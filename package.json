@@ -16,6 +16,10 @@
   },
   "author": "Miguel Martínez",
   "license": "ISC",
+  "dependencies": {
+    "@migudevelop/types-utils": "1.3.0",
+    "eslint": "9.38.0"
+  },
   "devDependencies": {
     "prettier": "^3.6.2",
     "turbo": "^2.6.0",

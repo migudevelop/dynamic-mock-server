@@ -1,0 +1,19 @@
+{
+  "name": "@dynamic-mock-server/core",
+  "version": "0.0.1-beta",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "eslint src --ext .ts"
+  },
+  "devDependencies": {
+    "@dynamic-mock-server/eslint-config": "workspace:*"
+  }
+}
