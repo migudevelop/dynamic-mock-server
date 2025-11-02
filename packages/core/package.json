@@ -14,6 +14,7 @@
     "lint": "eslint src --ext .ts"
   },
   "devDependencies": {
-    "@dynamic-mock-server/eslint-config": "workspace:*"
+    "@dynamic-mock-server/eslint-config": "workspace:*",
+    "@dynamic-mock-server/typescript-config": "workspace:*"
   }
 }

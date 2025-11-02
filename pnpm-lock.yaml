@@ -30,6 +30,9 @@ importers:
       '@dynamic-mock-server/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@dynamic-mock-server/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
 
   packages/eslint-config:
     devDependencies:
