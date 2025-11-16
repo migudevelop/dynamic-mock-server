@@ -2,7 +2,6 @@ import js from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import turboPlugin from "eslint-plugin-turbo";
 import tseslint from "typescript-eslint";
-import onlyWarn from "eslint-plugin-only-warn";
 
 /**
  * A shared ESLint configuration for the repository.
@@ -43,11 +42,24 @@ export const config = [
           },
         },
       ],
-    },
-  },
-  {
-    plugins: {
-      onlyWarn,
+      // Disable base rule and enable TypeScript-aware unused vars rule
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          vars: "all",
+          args: "after-used",
+          ignoreRestSiblings: true,
+          caughtErrors: "none",
+        },
+      ],
+      // Enforce type-only imports for types/interfaces (auto-fix adds `type`)
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          prefer: "type-imports",
+        },
+      ],
     },
   },
   {

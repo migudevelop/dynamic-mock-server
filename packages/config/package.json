@@ -1,5 +1,5 @@
 {
-  "name": "@dynamic-mock-server/core",
+  "name": "@dynamic-mock-server/config",
   "version": "0.0.1-beta",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,11 +16,9 @@
   },
   "devDependencies": {
     "@dynamic-mock-server/eslint-config": "workspace:*",
-    "@dynamic-mock-server/typescript-config": "workspace:*",
-    "@dynamic-mock-server/config": "workspace:*",
-    "pino-pretty": "13.1.2"
+    "@dynamic-mock-server/typescript-config": "workspace:*"
   },
   "dependencies": {
-    "fastify": "5.6.2"
+    "cosmiconfig": "9.0.0"
   }
 }
