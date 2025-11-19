@@ -2,7 +2,7 @@ import { NestedRoutesSuites } from "./nested-routes-suites";
 import { RoutesHandler } from "./routes-handler";
 import type { FastifyInstance } from "fastify";
 import type {
-  RouteVariant,
+  RouteResponse,
   RouteConfig,
   RoutesSuite,
   MocksManagerOptions,
@@ -12,10 +12,10 @@ import type {
  * MocksManager
  *
  * Central manager for all mocks in the Dynamic Mock Server.
- * Manages routes, variants, and routes suites with support for:
- * - Multiple variants per route
- * - Routes suites grouping specific variants
- * - Per-route variant overrides
+ * Manages routes, responses, and routes suites with support for:
+ * - Multiple response options per route
+ * - Routes suites grouping specific responses
+ * - Per-route response overrides
  * - Nested routes suites for hierarchical organization
  * - Integration with Fastify for handling HTTP requests
  */
@@ -59,46 +59,46 @@ export class MocksManager {
   }
 
   /**
-   * Add or update a route configuration with its variants
+   * Add or update a route configuration with its response options
    */
   addRoute(config: RouteConfig): void {
-    this.routesHandler.variants.addRoute(config);
+    this.routesHandler.responses.addRoute(config);
   }
 
   /**
    * Remove a route by ID
    */
   removeRoute(routeId: string): void {
-    this.routesHandler.variants.removeRoute(routeId);
+    this.routesHandler.responses.removeRoute(routeId);
   }
 
   /**
-   * Add a variant to an existing route
-   * If the variant already exists, it will be replaced
+   * Add a response option to an existing route
+   * If the response already exists, it will be replaced
    */
-  addVariant(routeId: string, variant: RouteVariant): void {
-    this.routesHandler.variants.addVariant(routeId, variant);
+  addResponse(routeId: string, response: RouteResponse): void {
+    this.routesHandler.responses.addResponse(routeId, response);
   }
 
   /**
-   * Remove a variant from a route
+   * Remove a response option from a route
    */
-  removeVariant(routeId: string, variantId: string): void {
-    this.routesHandler.variants.removeVariant(routeId, variantId);
+  removeResponse(routeId: string, responseId: string): void {
+    this.routesHandler.responses.removeResponse(routeId, responseId);
   }
 
   /**
    * Add or update a routes suite
    */
   addSuite(suite: RoutesSuite): void {
-    this.routesHandler.variants.addSuite(suite);
+    this.routesHandler.responses.addSuite(suite);
   }
 
   /**
    * Remove a routes suite
    */
   removeSuite(suiteId: string): void {
-    this.routesHandler.variants.removeSuite(suiteId);
+    this.routesHandler.responses.removeSuite(suiteId);
   }
 
   /**
@@ -106,75 +106,75 @@ export class MocksManager {
    * Pass null to clear the active suite
    */
   setActiveSuite(suiteId: string | null): void {
-    this.routesHandler.variants.setActiveSuite(suiteId);
+    this.routesHandler.responses.setActiveSuite(suiteId);
   }
 
   /**
    * Get the current active suite ID
    */
   getActiveSuite(): string | null {
-    return this.routesHandler.variants.getActiveSuite();
+    return this.routesHandler.responses.getActiveSuite();
   }
 
   /**
-   * Override the variant for a specific route
+   * Override the response for a specific route
    * This takes precedence over the active suite
    * Pass null to remove the override
    */
-  setRouteVariant(routeId: string, variantId: string | null): void {
-    this.routesHandler.variants.setRouteVariant(routeId, variantId);
+  setRouteResponse(routeId: string, responseId: string | null): void {
+    this.routesHandler.responses.setRouteResponse(routeId, responseId);
   }
 
   /**
    * Get all routes
    */
   getRoutes(): RouteConfig[] {
-    return this.routesHandler.variants.getRoutes();
+    return this.routesHandler.responses.getRoutes();
   }
 
   /**
    * Get a specific route by ID
    */
   getRoute(routeId: string): RouteConfig | undefined {
-    return this.routesHandler.variants.getRoute(routeId);
+    return this.routesHandler.responses.getRoute(routeId);
   }
 
   /**
    * Get all routes suites
    */
   getSuites(): RoutesSuite[] {
-    return this.routesHandler.variants.getSuites();
+    return this.routesHandler.responses.getSuites();
   }
 
   /**
    * Get a specific suite by ID
    */
   getSuite(suiteId: string): RoutesSuite | undefined {
-    return this.routesHandler.variants.getSuite(suiteId);
+    return this.routesHandler.responses.getSuite(suiteId);
   }
 
   /**
-   * Resolve the active variant for a route based on:
+   * Resolve the active response for a route based on:
    * 1. Per-route override (if set)
    * 2. Active suite mapping
-   * 3. First variant (default)
+   * 3. First response (default)
    */
-  resolveVariant(routeId: string): RouteVariant | null {
-    return this.routesHandler.variants.resolveVariant(routeId);
+  resolveResponse(routeId: string): RouteResponse | null {
+    return this.routesHandler.responses.resolveResponse(routeId);
   }
 
   /**
    * Find a route by HTTP method and URL path
    */
   findRoute(method: string, url: string): RouteConfig | null {
-    return this.routesHandler.variants.findRoute(method, url);
+    return this.routesHandler.responses.findRoute(method, url);
   }
 
   /**
    * Clear all routes, suites, and overrides
    */
   clear(): void {
-    this.routesHandler.variants.clear();
+    this.routesHandler.responses.clear();
     this.routesSuites.clear();
   }
 
@@ -183,21 +183,21 @@ export class MocksManager {
    */
   getStats(): {
     totalRoutes: number;
-    totalVariants: number;
+    totalResponses: number;
     totalSuites: number;
     activeSuite: string | null;
   } {
-    const routes = this.routesHandler.variants.getRoutes();
-    let totalVariants = 0;
+    const routes = this.routesHandler.responses.getRoutes();
+    let totalResponses = 0;
     for (const route of routes) {
-      totalVariants += route.variants.length;
+      totalResponses += route.responses.length;
     }
 
     return {
       totalRoutes: routes.length,
-      totalVariants,
-      totalSuites: this.routesHandler.variants.getSuites().length,
-      activeSuite: this.routesHandler.variants.getActiveSuite(),
+      totalResponses,
+      totalSuites: this.routesHandler.responses.getSuites().length,
+      activeSuite: this.routesHandler.responses.getActiveSuite(),
     };
   }
 }

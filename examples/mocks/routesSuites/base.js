@@ -1,5 +1,5 @@
 /**
- * Example routes suite with all success variants
+ * Example routes suite with all success responses
  */
 module.exports = {
   id: "base",

@@ -6,7 +6,7 @@ module.exports = {
   url: "/api/users/:id",
   method: "GET",
   delay: 100,
-  variants: [
+  responses: [
     {
       id: "success",
       type: "json",

@@ -1,17 +1,17 @@
 # @dynamic-mock-server/mocks-manager
 
-Manages the lifecycle and organization of mocks in the Dynamic Mock Server, including routes, variants, nested routes suites, and HTTP request handling through Fastify integration.
+Manages the lifecycle and organization of mocks in the Dynamic Mock Server, including routes, responses, nested routes suites, and HTTP request handling through Fastify integration.
 
 ## Features
 
-- **Route Management**: Add, update, remove, and query routes with their variants
-- **Variant Management**: Handle multiple variants per route for different response scenarios
-- **Routes Suites**: Group specific route variants into reusable suites
+- **Route Management**: Add, update, remove, and query routes with their responses
+- **Response Management**: Handle multiple responses per route for different scenarios
+- **Routes Suites**: Group specific route responses into reusable suites
 - **Nested Organization**: Hierarchical organization of routes suites with namespaces
-- **Active Suite Management**: Set and manage the active suite to control which variants are used
-- **Per-Route Overrides**: Override specific route variants independently of the active suite
+- **Active Suite Management**: Set and manage the active suite to control which responses are used
+- **Per-Route Overrides**: Override specific route responses independently of the active suite
 - **Fastify Integration**: Automatic HTTP request handling through `RoutesHandler`
-- **Variants Handler**: Internal management of route variants resolution
+- **Responses Handler**: Internal management of route responses resolution
 - **Nested Routes Suites**: Hierarchical structure for organizing suites with parent-child relationships
 
 ## Installation
@@ -35,12 +35,12 @@ const mocksManager = new MocksManager();
 const app = Fastify();
 mocksManager.setApp(app);
 
-// Add a route with variants
+// Add a route with responses
 mocksManager.addRoute({
   id: "get-users",
   url: "/api/users",
   method: "GET",
-  variants: [
+  responses: [
     {
       id: "success",
       status: 200,
@@ -72,9 +72,9 @@ mocksManager.setActiveSuite("happy-path");
 // Start the server
 await app.listen({ port: 3000 });
 
-// The server will now respond to GET /api/users with the "success" variant
-// Override a specific route variant
-mocksManager.setRouteVariant("get-users", "error");
+// The server will now respond to GET /api/users with the "success" response
+// Override a specific route response
+mocksManager.setRouteResponse("get-users", "error");
 // Now GET /api/users will return the error response
 
 // Use nested routes suites for organization
@@ -90,7 +90,7 @@ You can also use the individual components directly:
 ```typescript
 import {
   RoutesHandler,
-  VariantsHandler,
+  ResponsesHandler,
   NestedRoutesSuites,
 } from "@dynamic-mock-server/mocks-manager";
 
@@ -98,12 +98,12 @@ import {
 const routesHandler = new RoutesHandler();
 routesHandler.setApp(app);
 
-// Use VariantsHandler for variant management
-routesHandler.variants.addRoute({
+// Use ResponsesHandler for response management
+routesHandler.responses.addRoute({
   id: "get-users",
   url: "/api/users",
   method: "GET",
-  variants: [
+  responses: [
     /* ... */
   ],
 });
@@ -126,20 +126,20 @@ Main class that orchestrates all mock management functionality.
 
 - `setApp(app: FastifyInstance): void` - Set the Fastify instance for HTTP handling
 - `getApp(): FastifyInstance | undefined` - Get the current Fastify instance
-- `addRoute(config: RouteConfig): void` - Add or update a route with its variants
+- `addRoute(config: RouteConfig): void` - Add or update a route with its responses
 - `removeRoute(routeId: string): void` - Remove a route by ID
-- `addVariant(routeId: string, variant: RouteVariant): void` - Add a variant to an existing route
-- `removeVariant(routeId: string, variantId: string): void` - Remove a variant from a route
+- `addResponse(routeId: string, response: RouteResponse): void` - Add a response to an existing route
+- `removeResponse(routeId: string, responseId: string): void` - Remove a response from a route
 - `addSuite(suite: RoutesSuite): void` - Add or update a routes suite
 - `removeSuite(suiteId: string): void` - Remove a routes suite
 - `setActiveSuite(suiteId: string | null): void` - Set the active routes suite
 - `getActiveSuite(): string | null` - Get the current active suite ID
-- `setRouteVariant(routeId: string, variantId: string | null): void` - Override variant for a specific route
+- `setRouteResponse(routeId: string, responseId: string | null): void` - Override response for a specific route
 - `getRoutes(): RouteConfig[]` - Get all routes
 - `getRoute(routeId: string): RouteConfig | undefined` - Get a specific route by ID
 - `getSuites(): RoutesSuite[]` - Get all routes suites
 - `getSuite(suiteId: string): RoutesSuite | undefined` - Get a specific suite by ID
-- `resolveVariant(routeId: string): RouteVariant | null` - Resolve the active variant for a route
+- `resolveResponse(routeId: string): RouteResponse | null` - Resolve the active response for a route
 - `findRoute(method: string, url: string): RouteConfig | null` - Find a route by method and URL
 - `clear(): void` - Clear all routes and suites
 - `getStats(): object` - Get statistics about the current mocks state
@@ -161,28 +161,28 @@ Handles HTTP request routing through Fastify integration.
 
 #### Properties
 
-- `variants: VariantsHandler` - Access the variants handler
+- `responses: ResponsesHandler` - Access the responses handler
 
-### VariantsHandler
+### ResponsesHandler
 
-Manages route variants and their resolution.
+Manages route responses and their resolution.
 
 #### Methods
 
 - `addRoute(config: RouteConfig): void` - Add or update a route
 - `removeRoute(routeId: string): void` - Remove a route
-- `addVariant(routeId: string, variant: RouteVariant): void` - Add a variant to a route
-- `removeVariant(routeId: string, variantId: string): void` - Remove a variant
+- `addResponse(routeId: string, response: RouteResponse): void` - Add a response to a route
+- `removeResponse(routeId: string, responseId: string): void` - Remove a response
 - `addSuite(suite: RoutesSuite): void` - Add a routes suite
 - `removeSuite(suiteId: string): void` - Remove a routes suite
 - `setActiveSuite(suiteId: string | null): void` - Set the active suite
 - `getActiveSuite(): string | null` - Get the active suite
-- `setRouteVariant(routeId: string, variantId: string | null): void` - Override route variant
+- `setRouteResponse(routeId: string, responseId: string | null): void` - Override route response
 - `getRoutes(): RouteConfig[]` - Get all routes
 - `getRoute(routeId: string): RouteConfig | undefined` - Get a specific route
 - `getSuites(): RoutesSuite[]` - Get all suites
 - `getSuite(suiteId: string): RoutesSuite | undefined` - Get a specific suite
-- `resolveVariant(routeId: string): RouteVariant | null` - Resolve active variant
+- `resolveResponse(routeId: string): RouteResponse | null` - Resolve active response
 - `findRoute(method: string, url: string): RouteConfig | null` - Find route by method and URL
 - `clear(): void` - Clear all data
 

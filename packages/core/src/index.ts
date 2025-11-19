@@ -19,7 +19,7 @@ export { FilesLoader } from "./files";
 export type { FilesLoaderOptions } from "./files";
 export type {
   RouteDefinition,
-  RouteVariantDefinition,
+  RouteResponseDefinition,
   RoutesSuiteDefinition,
 } from "./files";
 

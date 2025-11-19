@@ -1,5 +1,5 @@
 import type {
-  RouteVariant,
+  RouteResponse,
   RouteConfig,
   RoutesSuite,
 } from "@dynamic-mock-server/mocks-manager";
@@ -7,13 +7,14 @@ import type {
 /**
  * Route definition loaded from files (extends RouteConfig with optional url/path)
  */
-export interface RouteDefinition extends Omit<RouteConfig, "url" | "variants"> {
+export interface RouteDefinition
+  extends Omit<RouteConfig, "url" | "responses"> {
   /** URL path for this route */
   url?: string;
   /** URL path for this route (alias for url) */
   path?: string;
-  /** Array of variants for this route */
-  variants?: RouteVariant[];
+  /** Array of response options for this route */
+  responses?: RouteResponse[];
 }
 
 /**
@@ -23,11 +24,11 @@ export interface RouteDefinition extends Omit<RouteConfig, "url" | "variants"> {
 export interface RoutesSuiteDefinition {
   /** Unique identifier for the suite */
   id: string;
-  /** Map of route IDs to their selected variant IDs */
+  /** Map of route IDs to their selected response IDs */
   routes: Record<string, string>;
 }
 
 /**
- * Re-export RouteVariant from mocks-manager for convenience
+ * Re-export RouteResponse from mocks-manager for convenience
  */
-export type { RouteVariant as RouteVariantDefinition, RoutesSuite };
+export type { RouteResponse as RouteResponseDefinition, RoutesSuite };

@@ -2,14 +2,14 @@ import type { FastifyInstance } from "fastify";
 import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import type {
   RouteConfig,
-  RouteVariant,
+  RouteResponse,
   RoutesSuite,
 } from "@dynamic-mock-server/mocks-manager";
 
 /**
  * AdminRoutes
  *
- * Provides HTTP endpoints to manage mock routes, variants, and suites at runtime.
+ * Provides HTTP endpoints to manage mock routes, responses, and suites at runtime.
  * All endpoints are prefixed with /__admin
  *
  */
@@ -67,20 +67,20 @@ export class AdminRoutes {
       }
     );
 
-    // Add a variant to a route
-    this.app.post<{ Params: { routeId: string }; Body: RouteVariant }>(
-      `${this.prefix}/routes/:routeId/variants`,
+    // Add a response to a route
+    this.app.post<{ Params: { routeId: string }; Body: RouteResponse }>(
+      `${this.prefix}/routes/:routeId/responses`,
       async (request, reply) => {
         try {
           const { routeId } = request.params;
-          const variant = request.body;
-          if (!variant.id) {
+          const response = request.body;
+          if (!response.id) {
             return reply.status(400).send({
-              error: "Missing required field: variant.id",
+              error: "Missing required field: response.id",
             });
           }
-          this.mocksManager.addVariant(routeId, variant);
-          return reply.status(201).send({ success: true, variant });
+          this.mocksManager.addResponse(routeId, response);
+          return reply.status(201).send({ success: true, response });
         } catch (err) {
           return reply.status(400).send({
             error: err instanceof Error ? err.message : "Unknown error",
@@ -89,26 +89,26 @@ export class AdminRoutes {
       }
     );
 
-    // Remove a variant from a route
-    this.app.delete<{ Params: { routeId: string; variantId: string } }>(
-      `${this.prefix}/routes/:routeId/variants/:variantId`,
+    // Remove a response from a route
+    this.app.delete<{ Params: { routeId: string; responseId: string } }>(
+      `${this.prefix}/routes/:routeId/responses/:responseId`,
       async (request, reply) => {
-        const { routeId, variantId } = request.params;
-        this.mocksManager.removeVariant(routeId, variantId);
+        const { routeId, responseId } = request.params;
+        this.mocksManager.removeResponse(routeId, responseId);
         return reply.send({ success: true });
       }
     );
 
-    // Set active variant for a route
+    // Set active response for a route
     this.app.put<{
       Params: { routeId: string };
-      Body: { variantId: string | null };
-    }>(`${this.prefix}/routes/:routeId/variant`, async (request, reply) => {
+      Body: { responseId: string | null };
+    }>(`${this.prefix}/routes/:routeId/response`, async (request, reply) => {
       try {
         const { routeId } = request.params;
-        const { variantId } = request.body;
-        this.mocksManager.setRouteVariant(routeId, variantId);
-        return reply.send({ success: true, routeId, variantId });
+        const { responseId } = request.body;
+        this.mocksManager.setRouteResponse(routeId, responseId);
+        return reply.send({ success: true, routeId, responseId });
       } catch (err) {
         return reply.status(400).send({
           error: err instanceof Error ? err.message : "Unknown error",

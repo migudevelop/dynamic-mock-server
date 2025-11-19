@@ -13,7 +13,6 @@ export const DEFAULT_CONFIG: ConfigType = {
     host: "localhost",
   },
   routes: {
-    basePath: "./mocks",
     selectedSuite: "default",
   },
   files: {

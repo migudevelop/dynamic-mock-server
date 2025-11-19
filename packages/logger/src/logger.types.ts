@@ -16,7 +16,7 @@ export interface LoggerOptions {
   /** Log level (trace|debug|info|warn|error|fatal) */
   level?: LogLevel;
   /** Additional pino options passed through to pino constructor */
-  pinoOptions?: PinoLoggerOptions;
+  options?: PinoLoggerOptions;
   /** Namespace for the logger */
   namespace?: string;
 }

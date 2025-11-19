@@ -1,4 +1,5 @@
 import { cosmiconfigSync } from "cosmiconfig";
+
 import type { ConfigType } from "./config.types";
 import { DEFAULT_CONFIG, DEFAULT_SEARCH_PLACES, FILE_NAME } from "./constants";
 

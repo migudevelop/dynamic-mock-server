@@ -64,7 +64,7 @@ Dynamic Mock Server is a development tool designed to facilitate the rapid creat
 - Use functions to check types from @migudevelop/types-utils
 - Use english for all code, comments, and documentation.
 - Avoid using `any` type; prefer specific types or generics.
-- Add types and interfaces in ".types.ts" files, for example, routes-handlers.types.ts, variants-handler.types.ts
+- Add types and interfaces in ".types.ts" files, for example, routes-handlers.types.ts, responses-handler.types.ts
 - Add a jsdoc comments for all functions and classes to describe their purpose, parameters, and return values. And add a little comment in the types and interfaces properties. eg.
   ```ts
   /**

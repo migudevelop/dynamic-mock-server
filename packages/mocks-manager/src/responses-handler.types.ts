@@ -1,10 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 /**
- * Represents a variant of a route with specific response configuration
+ * Represents a response option for a route
  */
-export interface RouteVariant {
-  /** Unique identifier for the variant */
+export interface RouteResponse {
+  /** Unique identifier for the response */
   id: string;
   /** HTTP status code for the response */
   status?: number;
@@ -22,7 +22,7 @@ export interface RouteVariant {
 }
 
 /**
- * Configuration for a route with all its variants
+ * Configuration for a route with all its responses
  */
 export interface RouteConfig {
   /** Unique identifier for the route */
@@ -31,18 +31,18 @@ export interface RouteConfig {
   url: string;
   /** HTTP method for the route */
   method: string;
-  /** Array of variants for this route */
-  variants: RouteVariant[];
-  /** Internal map for quick variant lookup */
-  variantsMap?: Map<string, RouteVariant>;
+  /** Array of response options for this route */
+  responses: RouteResponse[];
+  /** Internal map for quick response lookup */
+  responsesMap?: Map<string, RouteResponse>;
 }
 
 /**
- * A suite that groups specific variants across multiple routes
+ * A suite that groups specific responses across multiple routes
  */
 export interface RoutesSuite {
   /** Unique identifier for the suite */
   id: string;
-  /** Array of "routeId:variantId" combinations */
+  /** Array of "routeId:responseId" combinations */
   routes: string[];
 }

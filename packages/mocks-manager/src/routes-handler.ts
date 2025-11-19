@@ -1,12 +1,12 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { HttpMethod, RoutesHandlerOptions } from "./routes-handler.types";
-import { VariantsHandler } from "./variants-handler";
+import { ResponsesHandler } from "./responses-handler";
 
 /**
  * RoutesHandler
  *
  * - Registers a lightweight catch-all dispatcher in Fastify for common HTTP
- *   methods and forwards requests to route definitions managed by VariantsHandler.
+ *   methods and forwards requests to route definitions managed by ResponsesHandler.
  * - Routes are matched by exact `path` and `method`.
  *
  * Notes:
@@ -16,11 +16,11 @@ import { VariantsHandler } from "./variants-handler";
  */
 export class RoutesHandler {
   private _app?: FastifyInstance;
-  public variants: VariantsHandler;
+  public responses: ResponsesHandler;
   private registered = false;
 
   constructor(options?: RoutesHandlerOptions) {
-    this.variants = new VariantsHandler();
+    this.responses = new ResponsesHandler();
     if (options?.app) {
       this.setApp(options.app);
     }
@@ -74,29 +74,29 @@ export class RoutesHandler {
           const url = new URL(request.url ?? "", "http://localhost");
           const path = url.pathname;
 
-          // Find route using VariantsHandler
-          const route = this.variants.findRoute(method, path);
+          // Find route using ResponsesHandler
+          const route = this.responses.findRoute(method, path);
           if (!route) {
             return reply.callNotFound();
           }
 
-          // Resolve the active variant for this route
-          const variant = this.variants.resolveVariant(route.id);
-          if (!variant) {
+          // Resolve the active response for this route
+          const response = this.responses.resolveResponse(route.id);
+          if (!response) {
             return reply.callNotFound();
           }
 
-          // Apply optional delay from variant
-          await this.applyDelay(variant.delay);
+          // Apply optional delay from response
+          await this.applyDelay(response.delay);
 
-          // If variant has a custom handler, use it
-          if (variant.handler) {
-            const result = await variant.handler(request, reply);
+          // If response has a custom handler, use it
+          if (response.handler) {
+            const result = await response.handler(request, reply);
             // If handler returned a value and did not send, send it now
             if (result !== undefined && !reply.sent) {
-              const status = variant.status ?? 200;
-              if (variant.headers) {
-                for (const [h, v] of Object.entries(variant.headers)) {
+              const status = response.status ?? 200;
+              if (response.headers) {
+                for (const [h, v] of Object.entries(response.headers)) {
                   reply.header(h, v);
                 }
               }
@@ -107,13 +107,13 @@ export class RoutesHandler {
           }
 
           // Static response path
-          const status = variant.status ?? 200;
-          if (variant.headers) {
-            for (const [h, v] of Object.entries(variant.headers)) {
+          const status = response.status ?? 200;
+          if (response.headers) {
+            for (const [h, v] of Object.entries(response.headers)) {
               reply.header(h, v);
             }
           }
-          return reply.status(status).send(variant.body);
+          return reply.status(status).send(response.body);
         },
       });
     }

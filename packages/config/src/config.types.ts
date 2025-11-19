@@ -8,13 +8,16 @@ export type LogLevel =
   | "silent";
 
 export interface ConfigType {
+  /** The logging level */
   logLevel: LogLevel;
   server: {
+    /** The host for the server */
     host: string;
+    /** The port number for the server */
     port: number;
   };
   routes: {
-    basePath: string;
+    /** The selected routes-suite */
     selectedSuite: string;
   };
   files: {

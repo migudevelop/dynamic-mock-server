@@ -1,11 +1,11 @@
 export { MocksManager } from "./mocks-manager";
 export { RoutesHandler } from "./routes-handler";
-export { VariantsHandler } from "./variants-handler";
+export { ResponsesHandler } from "./responses-handler";
 export { NestedRoutesSuites } from "./nested-routes-suites";
 
 export type {
   HttpMethod,
-  RouteVariant,
+  RouteResponse,
   RouteConfig,
   RoutesSuite,
   MocksManagerOptions,

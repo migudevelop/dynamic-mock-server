@@ -2,7 +2,7 @@ import { loadConfig } from "unconfig";
 import { watch, type FSWatcher } from "chokidar";
 import { join } from "path";
 import type { Config } from "@dynamic-mock-server/config";
-import type Logger from "@dynamic-mock-server/loguer";
+import type Logger from "@dynamic-mock-server/logger";
 import type { Alerts } from "@dynamic-mock-server/alerts";
 import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import type {
@@ -240,20 +240,20 @@ export class FilesLoader {
       );
     }
 
-    const variants = (definition.variants || []).map((v) => ({
-      id: v.id,
-      status: v.status,
-      headers: v.headers,
-      body: v.body,
-      delay: v.delay,
-      handler: v.handler,
+    const responses = (definition.responses || []).map((r) => ({
+      id: r.id,
+      status: r.status,
+      headers: r.headers,
+      body: r.body,
+      delay: r.delay,
+      handler: r.handler,
     }));
 
     return {
       id: definition.id,
       url,
       method: definition.method,
-      variants,
+      responses,
     };
   }
 

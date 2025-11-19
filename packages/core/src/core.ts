@@ -1,6 +1,6 @@
 import { Server } from "./server";
 import { Config } from "@dynamic-mock-server/config";
-import Logger from "@dynamic-mock-server/loguer";
+import Logger from "@dynamic-mock-server/logger";
 import { Alerts } from "@dynamic-mock-server/alerts";
 import { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import { PluginManager } from "./plugins-manager";

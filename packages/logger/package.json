@@ -1,5 +1,5 @@
 {
-  "name": "@dynamic-mock-server/loguer",
+  "name": "@dynamic-mock-server/logger",
   "version": "0.0.1-beta",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

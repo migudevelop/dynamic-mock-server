@@ -1,4 +1,6 @@
-import pino, { Logger as PinoLogger } from "pino";
+import type { Logger as PinoLogger, LogFn } from "pino";
+import pino from "pino";
+
 import type { LoggerOptions } from "./logger.types";
 
 /**
@@ -19,7 +21,7 @@ export class Logger {
       },
     });
 
-    this.logger = pino({ level, ...(opts?.pinoOptions ?? {}) }, transport);
+    this.logger = pino({ level, ...(opts?.options ?? {}) }, transport);
   }
 
   /**
@@ -39,31 +41,33 @@ export class Logger {
     return this.child({ namespace: name });
   }
 
-  trace(...args: any[]) {}
-
-  debug(...args: any[]) {
-    return (this.logger.debug as any)(...args);
+  trace(...args: Parameters<LogFn>) {
+    return this.logger.trace(...args);
   }
 
-  info(...args: any[]) {
-    return (this.logger.info as any)(...args);
+  debug(...args: Parameters<LogFn>) {
+    return this.logger.debug(...args);
   }
 
-  warn(...args: any[]) {
-    return (this.logger.warn as any)(...args);
+  info(...args: Parameters<LogFn>) {
+    return this.logger.info(...args);
   }
 
-  error(...args: any[]) {
-    return (this.logger.error as any)(...args);
+  warn(...args: Parameters<LogFn>) {
+    return this.logger.warn(...args);
   }
 
-  fatal(...args: any[]) {
-    return (this.logger.fatal as any)(...args);
+  error(...args: Parameters<LogFn>) {
+    return this.logger.error(...args);
+  }
+
+  fatal(...args: Parameters<LogFn>) {
+    return this.logger.fatal(...args);
   }
 
   setLevel(level: string) {
     try {
-      (this.logger as any).level = level;
+      this.logger.level = level;
     } catch (_) {
       // ignore
     }

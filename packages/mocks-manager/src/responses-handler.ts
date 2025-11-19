@@ -1,34 +1,34 @@
 import type {
-  RouteVariant,
+  RouteResponse,
   RouteConfig,
   RoutesSuite,
-} from "./variants-handler.types";
+} from "./responses-handler.types";
 
 /**
- * VariantsHandler
+ * ResponsesHandler
  *
- * Manages route variants and routes suites:
- * - Each route can have multiple named variants with different responses
- * - Routes suites group specific variants across multiple routes
- * - Can set a global active suite or per-route active variant
+ * Manages route responses and routes suites:
+ * - Each route can have multiple named responses with different configurations
+ * - Routes suites group specific responses across multiple routes
+ * - Can set a global active suite or per-route active response
  */
-export class VariantsHandler {
+export class ResponsesHandler {
   private routes = new Map<string, RouteConfig>();
   private suites = new Map<string, RoutesSuite>();
   private activeSuite: string | null = null;
   // per-route overrides (takes precedence over suite)
-  private routeVariantOverrides = new Map<string, string>();
+  private routeResponseOverrides = new Map<string, string>();
 
   /**
-   * Add or update a route configuration with its variants.
+   * Add or update a route configuration with its responses.
    */
   addRoute(config: RouteConfig): void {
-    // build a quick lookup map for variants
-    const variantsMap = new Map<string, RouteVariant>();
-    for (const variant of config.variants) {
-      variantsMap.set(variant.id, variant);
+    // build a quick lookup map for responses
+    const responsesMap = new Map<string, RouteResponse>();
+    for (const response of config.responses) {
+      responsesMap.set(response.id, response);
     }
-    config.variantsMap = variantsMap;
+    config.responsesMap = responsesMap;
     this.routes.set(config.id, config);
   }
 
@@ -37,35 +37,35 @@ export class VariantsHandler {
    */
   removeRoute(routeId: string): void {
     this.routes.delete(routeId);
-    this.routeVariantOverrides.delete(routeId);
+    this.routeResponseOverrides.delete(routeId);
   }
 
   /**
-   * Add a variant to an existing route.
+   * Add a response to an existing route.
    */
-  addVariant(routeId: string, variant: RouteVariant): void {
+  addResponse(routeId: string, response: RouteResponse): void {
     const route = this.routes.get(routeId);
     if (!route) {
       throw new Error(`Route "${routeId}" not found`);
     }
-    // check if variant already exists and replace, or add new
-    const existing = route.variants.findIndex((v) => v.id === variant.id);
+    // check if response already exists and replace, or add new
+    const existing = route.responses.findIndex((r) => r.id === response.id);
     if (existing >= 0) {
-      route.variants[existing] = variant;
+      route.responses[existing] = response;
     } else {
-      route.variants.push(variant);
+      route.responses.push(response);
     }
-    route.variantsMap!.set(variant.id, variant);
+    route.responsesMap!.set(response.id, response);
   }
 
   /**
-   * Remove a variant from a route.
+   * Remove a response from a route.
    */
-  removeVariant(routeId: string, variantId: string): void {
+  removeResponse(routeId: string, responseId: string): void {
     const route = this.routes.get(routeId);
     if (!route) return;
-    route.variants = route.variants.filter((v) => v.id !== variantId);
-    route.variantsMap!.delete(variantId);
+    route.responses = route.responses.filter((r) => r.id !== responseId);
+    route.responsesMap!.delete(responseId);
   }
 
   /**
@@ -103,22 +103,22 @@ export class VariantsHandler {
   }
 
   /**
-   * Override the variant for a specific route (takes precedence over collection).
+   * Override the response for a specific route (takes precedence over suite).
    */
-  setRouteVariant(routeId: string, variantId: string | null): void {
+  setRouteResponse(routeId: string, responseId: string | null): void {
     const route = this.routes.get(routeId);
     if (!route) {
       throw new Error(`Route "${routeId}" not found`);
     }
-    if (variantId !== null && !route.variantsMap!.has(variantId)) {
+    if (responseId !== null && !route.responsesMap!.has(responseId)) {
       throw new Error(
-        `Variant "${variantId}" not found for route "${routeId}"`
+        `Response "${responseId}" not found for route "${routeId}"`
       );
     }
-    if (variantId === null) {
-      this.routeVariantOverrides.delete(routeId);
+    if (responseId === null) {
+      this.routeResponseOverrides.delete(routeId);
     } else {
-      this.routeVariantOverrides.set(routeId, variantId);
+      this.routeResponseOverrides.set(routeId, responseId);
     }
   }
 
@@ -151,42 +151,42 @@ export class VariantsHandler {
   }
 
   /**
-   * Resolve the active variant for a route based on:
+   * Resolve the active response for a route based on:
    * 1. Per-route override (if set)
-   * 2. Active scenario mapping
-   * 3. First variant (default)
+   * 2. Active suite mapping
+   * 3. First response (default)
    */
-  resolveVariant(routeId: string): RouteVariant | null {
+  resolveResponse(routeId: string): RouteResponse | null {
     const route = this.routes.get(routeId);
-    if (!route || route.variants.length === 0) return null;
+    if (!route || route.responses.length === 0) return null;
 
     // 1. Check per-route override
-    const override = this.routeVariantOverrides.get(routeId);
+    const override = this.routeResponseOverrides.get(routeId);
     if (override) {
-      return route.variantsMap!.get(override) ?? null;
+      return route.responsesMap!.get(override) ?? null;
     }
 
     // 2. Check active suite
     if (this.activeSuite) {
       const suite = this.suites.get(this.activeSuite);
       if (suite) {
-        // find the route:variant mapping in suite.routes
+        // find the route:response mapping in suite.routes
         const mapping = suite.routes.find((r: string) =>
           r.startsWith(`${routeId}:`)
         );
         if (mapping) {
           const parts = mapping.split(":");
-          const variantId = parts[1];
-          if (variantId) {
-            const variant = route.variantsMap!.get(variantId);
-            if (variant) return variant;
+          const responseId = parts[1];
+          if (responseId) {
+            const response = route.responsesMap!.get(responseId);
+            if (response) return response;
           }
         }
       }
     }
 
-    // 3. Default to first variant
-    return route.variants[0] ?? null;
+    // 3. Default to first response
+    return route.responses[0] ?? null;
   }
 
   /**
@@ -211,8 +211,8 @@ export class VariantsHandler {
     this.routes.clear();
     this.suites.clear();
     this.activeSuite = null;
-    this.routeVariantOverrides.clear();
+    this.routeResponseOverrides.clear();
   }
 }
 
-export default VariantsHandler;
+export default ResponsesHandler;

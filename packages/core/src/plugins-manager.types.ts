@@ -1,7 +1,7 @@
 import type { Core } from "./core";
 import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import type { Config } from "@dynamic-mock-server/config";
-import type Logger from "@dynamic-mock-server/loguer";
+import type Logger from "@dynamic-mock-server/logger";
 import type { Alerts } from "@dynamic-mock-server/alerts";
 import type { Server } from "./server";
 
@@ -29,7 +29,7 @@ export interface CoreApi {
 export interface Plugin {
   /**
    * Called during plugin registration, before any initialization.
-   * Use this to register variant handlers, configure options, etc.
+   * Use this to register response handlers, configure options, etc.
    */
   register?(coreApi: CoreApi): void;
 
