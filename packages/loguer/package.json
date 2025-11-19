@@ -1,0 +1,25 @@
+{
+  "name": "@dynamic-mock-server/loguer",
+  "version": "0.0.1-beta",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -w",
+    "lint": "eslint src --ext .ts"
+  },
+  "devDependencies": {
+    "@dynamic-mock-server/eslint-config": "workspace:*",
+    "@dynamic-mock-server/typescript-config": "workspace:*"
+  },
+  "dependencies": {
+    "pino": "10.1.0",
+    "pino-pretty": "13.1.2"
+  }
+}

@@ -5,7 +5,7 @@ module.exports = {
     "subject-case": [
       2,
       "always",
-      ["sentence-case", "pascal-case", "upper-case"],
+      ["sentence-case", "pascal-case", "upper-case", "lower-case"],
     ],
   },
 };

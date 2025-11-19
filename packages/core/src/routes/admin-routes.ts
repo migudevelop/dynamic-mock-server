@@ -1,10 +1,10 @@
-import { FastifyInstance } from "fastify";
-import { RoutesHandler } from "./routes-handler";
+import type { FastifyInstance } from "fastify";
+import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import type {
   RouteConfig,
   RouteVariant,
   RoutesSuite,
-} from "./variants-handler.types";
+} from "@dynamic-mock-server/mocks-manager";
 
 /**
  * AdminRoutes
@@ -12,20 +12,19 @@ import type {
  * Provides HTTP endpoints to manage mock routes, variants, and suites at runtime.
  * All endpoints are prefixed with /__admin
  *
- * Similar to mocks-server's admin API.
  */
 export class AdminRoutes {
   private app: FastifyInstance;
-  private routesHandler: RoutesHandler;
+  private mocksManager: MocksManager;
   private prefix: string;
 
   constructor(
     app: FastifyInstance,
-    routesHandler: RoutesHandler,
+    mocksManager: MocksManager,
     options?: { prefix?: string }
   ) {
     this.app = app;
-    this.routesHandler = routesHandler;
+    this.mocksManager = mocksManager;
     this.prefix = options?.prefix ?? "/__admin";
     this.registerRoutes();
   }
@@ -33,7 +32,7 @@ export class AdminRoutes {
   private registerRoutes() {
     // Get all routes
     this.app.get(`${this.prefix}/routes`, async (request, reply) => {
-      const routes = this.routesHandler.variants.getRoutes();
+      const routes = this.mocksManager.getRoutes();
       return reply.send({ routes });
     });
 
@@ -48,7 +47,7 @@ export class AdminRoutes {
               error: "Missing required fields: id, url, method",
             });
           }
-          this.routesHandler.variants.addRoute(config);
+          this.mocksManager.addRoute(config);
           return reply.status(201).send({ success: true, route: config });
         } catch (err) {
           return reply.status(400).send({
@@ -63,7 +62,7 @@ export class AdminRoutes {
       `${this.prefix}/routes/:routeId`,
       async (request, reply) => {
         const { routeId } = request.params;
-        this.routesHandler.variants.removeRoute(routeId);
+        this.mocksManager.removeRoute(routeId);
         return reply.send({ success: true });
       }
     );
@@ -80,7 +79,7 @@ export class AdminRoutes {
               error: "Missing required field: variant.id",
             });
           }
-          this.routesHandler.variants.addVariant(routeId, variant);
+          this.mocksManager.addVariant(routeId, variant);
           return reply.status(201).send({ success: true, variant });
         } catch (err) {
           return reply.status(400).send({
@@ -95,7 +94,7 @@ export class AdminRoutes {
       `${this.prefix}/routes/:routeId/variants/:variantId`,
       async (request, reply) => {
         const { routeId, variantId } = request.params;
-        this.routesHandler.variants.removeVariant(routeId, variantId);
+        this.mocksManager.removeVariant(routeId, variantId);
         return reply.send({ success: true });
       }
     );
@@ -108,7 +107,7 @@ export class AdminRoutes {
       try {
         const { routeId } = request.params;
         const { variantId } = request.body;
-        this.routesHandler.variants.setRouteVariant(routeId, variantId);
+        this.mocksManager.setRouteVariant(routeId, variantId);
         return reply.send({ success: true, routeId, variantId });
       } catch (err) {
         return reply.status(400).send({
@@ -119,8 +118,8 @@ export class AdminRoutes {
 
     // Get all suites
     this.app.get(`${this.prefix}/suites`, async (request, reply) => {
-      const suites = this.routesHandler.variants.getSuites();
-      const activeSuite = this.routesHandler.variants.getActiveSuite();
+      const suites = this.mocksManager.getSuites();
+      const activeSuite = this.mocksManager.getActiveSuite();
       return reply.send({ suites, activeSuite });
     });
 
@@ -135,7 +134,7 @@ export class AdminRoutes {
               error: "Missing required fields: id, routes",
             });
           }
-          this.routesHandler.variants.addSuite(suite);
+          this.mocksManager.addSuite(suite);
           return reply.status(201).send({ success: true, suite });
         } catch (err) {
           return reply.status(400).send({
@@ -150,7 +149,7 @@ export class AdminRoutes {
       `${this.prefix}/suites/:suiteId`,
       async (request, reply) => {
         const { suiteId } = request.params;
-        this.routesHandler.variants.removeSuite(suiteId);
+        this.mocksManager.removeSuite(suiteId);
         return reply.send({ success: true });
       }
     );
@@ -161,7 +160,7 @@ export class AdminRoutes {
       async (request, reply) => {
         try {
           const { suiteId } = request.body;
-          this.routesHandler.variants.setActiveSuite(suiteId);
+          this.mocksManager.setActiveSuite(suiteId);
           return reply.send({ success: true, suiteId });
         } catch (err) {
           return reply.status(400).send({
@@ -173,20 +172,16 @@ export class AdminRoutes {
 
     // Clear all routes and suites
     this.app.delete(`${this.prefix}/clear`, async (request, reply) => {
-      this.routesHandler.variants.clear();
+      this.mocksManager.clear();
       return reply.send({ success: true });
     });
 
     // Health/status endpoint
     this.app.get(`${this.prefix}/status`, async (request, reply) => {
-      const routesCount = this.routesHandler.variants.getRoutes().length;
-      const suitesCount = this.routesHandler.variants.getSuites().length;
-      const activeSuite = this.routesHandler.variants.getActiveSuite();
+      const stats = this.mocksManager.getStats();
       return reply.send({
         status: "ok",
-        routes: routesCount,
-        suites: suitesCount,
-        activeSuite,
+        ...stats,
       });
     });
   }

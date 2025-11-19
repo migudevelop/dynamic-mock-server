@@ -1,6 +1,6 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { HttpMethod, RoutesHandlerOptions } from "./routes-handler.types";
 import { VariantsHandler } from "./variants-handler";
-import type { HttpMethod } from "./routes-handler.types";
 
 /**
  * RoutesHandler
@@ -8,7 +8,6 @@ import type { HttpMethod } from "./routes-handler.types";
  * - Registers a lightweight catch-all dispatcher in Fastify for common HTTP
  *   methods and forwards requests to route definitions managed by VariantsHandler.
  * - Routes are matched by exact `path` and `method`.
- * - Supports variants and collections (scenarios) similar to mocks-server.
  *
  * Notes:
  * - Fastify does not provide a built-in way to remove previously registered
@@ -16,14 +15,30 @@ import type { HttpMethod } from "./routes-handler.types";
  *   manually lets us add/remove mock routes at runtime.
  */
 export class RoutesHandler {
-  private app: FastifyInstance;
+  private _app?: FastifyInstance;
   public variants: VariantsHandler;
   private registered = false;
 
-  constructor(app: FastifyInstance) {
-    this.app = app;
+  constructor(options?: RoutesHandlerOptions) {
     this.variants = new VariantsHandler();
+    if (options?.app) {
+      this.setApp(options.app);
+    }
+  }
+
+  /**
+   * Set the Fastify instance and register routes
+   */
+  setApp(app: FastifyInstance): void {
+    this._app = app;
     this.registerCatchAll();
+  }
+
+  /**
+   * Get the Fastify instance
+   */
+  getApp(): FastifyInstance | undefined {
+    return this._app;
   }
 
   /**
@@ -34,8 +49,11 @@ export class RoutesHandler {
     await new Promise((res) => setTimeout(res, delay));
   }
 
+  /**
+   * Register catch-all routes for all HTTP methods
+   */
   private registerCatchAll() {
-    if (this.registered) return;
+    if (this.registered || !this._app) return;
     const methods: HttpMethod[] = [
       "GET",
       "POST",
@@ -48,7 +66,7 @@ export class RoutesHandler {
 
     for (const method of methods) {
       // register a wildcard route for each method and dispatch manually
-      this.app.route({
+      this._app.route({
         method,
         url: "/*",
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
@@ -68,44 +86,46 @@ export class RoutesHandler {
             return reply.callNotFound();
           }
 
-          try {
-            // Apply optional delay from variant
-            await this.applyDelay(variant.delay);
+          // Apply optional delay from variant
+          await this.applyDelay(variant.delay);
 
-            // If variant has a custom handler, use it
-            if (variant.handler) {
-              const result = await variant.handler(request, reply);
-              // If handler returned a value and did not send, send it now
-              if (result !== undefined && !reply.sent) {
-                const status = variant.status ?? 200;
-                if (variant.headers) {
-                  for (const [h, v] of Object.entries(variant.headers)) {
-                    reply.header(h, v);
-                  }
+          // If variant has a custom handler, use it
+          if (variant.handler) {
+            const result = await variant.handler(request, reply);
+            // If handler returned a value and did not send, send it now
+            if (result !== undefined && !reply.sent) {
+              const status = variant.status ?? 200;
+              if (variant.headers) {
+                for (const [h, v] of Object.entries(variant.headers)) {
+                  reply.header(h, v);
                 }
-                return reply.status(status).send(result);
               }
-              // Otherwise assume handler sent response
-              return;
+              return reply.status(status).send(result);
             }
-
-            // Static response path
-            const status = variant.status ?? 200;
-            if (variant.headers) {
-              for (const [h, v] of Object.entries(variant.headers)) {
-                reply.header(h, v);
-              }
-            }
-            return reply.status(status).send(variant.body);
-          } catch (err) {
-            // bubble error to fastify
-            throw err;
+            // Otherwise assume handler sent response
+            return;
           }
+
+          // Static response path
+          const status = variant.status ?? 200;
+          if (variant.headers) {
+            for (const [h, v] of Object.entries(variant.headers)) {
+              reply.header(h, v);
+            }
+          }
+          return reply.status(status).send(variant.body);
         },
       });
     }
 
     this.registered = true;
+  }
+
+  /**
+   * Check if routes are registered
+   */
+  isRegistered(): boolean {
+    return this.registered;
   }
 }
 

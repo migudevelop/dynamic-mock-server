@@ -1,28 +1,27 @@
 import fastify, { type FastifyInstance } from "fastify";
 import { EventEmitter } from "events";
-import type RoutesHandler from "./routes/routes-handler";
 import type { Config } from "@dynamic-mock-server/config";
 import type { ConfigType } from "@dynamic-mock-server/config";
-
-const DEFAULT_PORT = 3000;
+import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
 
 export type ConfigOptions = Pick<ConfigType, "server" | "logLevel">;
 
 export interface ServerOptions {
   config: Config;
-  routesHandler?: RoutesHandler;
+  mocksManager: MocksManager;
 }
 
 export class Server extends EventEmitter {
   private _config?: Config;
+  private _mocksManager?: MocksManager;
   private _app: FastifyInstance | null = null;
   private _isServerInitialized: boolean = false;
   private _options: ConfigOptions | null = null;
-  // private server?: http.Server | https.Server;
 
-  constructor({ config, routesHandler }: ServerOptions) {
+  constructor({ config, mocksManager }: ServerOptions) {
     super();
     this._config = config;
+    this._mocksManager = mocksManager;
   }
 
   private async _initServer() {
@@ -37,9 +36,12 @@ export class Server extends EventEmitter {
         },
       },
     });
-    this._app.get("/", function (request, reply) {
-      reply.send({ hello: "world" });
-    });
+
+    // Connect MocksManager with Fastify
+    if (this._mocksManager) {
+      this._mocksManager.setApp(this._app);
+    }
+
     this._isServerInitialized = true;
   }
 
@@ -57,6 +59,20 @@ export class Server extends EventEmitter {
   }
 
   /**
+   * Get the Fastify app instance
+   */
+  getApp(): FastifyInstance | null {
+    return this._app;
+  }
+
+  /**
+   * Get the MocksManager instance
+   */
+  getMocksManager(): MocksManager | undefined {
+    return this._mocksManager;
+  }
+
+  /**
    * Start the underlying HTTP(S) server using Fastify's listen.
    */
   async start(): Promise<void> {
@@ -66,8 +82,6 @@ export class Server extends EventEmitter {
         port: this._options?.server.port,
         host: this._options?.server.host,
       });
-      // fastify sets `app.server` to the underlying node server after listen
-      // this.server = this._app?.server as http.Server | https.Server;
       this.emit("start", {
         port: this._options?.server.port,
         host: this._options?.server.host,
@@ -85,7 +99,6 @@ export class Server extends EventEmitter {
     if (!this._app || !this._app.server) return;
     try {
       await this._app.close();
-      // this.server = undefined;
       this.emit("stop");
     } catch (err) {
       this.emit("error", err);
