@@ -59,7 +59,7 @@ Dynamic Mock Server is a development tool designed to facilitate the rapid creat
 - Test files (if any) should be placed alongside source files with a `.test.ts` suffix.
 - Source files go in `src/` directories within each package.
 - Use kebab-case for package folder and file names (e.g., `eslint-config`, `typescript-config`).
-- Use destructuring in imports and let/const declarations where applicable for cleaner code.
+- Use destructuring in imports, arguments and let/const declarations where applicable for cleaner code.
 - Use async/await for asynchronous code instead of raw Promises for better readability.
 - Use functions to check types from @migudevelop/types-utils
 - Use english for all code, comments, and documentation.

@@ -1,7 +1,7 @@
 import { Core } from "./core";
 
 export { Core } from "./core";
-export type { CoreOptions } from "./core";
+export type { CoreOptions } from "./core.types";
 export { Server } from "./server";
 export { PluginManager } from "./plugins-manager";
 export type {
@@ -13,15 +13,6 @@ export type {
 
 // Export admin routes
 export { AdminRoutes } from "./routes/admin-routes";
-
-// Export files system
-export { FilesLoader } from "./files";
-export type { FilesLoaderOptions } from "./files";
-export type {
-  RouteDefinition,
-  RouteResponseDefinition,
-  RoutesSuiteDefinition,
-} from "./files";
 
 // Main entry point for direct execution
 export async function main(): Promise<Core> {

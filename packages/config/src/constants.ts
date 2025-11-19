@@ -8,6 +8,9 @@ export const DEFAULT_SEARCH_PLACES = VALID_CONFIG_EXTENSIONS.map(
 
 export const DEFAULT_CONFIG: ConfigType = {
   logLevel: "trace",
+  plugins: {
+    register: [],
+  },
   server: {
     port: 3000,
     host: "localhost",

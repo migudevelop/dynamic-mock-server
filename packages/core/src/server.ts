@@ -29,7 +29,7 @@ export class Server extends EventEmitter {
     await this._loadConfigOptions();
     this._app = fastify({
       logger: {
-        level: process.env.LOG_LEVEL ?? this._options?.logLevel,
+        level: process.env.LOG_LEVEL ?? this._options?.logLevel ?? "info",
         transport: {
           target: "pino-pretty",
           options: { colorize: true },

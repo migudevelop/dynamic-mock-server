@@ -4,19 +4,8 @@ import Logger from "@dynamic-mock-server/logger";
 import { Alerts } from "@dynamic-mock-server/alerts";
 import { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import { PluginManager } from "./plugins-manager";
-import type { PluginConstructor, CoreApi } from "./plugins-manager.types";
-
-/**
- * Options for Core initialization
- */
-export interface CoreOptions {
-  /** Configuration overrides */
-  config?: any;
-  /** Array of plugins to register */
-  plugins?: {
-    register?: PluginConstructor[];
-  };
-}
+import type { CoreApi } from "./plugins-manager.types";
+import type { CoreOptions } from "./core.types";
 
 /**
  * Core is the main orchestrator for the mock server.
@@ -38,22 +27,21 @@ export class Core {
     this._alerts = new Alerts();
     this._mocksManager = new MocksManager();
 
+    // Initialize server
+    this._server = new Server({
+      config: this._config,
+      mocksManager: this._mocksManager,
+    });
+
     // Create Core API for plugins
     const coreApi: CoreApi = {
       config: this._config,
       logger: this._logger,
       alerts: this._alerts,
       mocksManager: this._mocksManager,
-      server: null, // Will be set after server creation
+      server: this._server,
       version: this._version,
     };
-
-    // Initialize server
-    this._server = new Server({
-      config: this._config,
-      mocksManager: this._mocksManager,
-    });
-    coreApi.server = this._server;
 
     // Initialize plugin manager
     this._pluginManager = new PluginManager(coreApi, this, options?.plugins);
@@ -63,7 +51,10 @@ export class Core {
    * Initialize the core and all plugins
    */
   async init(): Promise<void> {
+    // Load configuration (available via this._config.getConfig())
     await this._config.getConfig();
+
+    // Initialize plugin manager (will load plugins from config + options)
     await this._pluginManager.init();
   }
 

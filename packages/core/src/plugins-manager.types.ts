@@ -18,7 +18,7 @@ export interface CoreApi {
   /** Mock management */
   mocksManager: MocksManager;
   /** Server instance */
-  server: Server | null;
+  server: Server;
   /** Core version */
   version: string;
 }

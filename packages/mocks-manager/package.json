@@ -22,7 +22,10 @@
     "fastify": "5.6.2"
   },
   "dependencies": {
-    "@migudevelop/types-utils": "1.3.0"
+    "@migudevelop/types-utils": "1.3.0",
+    "@dynamic-mock-server/config": "workspace:*",
+    "unconfig": "7.4.1",
+    "chokidar": "4.0.3"
   },
   "peerDependencies": {
     "fastify": "5.6.2"

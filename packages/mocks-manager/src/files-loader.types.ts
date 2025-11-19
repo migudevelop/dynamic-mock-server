@@ -2,7 +2,7 @@ import type {
   RouteResponse,
   RouteConfig,
   RoutesSuite,
-} from "@dynamic-mock-server/mocks-manager";
+} from "./mocks-manager.types";
 
 /**
  * Route definition loaded from files (extends RouteConfig with optional url/path)

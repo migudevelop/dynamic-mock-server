@@ -10,6 +10,9 @@ export type LogLevel =
 export interface ConfigType {
   /** The logging level */
   logLevel: LogLevel;
+  plugins: {
+    register?: unknown[];
+  };
   server: {
     /** The host for the server */
     host: string;

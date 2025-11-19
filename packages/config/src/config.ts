@@ -1,4 +1,5 @@
 import { cosmiconfigSync } from "cosmiconfig";
+import merge from "deepmerge";
 
 import type { ConfigType } from "./config.types";
 import { DEFAULT_CONFIG, DEFAULT_SEARCH_PLACES, FILE_NAME } from "./constants";
@@ -15,7 +16,7 @@ export class Config {
     if (!result || result.isEmpty) {
       return DEFAULT_CONFIG;
     }
-    return result.config;
+    return merge(DEFAULT_CONFIG, result.config);
   }
 
   async getConfig(): Promise<ConfigType> {

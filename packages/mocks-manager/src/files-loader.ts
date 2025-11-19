@@ -2,22 +2,50 @@ import { loadConfig } from "unconfig";
 import { watch, type FSWatcher } from "chokidar";
 import { join } from "path";
 import type { Config } from "@dynamic-mock-server/config";
-import type Logger from "@dynamic-mock-server/logger";
-import type { Alerts } from "@dynamic-mock-server/alerts";
-import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
+import type { MocksManager } from "./mocks-manager";
+import type { RouteConfig, RoutesSuite } from "./mocks-manager.types";
 import type {
-  RouteConfig,
-  RoutesSuite,
-} from "@dynamic-mock-server/mocks-manager";
-import type { RouteDefinition, RoutesSuiteDefinition } from "./loaders.types";
+  RouteDefinition,
+  RoutesSuiteDefinition,
+} from "./files-loader.types";
+
+/**
+ * Minimal logger interface for FilesLoader
+ */
+export interface MinimalLogger {
+  /** Log info message */
+  info(message: string): void;
+  /** Log warning message */
+  warn(message: string): void;
+  /** Log error message */
+  error(message: string): void;
+  /** Create namespaced logger */
+  namespace(name: string): MinimalLogger;
+}
+
+/**
+ * Minimal alerts interface for FilesLoader
+ */
+export interface MinimalAlerts {
+  /** Set an alert */
+  set(id: string, message: string): void;
+  /** Remove an alert */
+  remove(id: string): void;
+  /** Create alert collection */
+  collection(name: string): MinimalAlerts;
+}
 
 /**
  * Options for FilesLoader
  */
 export interface FilesLoaderOptions {
+  /** Configuration instance */
   config: Config;
-  logger: Logger;
-  alerts: Alerts;
+  /** Logger instance */
+  logger: MinimalLogger;
+  /** Alerts instance */
+  alerts: MinimalAlerts;
+  /** MocksManager instance */
   mocksManager: MocksManager;
 }
 
@@ -29,8 +57,8 @@ export class FilesLoader {
   static readonly id = "files";
 
   private readonly _config: Config;
-  private readonly _logger: Logger;
-  private readonly _alerts: Alerts;
+  private readonly _logger: MinimalLogger;
+  private readonly _alerts: MinimalAlerts;
   private readonly _mocksManager: MocksManager;
   private _routesWatcher?: FSWatcher;
   private _suitesWatcher?: FSWatcher;

@@ -10,7 +10,7 @@ export class Logger {
   private logger: PinoLogger;
 
   constructor(opts?: LoggerOptions) {
-    const level = opts?.level ?? process.env.LOG_LEVEL ?? "info";
+    const level = process.env.LOG_LEVEL ?? opts?.level ?? "info";
 
     const transport = pino.transport({
       target: "pino-pretty",

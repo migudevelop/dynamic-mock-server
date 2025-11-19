@@ -19,6 +19,7 @@
     "@dynamic-mock-server/typescript-config": "workspace:*"
   },
   "dependencies": {
-    "cosmiconfig": "9.0.0"
+    "cosmiconfig": "9.0.0",
+    "deepmerge": "4.3.1"
   }
 }

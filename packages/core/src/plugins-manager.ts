@@ -16,14 +16,12 @@ export class PluginManager {
   private _pluginIds = new Set<string>();
   private _coreApi: CoreApi;
   private _core: Core;
+  private _options?: PluginManagerOptions;
 
   constructor(coreApi: CoreApi, core: Core, options?: PluginManagerOptions) {
     this._coreApi = coreApi;
     this._core = core;
-
-    if (options?.register && Array.isArray(options.register)) {
-      this.register(options.register);
-    }
+    this._options = options;
   }
 
   /**
@@ -70,6 +68,22 @@ export class PluginManager {
    * Initialize all plugins (calls init() on each)
    */
   async init(): Promise<void> {
+    // Load plugins from config
+    const config = await this._coreApi.config.getConfig();
+    const configPlugins = (config.plugins as { register?: PluginConstructor[] })
+      ?.register;
+
+    // Register plugins from config first
+    if (configPlugins && Array.isArray(configPlugins)) {
+      this.register(configPlugins);
+    }
+
+    // Then register plugins from options (allows overrides)
+    if (this._options?.register && Array.isArray(this._options.register)) {
+      this.register(this._options.register);
+    }
+
+    // Initialize all registered plugins
     for (const plugin of this._plugins) {
       if (isFunction(plugin.init)) {
         await plugin.init();
