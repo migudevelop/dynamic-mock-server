@@ -1,0 +1,30 @@
+{
+  "name": "@dynamic-mock-server/mocks-manager",
+  "version": "0.0.1-beta",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -w",
+    "lint": "eslint src --ext .ts",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@dynamic-mock-server/eslint-config": "workspace:*",
+    "@dynamic-mock-server/typescript-config": "workspace:*",
+    "@types/node": "22.10.2",
+    "fastify": "5.2.0"
+  },
+  "dependencies": {
+    "@migudevelop/types-utils": "1.3.0"
+  },
+  "peerDependencies": {
+    "fastify": "5.0.0"
+  }
+}

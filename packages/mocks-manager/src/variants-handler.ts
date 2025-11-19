@@ -7,10 +7,10 @@ import type {
 /**
  * VariantsHandler
  *
- * Manages route variants and collections (scenarios) similar to mocks-server:
+ * Manages route variants and routes suites:
  * - Each route can have multiple named variants with different responses
- * - Collections group specific variants across multiple routes
- * - Can set a global active collection or per-route active variant
+ * - Routes suites group specific variants across multiple routes
+ * - Can set a global active suite or per-route active variant
  */
 export class VariantsHandler {
   private routes = new Map<string, RouteConfig>();
@@ -22,7 +22,7 @@ export class VariantsHandler {
   /**
    * Add or update a route configuration with its variants.
    */
-  addRoute(config: RouteConfig) {
+  addRoute(config: RouteConfig): void {
     // build a quick lookup map for variants
     const variantsMap = new Map<string, RouteVariant>();
     for (const variant of config.variants) {
@@ -35,7 +35,7 @@ export class VariantsHandler {
   /**
    * Remove a route by id.
    */
-  removeRoute(routeId: string) {
+  removeRoute(routeId: string): void {
     this.routes.delete(routeId);
     this.routeVariantOverrides.delete(routeId);
   }
@@ -43,7 +43,7 @@ export class VariantsHandler {
   /**
    * Add a variant to an existing route.
    */
-  addVariant(routeId: string, variant: RouteVariant) {
+  addVariant(routeId: string, variant: RouteVariant): void {
     const route = this.routes.get(routeId);
     if (!route) {
       throw new Error(`Route "${routeId}" not found`);
@@ -61,7 +61,7 @@ export class VariantsHandler {
   /**
    * Remove a variant from a route.
    */
-  removeVariant(routeId: string, variantId: string) {
+  removeVariant(routeId: string, variantId: string): void {
     const route = this.routes.get(routeId);
     if (!route) return;
     route.variants = route.variants.filter((v) => v.id !== variantId);
@@ -71,14 +71,14 @@ export class VariantsHandler {
   /**
    * Add or update a suite.
    */
-  addSuite(suite: RoutesSuite) {
+  addSuite(suite: RoutesSuite): void {
     this.suites.set(suite.id, suite);
   }
 
   /**
    * Remove a suite.
    */
-  removeSuite(suiteId: string) {
+  removeSuite(suiteId: string): void {
     this.suites.delete(suiteId);
     if (this.activeSuite === suiteId) {
       this.activeSuite = null;
@@ -88,7 +88,7 @@ export class VariantsHandler {
   /**
    * Set the active suite.
    */
-  setActiveSuite(suiteId: string | null) {
+  setActiveSuite(suiteId: string | null): void {
     if (suiteId !== null && !this.suites.has(suiteId)) {
       throw new Error(`Suite "${suiteId}" not found`);
     }
@@ -105,7 +105,7 @@ export class VariantsHandler {
   /**
    * Override the variant for a specific route (takes precedence over collection).
    */
-  setRouteVariant(routeId: string, variantId: string | null) {
+  setRouteVariant(routeId: string, variantId: string | null): void {
     const route = this.routes.get(routeId);
     if (!route) {
       throw new Error(`Route "${routeId}" not found`);
@@ -130,10 +130,24 @@ export class VariantsHandler {
   }
 
   /**
+   * Get a specific route by ID.
+   */
+  getRoute(routeId: string): RouteConfig | undefined {
+    return this.routes.get(routeId);
+  }
+
+  /**
    * Get all suites.
    */
   getSuites(): RoutesSuite[] {
     return Array.from(this.suites.values());
+  }
+
+  /**
+   * Get a specific suite by ID.
+   */
+  getSuite(suiteId: string): RoutesSuite | undefined {
+    return this.suites.get(suiteId);
   }
 
   /**
@@ -193,7 +207,7 @@ export class VariantsHandler {
   /**
    * Clear all routes and suites.
    */
-  clear() {
+  clear(): void {
     this.routes.clear();
     this.suites.clear();
     this.activeSuite = null;

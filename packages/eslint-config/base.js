@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
+import importPlugin from "eslint-plugin-import";
 import turboPlugin from "eslint-plugin-turbo";
 import tseslint from "typescript-eslint";
 
@@ -15,6 +16,7 @@ export const config = [
   {
     plugins: {
       turbo: turboPlugin,
+      import: importPlugin,
     },
     rules: {
       "turbo/no-undeclared-env-vars": "warn",
@@ -25,7 +27,7 @@ export const config = [
         },
       ],
       "import/order": [
-        2,
+        "error",
         {
           groups: [
             "builtin",

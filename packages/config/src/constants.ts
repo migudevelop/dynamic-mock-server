@@ -16,4 +16,9 @@ export const DEFAULT_CONFIG: ConfigType = {
     basePath: "./mocks",
     selectedSuite: "default",
   },
+  files: {
+    enabled: true,
+    watch: true,
+    path: "mocks",
+  },
 };
