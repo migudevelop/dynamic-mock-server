@@ -1,8 +1,8 @@
 import { cosmiconfigSync } from "cosmiconfig";
 import merge from "deepmerge";
 
-import type { ConfigType } from "./config.types";
-import { DEFAULT_CONFIG, DEFAULT_SEARCH_PLACES, FILE_NAME } from "./constants";
+import type { ConfigType } from "./config.types.js";
+import { DEFAULT_CONFIG, DEFAULT_SEARCH_PLACES, FILE_NAME } from "./constants.js";
 
 export class Config {
   private _config: ConfigType | null = null;

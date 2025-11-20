@@ -1,3 +1,2 @@
-import { Logger } from "./logger";
-
-export default Logger;
+export { Logger } from "./logger.js";
+export { Logger as default } from "./logger.js";

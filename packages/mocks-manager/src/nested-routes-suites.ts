@@ -3,7 +3,7 @@ import type {
   ChangeListener,
   UnsubscribeFunction,
   NestedCollectionOptions,
-} from "./nested-routes-suites.types";
+} from "./nested-routes-suites.types.js";
 
 /**
  * NestedRoutesSuites provides a hierarchical routes-suites system with namespaces.

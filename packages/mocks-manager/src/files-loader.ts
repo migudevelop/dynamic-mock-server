@@ -1,13 +1,12 @@
-import { loadConfig } from "unconfig";
 import { watch, type FSWatcher } from "chokidar";
 import { join } from "path";
 import type { Config } from "@dynamic-mock-server/config";
-import type { MocksManager } from "./mocks-manager";
-import type { RouteConfig, RoutesSuite } from "./mocks-manager.types";
+import type { MocksManager } from "./mocks-manager.js";
+import type { RouteConfig, RoutesSuite } from "./mocks-manager.types.js";
 import type {
   RouteDefinition,
   RoutesSuiteDefinition,
-} from "./files-loader.types";
+} from "./files-loader.types.js";
 
 /**
  * Minimal logger interface for FilesLoader
@@ -55,6 +54,7 @@ export interface FilesLoaderOptions {
  */
 export class FilesLoader {
   static readonly id = "files";
+  private static _unconfigModule: typeof import("unconfig") | null = null;
 
   private readonly _config: Config;
   private readonly _logger: MinimalLogger;
@@ -160,6 +160,10 @@ export class FilesLoader {
    */
   private async _loadRoutes(): Promise<void> {
     try {
+      const unconfig = FilesLoader._unconfigModule ?? (await import("unconfig"));
+      FilesLoader._unconfigModule = unconfig;
+      const { loadConfig } = unconfig;
+
       const routesPath = join(process.cwd(), this._basePath, "routes");
 
       const { config: routes } = await loadConfig<
@@ -210,6 +214,10 @@ export class FilesLoader {
    */
   private async _loadRoutesSuites(): Promise<void> {
     try {
+      const unconfig = FilesLoader._unconfigModule ?? (await import("unconfig"));
+      FilesLoader._unconfigModule = unconfig;
+      const { loadConfig } = unconfig;
+
       const suitesPath = join(process.cwd(), this._basePath, "routesSuites");
 
       const { config: suites } = await loadConfig<

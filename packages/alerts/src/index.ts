@@ -1,6 +1,6 @@
-export { Alerts } from "./alerts";
+export { Alerts } from "./alerts.js";
 export type {
   Alert,
   ChangeListener,
   UnsubscribeFunction,
-} from "./alerts.types";
+} from "./alerts.types.js";

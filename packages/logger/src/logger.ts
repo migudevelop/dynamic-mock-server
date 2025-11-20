@@ -1,7 +1,7 @@
 import type { Logger as PinoLogger, LogFn } from "pino";
 import pino from "pino";
 
-import type { LoggerOptions } from "./logger.types";
+import type { LoggerOptions } from "./logger.types.js";
 
 /**
  * Lightweight Logger wrapper around pino that uses pino-pretty in non-production.

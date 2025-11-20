@@ -3,8 +3,8 @@ import type {
   PluginConstructor,
   PluginManagerOptions,
   CoreApi,
-} from "./plugins-manager.types";
-import type { Core } from "./core";
+} from "./plugins-manager.types.js";
+import type { Core } from "./core.js";
 import { isFunction, isString } from "@migudevelop/types-utils";
 
 /**

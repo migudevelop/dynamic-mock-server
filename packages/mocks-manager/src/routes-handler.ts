@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import type { HttpMethod, RoutesHandlerOptions } from "./routes-handler.types";
-import { ResponsesHandler } from "./responses-handler";
+import type { HttpMethod, RoutesHandlerOptions } from "./routes-handler.types.js";
+import { ResponsesHandler } from "./responses-handler.js";
 
 /**
  * RoutesHandler

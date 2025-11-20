@@ -1,4 +1,4 @@
-import type { ConfigType } from "./config.types";
+import type { ConfigType } from "./config.types.js";
 
 export const FILE_NAME = "dynamicMockServer";
 const VALID_CONFIG_EXTENSIONS = ["json", "yaml", "yml", "js", "ts", "cjs"];

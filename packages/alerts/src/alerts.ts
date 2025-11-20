@@ -5,7 +5,7 @@ import type {
   Alert,
   ChangeListener,
   UnsubscribeFunction,
-} from "./alerts.types";
+} from "./alerts.types.js";
 
 /**
  * Alerts system extends NestedRoutesSuites to provide structured alert management.

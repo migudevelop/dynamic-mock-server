@@ -2,7 +2,7 @@ import type {
   RouteResponse,
   RouteConfig,
   RoutesSuite,
-} from "./responses-handler.types";
+} from "./responses-handler.types.js";
 
 /**
  * ResponsesHandler

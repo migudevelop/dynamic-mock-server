@@ -1,9 +1,9 @@
-import type { Core } from "./core";
+import type { Core } from "./core.js";
 import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import type { Config } from "@dynamic-mock-server/config";
-import type Logger from "@dynamic-mock-server/logger";
+import type { Logger } from "@dynamic-mock-server/logger";
 import type { Alerts } from "@dynamic-mock-server/alerts";
-import type { Server } from "./server";
+import type { Server } from "./server.js";
 
 /**
  * Core API exposed to plugins
