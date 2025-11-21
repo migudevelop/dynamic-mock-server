@@ -1,6 +1,12 @@
 # @dynamic-mock-server/logger
 
-Simple wrapper around `pino` to create a consistent logger for the monorepo.
+📝 Simple wrapper around `pino` to create a consistent logger for the monorepo.
+
+## Features
+
+- 📝 **Consistent API**: Unified logger creation across packages
+- 🔍 **Structured Logs**: JSON structured logs for production-friendly output
+- ⚙️ **Configurable Levels**: Support for `debug`, `info`, `warn`, `error`, etc.
 
 Usage:
 

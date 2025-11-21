@@ -4,9 +4,9 @@ A powerful development tool for rapidly creating, serving, and updating API mock
 
 ## Features
 
-- 🚀 **Hot Reload**: See changes in real-time without restarting
+- 🔁 **Hot Reload**: See changes in real-time without restarting
 - 🎯 **Multiple Response Options**: Define multiple responses per route
-- 🔄 **Routes Suites**: Group responses for different scenarios
+- 🗂️ **Routes Suites**: Group responses for different scenarios
 - 🛠️ **Interactive CLI**: Manage your server from the command line
 - 🎨 **Beautiful Output**: Colored terminal interface with picocolors
 - ⚡ **Fast**: Built on Fastify for maximum performance
@@ -18,7 +18,7 @@ A powerful development tool for rapidly creating, serving, and updating API mock
 This monorepo contains the following packages:
 
 - **[@dynamic-mock-server/core](./packages/core)** - Core server functionality
-- **[@dynamic-mock-server/cli](./packages/cli)** - Interactive command-line interface ⭐ NEW!
+- **[@dynamic-mock-server/cli](./packages/cli)** - Interactive command-line interface [*] NEW!
 - **[@dynamic-mock-server/config](./packages/config)** - Configuration management
 - **[@dynamic-mock-server/logger](./packages/logger)** - Logging utilities
 - **[@dynamic-mock-server/alerts](./packages/alerts)** - Alert system
@@ -255,6 +255,6 @@ Inspired by [mocks-server](https://github.com/mocks-server/main) - A great tool 
 
 ## Support
 
-- 📖 [Documentation](./packages)
-- 🐛 [Issue Tracker](https://github.com/migudevelop/dynamic-mock-server/issues)
-- 💬 [Discussions](https://github.com/migudevelop/dynamic-mock-server/discussions)
+- [?] [Documentation](./packages)
+- [!] [Issue Tracker](https://github.com/migudevelop/dynamic-mock-server/issues)
+- [+] [Discussions](https://github.com/migudevelop/dynamic-mock-server/discussions)

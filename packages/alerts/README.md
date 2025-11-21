@@ -4,10 +4,10 @@ Alert management system with namespace support for organizing warnings and error
 
 ## Features
 
-- Hierarchical alert organization by namespace
-- Structured error details capture
-- Change notification system
-- Flat access to all alerts across namespaces
+- 🗂️ **Hierarchical Organization**: Group alerts by namespace
+- 🧾 **Structured Details**: Capture error details and metadata
+- 🔔 **Change Notifications**: Subscribe to alert updates
+- 🔍 **Flat Access**: Browse all alerts across namespaces
 
 ## Usage
 

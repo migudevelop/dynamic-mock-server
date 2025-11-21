@@ -8,14 +8,14 @@ The Core package is the heart of Dynamic Mock Server, integrating all components
 
 ## Features
 
-- íº€ **Server Management**: Start, stop, and restart the Fastify HTTP server
+- ğŸ” **Server Management**: Start, stop, and restart the Fastify HTTP server
 - âš™ï¸ **Configuration**: Automatic config loading from multiple sources
-- í´Œ **Plugin System**: Extensible plugin architecture with hot-reoad
-- í³ **Logging**: Integrated pino logger with pretty printing
+- ğŸ§© **Plugin System**: Extensible plugin architecture with hot-reload
+- ğŸ“ **Logging**: Integrated pino logger with pretty printing
 - âš ï¸ **Alerts**: Centralized alert management
-- í´„ **Hot Reload**: Watch molde for config and mock files
-- í¼ **HTTP Server**: Fastify-based with full control
-- í³Š **State Management**: Access to all server components
+- ğŸ” **Hot Reload**: Watch mode for config and mock files
+- ğŸŒ **HTTP Server**: Fastify-based with full control
+- ğŸ“Š **State Management**: Access to all server components
 
 ## Installation
 

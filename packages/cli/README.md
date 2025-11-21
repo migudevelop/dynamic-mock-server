@@ -4,8 +4,10 @@ Interactive command-line interface for Dynamic Mock Server. Provides an intuitiv
 
 ## Features
 
-- 🎯 **Interactive Mode by Default**: Navigate through options with an intuitive interface
-- 🔄 **Hot Reload**: Change routes suites and responses without restarting
+## Features
+
+- 🎯 **Interactive Mode**: Navigate options with an intuitive interface
+- 🔁 **Hot Reload**: Change routes suites and responses without restarting
 - 🎨 **Colored Output**: Beautiful terminal UI with picocolors
 - ⚙️ **Flexible Commands**: CLI and programmatic API
 - 📊 **Real-time Management**: Monitor and control your mock server on the fly

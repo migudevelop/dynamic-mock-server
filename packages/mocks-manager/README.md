@@ -4,15 +4,15 @@ Manages the lifecycle and organization of mocks in the Dynamic Mock Server, incl
 
 ## Features
 
-- **Route Management**: Add, update, remove, and query routes with their responses
-- **Response Management**: Handle multiple responses per route for different scenarios
-- **Routes Suites**: Group specific route responses into reusable suites
-- **Nested Organization**: Hierarchical organization of routes suites with namespaces
-- **Active Suite Management**: Set and manage the active suite to control which responses are used
-- **Per-Route Overrides**: Override specific route responses independently of the active suite
-- **Fastify Integration**: Automatic HTTP request handling through `RoutesHandler`
-- **Responses Handler**: Internal management of route responses resolution
-- **Nested Routes Suites**: Hierarchical structure for organizing suites with parent-child relationships
+- 🔁 **Route Management**: Add, update, remove, and query routes with their responses
+- 🎯 **Response Management**: Handle multiple responses per route for different scenarios
+- 🗂️ **Routes Suites**: Group specific route responses into reusable suites
+- 📂 **Nested Organization**: Hierarchical organization of routes suites with namespaces
+- ⭐ **Active Suite Management**: Set and manage the active suite to control which responses are used
+- 🔧 **Per-Route Overrides**: Override specific route responses independently of the active suite
+- ⚡ **Fastify Integration**: Automatic HTTP request handling through `RoutesHandler`
+- 🧭 **Responses Handler**: Internal management of route responses resolution
+- 🔗 **Nested Routes Suites**: Hierarchical structure for organizing suites with parent-child relationships
 
 ## Installation
 

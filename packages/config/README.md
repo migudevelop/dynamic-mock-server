@@ -1,63 +1,267 @@
-# @ghost-file-analyzer/core
+# @dynamic-mock-server/config
 
-> Core static analysis engine for Ghost File Analyzer
+Configuration management system for Dynamic Mock Server. Provides centralized configuration loading from multiple file formats with smart defaults and deep merging capabilities.
 
----
+## Features
 
-## Overview
+## Features
 
-This package contains the core logic and algorithms for analyzing unused files and dead code in JavaScript/TypeScript projects. It is designed to be reusable and framework-agnostic.
-
----
+- 🧭 **Multiple Formats**: Load config from JSON, YAML, JS, TS, or CJS files
+- 🔎 **Smart Search**: Automatic config file discovery in your project
+- 🔀 **Deep Merge**: Extends default configuration with your custom settings
+- ✅ **Type Safety**: Full TypeScript support with typed configuration
+- ⚠️ **Validation**: Configuration validation and error reporting
 
 ## Installation
 
-```bash
-pnpm add @ghost-file-analyzer/core
-```
+This package is part of the Dynamic Mock Server monorepo and should be installed via the workspace.
 
----
+```bash
+pnpm install
+```
 
 ## Usage
 
-Import and use the analysis engine in your own tools or scripts:
+### Basic Setup
 
-```ts
-import { analyzeProject } from "@ghost-file-analyzer/core";
+```typescript
+import { Config } from "@dynamic-mock-server/config";
 
-const result = await analyzeProject({
-  projectRoot: "./my-app",
-  configPath: "./my-config.json",
-});
+// Create config instance
+const config = new Config();
 
-console.log(result.unusedFiles);
+// Load configuration (searches for config file)
+const settings = await config.getConfig();
+
+console.log(settings.server.port); // 3000 (default) or your custom value
 ```
 
----
+### Configuration File
 
-## API
+Create a configuration file in your project root with one of these names:
 
-- `analyzeProject(options)` — Analyze a project for unused files
-  - `options.projectRoot` (string): Path to the project root
-  - `options.configPath` (string, optional): Path to config file
-  - Returns: `{ unusedFiles: string[], deadCode: string[] }`
+- `dynamicMockServer.config.json`
+- `dynamicMockServer.config.yaml`
+- `dynamicMockServer.config.yml`
+- `dynamicMockServer.config.js`
+- `dynamicMockServer.config.ts`
+- `dynamicMockServer.config.cjs`
 
----
+### Example Configuration
 
-## Development
+#### JSON Format
 
-- Run in dev mode: `pnpm start:dev`
-- Build: `pnpm build`
-- Lint: `pnpm lint`
+```json
+{
+  "logLevel": "info",
+  "server": {
+    "port": 4000,
+    "host": "0.0.0.0"
+  },
+  "routes": {
+    "selectedSuite": "base"
+  },
+  "files": {
+    "enabled": true,
+    "watch": true,
+    "path": "./mocks"
+  }
+}
+```
 
----
+#### JavaScript Format
 
-## Contributing
+```javascript
+export default {
+  logLevel: "info",
+  server: {
+    port: process.env.PORT || 4000,
+    host: "0.0.0.0",
+  },
+  routes: {
+    selectedSuite: "base",
+  },
+  files: {
+    enabled: true,
+    watch: true,
+    path: "./mocks",
+  },
+  plugins: {
+    register: [
+      // Your custom plugins here
+    ],
+  },
+};
+```
 
-See the [main monorepo README](../../README.md#contributing).
+#### TypeScript Format
 
----
+```typescript
+import type { ConfigType } from "@dynamic-mock-server/config";
+
+const config: ConfigType = {
+  logLevel: "debug",
+  server: {
+    port: 3000,
+    host: "127.0.0.1",
+  },
+  routes: {
+    selectedSuite: "default",
+  },
+  files: {
+    enabled: true,
+    watch: true,
+    path: "./mocks",
+  },
+};
+
+export default config;
+```
+
+## Configuration Options
+
+### Root Level
+
+- `logLevel` (string): Logging level - Options: `"fatal"`, `"error"`, `"warn"`, `"info"`, `"debug"`, `"trace"`, `"silent"` (default: `"trace"`)
+
+### Server Configuration
+
+- `server.port` (number): Server port number (default: `3000`)
+- `server.host` (string): Server host address (default: `"127.0.0.1"`)
+
+### Routes Configuration
+
+- `routes.selectedSuite` (string): Default active routes suite (default: `"default"`)
+
+### Files Configuration
+
+- `files.enabled` (boolean): Enable/disable file loading system (default: `true`)
+- `files.watch` (boolean): Watch files for changes and hot-reload (default: `true`)
+- `files.path` (string): Base path for mock files (default: `"mocks"`)
+
+### Plugins Configuration
+
+- `plugins.register` (array): Array of plugins to register (default: `[]`)
+
+## API Reference
+
+### Config Class
+
+Main configuration management class.
+
+#### Methods
+
+##### `loadConfig(): Promise<ConfigType>`
+
+Searches for and loads configuration file, merging it with defaults.
+
+```typescript
+const config = new Config();
+const settings = await config.loadConfig();
+```
+
+##### `getConfig(): Promise<ConfigType>`
+
+Gets the configuration, loading it if not already loaded (cached).
+
+```typescript
+const config = new Config();
+const settings = await config.getConfig();
+```
+
+## Default Configuration
+
+If no configuration file is found, these defaults are used:
+
+```typescript
+{
+  logLevel: "trace",
+  plugins: {
+    register: [],
+  },
+  server: {
+    port: 3000,
+    host: "127.0.0.1",
+  },
+  routes: {
+    selectedSuite: "default",
+  },
+  files: {
+    enabled: true,
+    watch: true,
+    path: "mocks",
+  },
+}
+```
+
+## Configuration Search
+
+The config loader searches for configuration files in this order:
+
+1. `dynamicMockServer.config.json`
+2. `dynamicMockServer.config.yaml`
+3. `dynamicMockServer.config.yml`
+4. `dynamicMockServer.config.js`
+5. `dynamicMockServer.config.ts`
+6. `dynamicMockServer.config.cjs`
+
+The search starts from the current working directory and stops when a config file is found.
+
+## Examples
+
+### Development Configuration
+
+```javascript
+// dynamicMockServer.config.js
+export default {
+  logLevel: "debug",
+  server: {
+    port: 3000,
+    host: "localhost",
+  },
+  files: {
+    watch: true, // Enable hot-reload for development
+  },
+};
+```
+
+### Production Configuration
+
+```javascript
+// dynamicMockServer.config.js
+export default {
+  logLevel: "error",
+  server: {
+    port: process.env.PORT || 8080,
+    host: "0.0.0.0",
+  },
+  files: {
+    watch: false, // Disable hot-reload for production
+  },
+};
+```
+
+### Custom Mock Path
+
+```javascript
+// dynamicMockServer.config.js
+export default {
+  files: {
+    path: "./api-mocks", // Use custom directory for mocks
+  },
+};
+```
+
+## Dependencies
+
+- `cosmiconfig` - Configuration file loader
+- `deepmerge` - Deep merge utility for configuration
+
+## Related Packages
+
+- [@dynamic-mock-server/core](../core/README.md) - Uses config for server setup
+- [@dynamic-mock-server/logger](../logger/README.md) - Respects logLevel setting
 
 ## License
 
-[MIT](../../LICENSE)
+MIT
