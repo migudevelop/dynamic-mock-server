@@ -1,6 +1,9 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import type { HttpMethod, RoutesHandlerOptions } from "./routes-handler.types";
-import { ResponsesHandler } from "./responses-handler";
+import type {
+  HttpMethod,
+  RoutesHandlerOptions,
+} from "./routes-handler.types.js";
+import { ResponsesHandler } from "./responses-handler.js";
 
 /**
  * RoutesHandler
@@ -61,7 +64,7 @@ export class RoutesHandler {
       "PATCH",
       "DELETE",
       "OPTIONS",
-      "HEAD",
+      // Note: HEAD is omitted because Fastify auto-registers HEAD for GET routes
     ];
 
     for (const method of methods) {

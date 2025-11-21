@@ -112,6 +112,15 @@ export class Server extends EventEmitter {
     const addr = s.address();
     if (!addr) return null;
     if (typeof addr === "string") return addr;
-    return `http://${addr.address}:${addr.port}`;
+
+    // Normalize IPv6 localhost (::1) and bind-all (::) to readable format
+    let host = addr.address;
+    if (host === "::1" || host === "::") {
+      host = "localhost";
+    } else if (host === "0.0.0.0") {
+      host = "localhost";
+    }
+
+    return `http://${host}:${addr.port}`;
   }
 }

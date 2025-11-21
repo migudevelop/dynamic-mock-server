@@ -1,5 +1,5 @@
 import type { ConfigType } from "@dynamic-mock-server/config";
-import type { PluginConstructor } from "./plugins-manager.types";
+import type { PluginConstructor } from "./plugins-manager.types.js";
 
 /**
  * Options for Core initialization

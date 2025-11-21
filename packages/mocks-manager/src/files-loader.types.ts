@@ -2,7 +2,7 @@ import type {
   RouteResponse,
   RouteConfig,
   RoutesSuite,
-} from "./mocks-manager.types";
+} from "./mocks-manager.types.js";
 
 /**
  * Route definition loaded from files (extends RouteConfig with optional url/path)

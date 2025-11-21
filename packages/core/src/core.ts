@@ -1,11 +1,11 @@
-import { Server } from "./server";
+import { Server } from "./server.js";
 import { Config } from "@dynamic-mock-server/config";
-import Logger from "@dynamic-mock-server/logger";
+import { Logger } from "@dynamic-mock-server/logger";
 import { Alerts } from "@dynamic-mock-server/alerts";
 import { MocksManager } from "@dynamic-mock-server/mocks-manager";
-import { PluginManager } from "./plugins-manager";
-import type { CoreApi } from "./plugins-manager.types";
-import type { CoreOptions } from "./core.types";
+import { PluginManager } from "./plugins-manager.js";
+import type { CoreApi } from "./plugins-manager.types.js";
+import type { CoreOptions } from "./core.types.js";
 
 /**
  * Core is the main orchestrator for the mock server.

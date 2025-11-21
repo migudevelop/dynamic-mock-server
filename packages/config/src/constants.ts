@@ -1,4 +1,4 @@
-import type { ConfigType } from "./config.types";
+import type { ConfigType } from "./config.types.js";
 
 export const FILE_NAME = "dynamicMockServer";
 const VALID_CONFIG_EXTENSIONS = ["json", "yaml", "yml", "js", "ts", "cjs"];
@@ -13,7 +13,7 @@ export const DEFAULT_CONFIG: ConfigType = {
   },
   server: {
     port: 3000,
-    host: "localhost",
+    host: "127.0.0.1",
   },
   routes: {
     selectedSuite: "default",

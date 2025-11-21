@@ -1,4 +1,4 @@
-import type { NestedRoutesSuites } from "./nested-routes-suites";
+import type { NestedRoutesSuites } from "./nested-routes-suites.js";
 
 /**
  * Represents a listener function for routes-suites changes

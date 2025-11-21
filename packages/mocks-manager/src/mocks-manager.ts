@@ -1,12 +1,12 @@
-import { NestedRoutesSuites } from "./nested-routes-suites";
-import { RoutesHandler } from "./routes-handler";
+import { NestedRoutesSuites } from "./nested-routes-suites.js";
+import { RoutesHandler } from "./routes-handler.js";
 import type { FastifyInstance } from "fastify";
 import type {
   RouteResponse,
   RouteConfig,
   RoutesSuite,
   MocksManagerOptions,
-} from "./mocks-manager.types";
+} from "./mocks-manager.types.js";
 
 /**
  * MocksManager

@@ -1,0 +1,53 @@
+{
+  "name": "@dynamic-mock-server/cli",
+  "version": "0.0.1-beta",
+  "description": "Interactive CLI for Dynamic Mock Server",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "dynamic-mock-server": "./dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --ext .ts",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dynamic-mock-server/core": "workspace:*",
+    "@dynamic-mock-server/config": "workspace:*",
+    "@dynamic-mock-server/logger": "workspace:*",
+    "@dynamic-mock-server/alerts": "workspace:*",
+    "@dynamic-mock-server/mocks-manager": "workspace:*",
+    "@clack/prompts": "^0.8.2",
+    "commander": "^12.1.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@dynamic-mock-server/eslint-config": "workspace:*",
+    "@dynamic-mock-server/typescript-config": "workspace:*",
+    "@types/node": "^22.10.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  },
+  "keywords": [
+    "mock",
+    "server",
+    "cli",
+    "interactive",
+    "commander",
+    "development"
+  ],
+  "author": "migudevelop",
+  "license": "MIT"
+}

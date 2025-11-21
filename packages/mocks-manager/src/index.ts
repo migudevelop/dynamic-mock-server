@@ -1,8 +1,8 @@
-export { MocksManager } from "./mocks-manager";
-export { RoutesHandler } from "./routes-handler";
-export { ResponsesHandler } from "./responses-handler";
-export { NestedRoutesSuites } from "./nested-routes-suites";
-export { FilesLoader } from "./files-loader";
+export { MocksManager } from "./mocks-manager.js";
+export { RoutesHandler } from "./routes-handler.js";
+export { ResponsesHandler } from "./responses-handler.js";
+export { NestedRoutesSuites } from "./nested-routes-suites.js";
+export { FilesLoader } from "./files-loader.js";
 
 export type {
   HttpMethod,
@@ -10,24 +10,24 @@ export type {
   RouteConfig,
   RoutesSuite,
   MocksManagerOptions,
-} from "./mocks-manager.types";
+} from "./mocks-manager.types.js";
 
 export type {
   RoutesHandlerOptions,
   RouteRequest,
   RouteReply,
-} from "./routes-handler.types";
+} from "./routes-handler.types.js";
 
 export type {
   ChangeListener,
   UnsubscribeFunction,
   NestedCollectionOptions,
-} from "./nested-routes-suites.types";
+} from "./nested-routes-suites.types.js";
 
-export type { FilesLoaderOptions } from "./files-loader";
+export type { FilesLoaderOptions } from "./files-loader.js";
 
 export type {
   RouteDefinition,
   RouteResponseDefinition,
   RoutesSuiteDefinition,
-} from "./files-loader.types";
+} from "./files-loader.types.js";
