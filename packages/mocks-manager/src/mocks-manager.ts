@@ -1,5 +1,6 @@
 import { NestedRoutesSuites } from "./nested-routes-suites.js";
 import { RoutesHandler } from "./routes-handler.js";
+import { FilesLoader } from "./files-loader.js";
 import type { FastifyInstance } from "fastify";
 import type {
   RouteResponse,
@@ -18,14 +19,26 @@ import type {
  * - Per-route response overrides
  * - Nested routes suites for hierarchical organization
  * - Integration with Fastify for handling HTTP requests
+ * - File loading with hot-reload support via FilesLoader
  */
 export class MocksManager {
   public routesSuites: NestedRoutesSuites;
   public routesHandler: RoutesHandler;
+  private _filesLoader?: FilesLoader;
 
   constructor(options?: MocksManagerOptions) {
     this.routesSuites = new NestedRoutesSuites();
     this.routesHandler = new RoutesHandler();
+
+    // Initialize FilesLoader if dependencies are provided
+    if (options?.config && options?.logger && options?.alerts) {
+      this._filesLoader = new FilesLoader({
+        config: options.config,
+        logger: options.logger,
+        alerts: options.alerts,
+        mocksManager: this,
+      });
+    }
 
     if (options?.routes) {
       for (const route of options.routes) {
@@ -176,6 +189,40 @@ export class MocksManager {
   clear(): void {
     this.routesHandler.responses.clear();
     this.routesSuites.clear();
+  }
+
+  /**
+   * Initialize the mocks manager and load files if FilesLoader is available
+   */
+  async init(): Promise<void> {
+    if (this._filesLoader) {
+      await this._filesLoader.init();
+    }
+  }
+
+  /**
+   * Start file watching if FilesLoader is available
+   */
+  async start(): Promise<void> {
+    if (this._filesLoader) {
+      await this._filesLoader.start();
+    }
+  }
+
+  /**
+   * Stop file watching if FilesLoader is available
+   */
+  async stop(): Promise<void> {
+    if (this._filesLoader) {
+      await this._filesLoader.stop();
+    }
+  }
+
+  /**
+   * Get the FilesLoader instance (if available)
+   */
+  getFilesLoader(): FilesLoader | undefined {
+    return this._filesLoader;
   }
 
   /**

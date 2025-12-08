@@ -32,5 +32,5 @@ const core = new Core({ port: 3000 });
 
 - All packages are built with dual exports for maximum compatibility
 - ESM modules are the default entry point
-- No ExperimentalWarning when using ESM dependencies like `unconfig`
+- No ExperimentalWarning when using ESM dependencies
 - TypeScript types are available for both module systems

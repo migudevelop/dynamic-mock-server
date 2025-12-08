@@ -25,7 +25,11 @@ export class Core {
     this._config = new Config();
     this._logger = new Logger();
     this._alerts = new Alerts();
-    this._mocksManager = new MocksManager();
+    this._mocksManager = new MocksManager({
+      config: this._config,
+      logger: this._logger,
+      alerts: this._alerts,
+    });
 
     // Initialize server
     this._server = new Server({
@@ -54,6 +58,9 @@ export class Core {
     // Load configuration (available via this._config.getConfig())
     this._config.getConfig();
 
+    // Initialize mocks manager (loads files if configured)
+    await this._mocksManager.init();
+
     // Initialize plugin manager (will load plugins from config + options)
     await this._pluginManager.init();
   }
@@ -64,6 +71,7 @@ export class Core {
   async start(): Promise<void> {
     await this.init();
     await this._server.start();
+    await this._mocksManager.start();
     await this._pluginManager.start();
   }
 
@@ -72,6 +80,7 @@ export class Core {
    */
   async stop(): Promise<void> {
     await this._pluginManager.stop();
+    await this._mocksManager.stop();
     await this._server.stop();
   }
 

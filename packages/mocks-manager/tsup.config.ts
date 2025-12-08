@@ -13,7 +13,6 @@ export default defineConfig({
     "@migudevelop/types-utils",
     "fastify",
     "chokidar",
-    "unconfig",
   ],
   cjsInterop: true,
   outExtension({ format }) {

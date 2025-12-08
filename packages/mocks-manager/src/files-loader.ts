@@ -1,5 +1,8 @@
 import { watch, type FSWatcher } from "chokidar";
 import { join } from "path";
+import { readFile } from "fs/promises";
+import { pathToFileURL } from "url";
+import fg from "fast-glob";
 import type { Config } from "@dynamic-mock-server/config";
 import type { MocksManager } from "./mocks-manager.js";
 import type { RouteConfig, RoutesSuite } from "./mocks-manager.types.js";
@@ -15,11 +18,10 @@ import type {
 
 /**
  * FilesLoader manages loading of mock files (routes and suites) with hot-reload support.
- * Uses unconfig for robust file loading and chokidar for watching.
+ * Uses fast-glob for file discovery, dynamic imports for loading, and chokidar for watching.
  */
 export class FilesLoader {
   static readonly id = "files";
-  private static _unconfigModule: typeof import("unconfig") | null = null;
 
   private readonly _config: Config;
   private readonly _logger: MinimalLogger;
@@ -121,57 +123,89 @@ export class FilesLoader {
   }
 
   /**
-   * Load routes from files
+   * Load routes from files using fast-glob and dynamic imports with cache busting
    */
   private async _loadRoutes(): Promise<void> {
     try {
-      const unconfig =
-        FilesLoader._unconfigModule ?? (await import("unconfig"));
-      FilesLoader._unconfigModule = unconfig;
-      const { loadConfig } = unconfig;
-
       const routesPath = join(process.cwd(), this._basePath, "routes");
 
-      const { config: routes } = await loadConfig<
-        Record<string, RouteDefinition>
-      >({
-        cwd: routesPath,
-        sources: [
-          {
-            files: "**/*.{js,mjs,cjs,ts,mts,cts,json,yaml,yml}",
-          },
-        ],
-        merge: true,
-      });
-      console.log(
-        "🚀 ~ FilesLoader ~ _loadRoutes ~ routes:",
-        routesPath,
-        routes
-      );
+      this._logger.info(`Looking for route files in: ${routesPath}`);
 
-      if (!routes || Object.keys(routes).length === 0) {
-        this._logger.warn(`No routes found in: ${routesPath}`);
+      // Get all route files using fast-glob
+      const files = await fg("**/*.{js,mjs,cjs,ts,mts,cts,json}", {
+        cwd: routesPath,
+        onlyFiles: true,
+        absolute: false,
+      });
+
+      if (files.length === 0) {
+        this._logger.warn(`No route files found in: ${routesPath}`);
         return;
       }
 
+      this._logger.info(`Found ${files.length} route file(s)`);
+
       let loadedCount = 0;
-      for (const [fileName, routeData] of Object.entries(routes)) {
+
+      // Load each file individually using dynamic import
+      for (const file of files) {
         try {
-          const routeConfig = this._convertRouteDefinitionToConfig(routeData);
-          this._mocksManager.addRoute(routeConfig);
-          loadedCount++;
+          const filePath = join(routesPath, file);
+          const isJson = file.endsWith(".json");
+
+          let routesData: RouteDefinition | RouteDefinition[];
+
+          if (isJson) {
+            // For JSON files, read and parse
+            const content = await readFile(filePath, "utf-8");
+            routesData = JSON.parse(content);
+          } else {
+            // For JS/TS files, use dynamic import with cache busting
+            const fileUrl = pathToFileURL(filePath).href;
+            const module = await import(`${fileUrl}?t=${Date.now()}`);
+            routesData = module.default || module;
+          }
+
+          if (!routesData) {
+            this._logger.warn(`Could not load routes from file: ${file}`);
+            continue;
+          }
+
+          // Ensure routesData is an array
+          const routesArray = Array.isArray(routesData)
+            ? routesData
+            : [routesData];
+
+          // Process each route in the array
+          for (const routeData of routesArray) {
+            try {
+              const routeConfig =
+                this._convertRouteDefinitionToConfig(routeData);
+              this._mocksManager.addRoute(routeConfig);
+              loadedCount++;
+              this._logger.info(
+                `✓ Loaded route: ${routeConfig.id} from ${file}`
+              );
+            } catch (err) {
+              this._logger.error(
+                `Error converting route from ${file}: ${err instanceof Error ? err.message : String(err)}`
+              );
+            }
+          }
         } catch (err) {
           this._logger.error(
-            `Error loading route from ${fileName}: ${err instanceof Error ? err.message : String(err)}`
+            `Error loading route from ${file}: ${err instanceof Error ? err.message : String(err)}`
           );
           this._alerts.set(
-            `route-error-${fileName}`,
-            `Failed to load route from ${fileName}`
+            `route-error-${file}`,
+            `Failed to load route from ${file}`
           );
         }
       }
 
-      this._logger.info(`Loaded ${loadedCount} routes`);
+      this._logger.info(
+        `Successfully loaded ${loadedCount} of ${files.length} routes`
+      );
     } catch (err) {
       this._logger.error(
         `Error loading routes: ${err instanceof Error ? err.message : String(err)}`
@@ -181,52 +215,72 @@ export class FilesLoader {
   }
 
   /**
-   * Load routes suites from files
+   * Load routes suites from files using fast-glob and dynamic imports with cache busting
    */
   private async _loadRoutesSuites(): Promise<void> {
     try {
-      const unconfig =
-        FilesLoader._unconfigModule ?? (await import("unconfig"));
-      FilesLoader._unconfigModule = unconfig;
-      const { loadConfig } = unconfig;
-
       const suitesPath = join(process.cwd(), this._basePath, "routesSuites");
 
-      const { config: suites } = await loadConfig<
-        Record<string, RoutesSuiteDefinition>
-      >({
+      this._logger.info(`Looking for suite files in: ${suitesPath}`);
+
+      // Get all suite files using fast-glob
+      const files = await fg("**/*.{js,mjs,cjs,ts,mts,cts,json}", {
         cwd: suitesPath,
-        sources: [
-          {
-            files: "**/*.{js,mjs,cjs,ts,mts,cts,json,yaml,yml}",
-          },
-        ],
-        merge: true,
+        onlyFiles: true,
+        absolute: false,
       });
 
-      if (!suites || Object.keys(suites).length === 0) {
-        this._logger.warn(`No routes suites found in: ${suitesPath}`);
+      if (files.length === 0) {
+        this._logger.warn(`No suite files found in: ${suitesPath}`);
         return;
       }
 
+      this._logger.info(`Found ${files.length} suite file(s)`);
+
       let loadedCount = 0;
-      for (const [fileName, suiteData] of Object.entries(suites)) {
+
+      // Load each file individually using dynamic import
+      for (const file of files) {
         try {
+          const filePath = join(suitesPath, file);
+          const isJson = file.endsWith(".json");
+
+          let suiteData: RoutesSuiteDefinition;
+
+          if (isJson) {
+            // For JSON files, read and parse
+            const content = await readFile(filePath, "utf-8");
+            suiteData = JSON.parse(content);
+          } else {
+            // For JS/TS files, use dynamic import with cache busting
+            const fileUrl = pathToFileURL(filePath).href;
+            const module = await import(`${fileUrl}?t=${Date.now()}`);
+            suiteData = module.default || module;
+          }
+
+          if (!suiteData) {
+            this._logger.warn(`Could not load suite from file: ${file}`);
+            continue;
+          }
+
           const suite = this._convertSuiteDefinitionToConfig(suiteData);
           this._mocksManager.addSuite(suite);
           loadedCount++;
+          this._logger.info(`Loaded suite: ${suite.id} from ${file}`);
         } catch (err) {
           this._logger.error(
-            `Error loading suite from ${fileName}: ${err instanceof Error ? err.message : String(err)}`
+            `Error loading suite from ${file}: ${err instanceof Error ? err.message : String(err)}`
           );
           this._alerts.set(
-            `suite-error-${fileName}`,
-            `Failed to load suite from ${fileName}`
+            `suite-error-${file}`,
+            `Failed to load suite from ${file}`
           );
         }
       }
 
-      this._logger.info(`Loaded ${loadedCount} routes suites`);
+      this._logger.info(
+        `Successfully loaded ${loadedCount} of ${files.length} suites`
+      );
     } catch (err) {
       this._logger.error(
         `Error loading routes suites: ${err instanceof Error ? err.message : String(err)}`

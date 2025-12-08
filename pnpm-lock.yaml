@@ -37,7 +37,7 @@ importers:
         specifier: 3.6.2
         version: 3.6.2
       tsup:
-        specifier: ^8.5.1
+        specifier: 8.5.1
         version: 8.5.1(@swc/core@1.15.3)(jiti@2.6.1)(postcss@8.5.6)(typescript@5.9.2)(yaml@2.8.1)
       turbo:
         specifier: 2.6.0
@@ -141,9 +141,6 @@ importers:
       fastify:
         specifier: 5.6.2
         version: 5.6.2
-      unconfig:
-        specifier: 7.4.1
-        version: 7.4.1
     devDependencies:
       '@dynamic-mock-server/eslint-config':
         specifier: workspace:*
@@ -200,9 +197,9 @@ importers:
       chokidar:
         specifier: 4.0.3
         version: 4.0.3
-      unconfig:
-        specifier: 7.4.1
-        version: 7.4.1
+      fast-glob:
+        specifier: 3.3.3
+        version: 3.3.3
     devDependencies:
       '@dynamic-mock-server/eslint-config':
         specifier: workspace:*
@@ -1087,9 +1084,6 @@ packages:
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
 
-  '@quansync/fs@0.1.5':
-    resolution: {integrity: sha512-lNS9hL2aS2NZgNW7BBj+6EBl4rOf8l+tQ0eRY6JWCI8jI2kc53gSoqbjojU0OnAWhzoXiOjFyGsHcDGePB3lhA==}
-
   '@rolldown/pluginutils@1.0.0-beta.47':
     resolution: {integrity: sha512-8QagwMH3kNCuzD8EWL8R2YPW5e4OrHNSAHRFDdmFqEwEaD/KcNKjVoumo+gP2vW5eKB2UPbM6vTYiGZX0ixLnw==}
 
@@ -1960,9 +1954,6 @@ packages:
   define-properties@1.2.1:
     resolution: {integrity: sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==}
     engines: {node: '>= 0.4'}
-
-  defu@6.1.4:
-    resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
 
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
@@ -3358,9 +3349,6 @@ packages:
     resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
     engines: {node: '>=0.6'}
 
-  quansync@0.2.11:
-    resolution: {integrity: sha512-AifT7QEbW9Nri4tAwR5M/uzpBuqfZf+zwaEM/QkzEjj7NBuFD2rBuy0K3dE+8wltbezDV7JMA0WfnCPYRSYbXA==}
-
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
@@ -3953,12 +3941,6 @@ packages:
   unbox-primitive@1.1.0:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
-
-  unconfig-core@7.4.1:
-    resolution: {integrity: sha512-Bp/bPZjV2Vl/fofoA2OYLSnw1Z0MOhCX7zHnVCYrazpfZvseBbGhwcNQMxsg185Mqh7VZQqK3C8hFG/Dyng+yA==}
-
-  unconfig@7.4.1:
-    resolution: {integrity: sha512-uyQ7LElcGizrOGZyIq9KU+xkuEjcRf9IpmDTkCSYv5mEeZzrXSj6rb51C0L+WTedsmAoVxW9WKrLWhSwebIM9Q==}
 
   undici-types@6.20.0:
     resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
@@ -4921,10 +4903,6 @@ snapshots:
 
   '@pinojs/redact@0.4.0': {}
 
-  '@quansync/fs@0.1.5':
-    dependencies:
-      quansync: 0.2.11
-
   '@rolldown/pluginutils@1.0.0-beta.47': {}
 
   '@rollup/rollup-android-arm-eabi@4.53.3':
@@ -5842,8 +5820,6 @@ snapshots:
       define-data-property: 1.1.4
       has-property-descriptors: 1.0.2
       object-keys: 1.1.1
-
-  defu@6.1.4: {}
 
   delayed-stream@1.0.0: {}
 
@@ -7448,8 +7424,6 @@ snapshots:
     dependencies:
       side-channel: 1.1.0
 
-  quansync@0.2.11: {}
-
   queue-microtask@1.2.3: {}
 
   quick-format-unescaped@4.0.4: {}
@@ -8121,19 +8095,6 @@ snapshots:
       has-bigints: 1.1.0
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
-
-  unconfig-core@7.4.1:
-    dependencies:
-      '@quansync/fs': 0.1.5
-      quansync: 0.2.11
-
-  unconfig@7.4.1:
-    dependencies:
-      '@quansync/fs': 0.1.5
-      defu: 6.1.4
-      jiti: 2.6.1
-      quansync: 0.2.11
-      unconfig-core: 7.4.1
 
   undici-types@6.20.0: {}
 

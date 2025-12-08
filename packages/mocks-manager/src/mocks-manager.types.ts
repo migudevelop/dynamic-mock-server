@@ -1,4 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type { Config } from "@dynamic-mock-server/config";
+import type { MinimalLogger, MinimalAlerts } from "./files-loader.types.js";
 
 /**
  * HTTP methods supported by the mocks manager
@@ -69,4 +71,10 @@ export interface MocksManagerOptions {
   suites?: RoutesSuite[];
   /** Optional initial active suite */
   activeSuite?: string | null;
+  /** Optional config instance for FilesLoader */
+  config?: Config;
+  /** Optional logger instance for FilesLoader */
+  logger?: MinimalLogger;
+  /** Optional alerts instance for FilesLoader */
+  alerts?: MinimalAlerts;
 }
