@@ -7,46 +7,11 @@ import type {
   RouteDefinition,
   RoutesSuiteDefinition,
 } from "./files-loader.types.js";
-
-/**
- * Minimal logger interface for FilesLoader
- */
-export interface MinimalLogger {
-  /** Log info message */
-  info(message: string): void;
-  /** Log warning message */
-  warn(message: string): void;
-  /** Log error message */
-  error(message: string): void;
-  /** Create namespaced logger */
-  namespace(name: string): MinimalLogger;
-}
-
-/**
- * Minimal alerts interface for FilesLoader
- */
-export interface MinimalAlerts {
-  /** Set an alert */
-  set(id: string, message: string): void;
-  /** Remove an alert */
-  remove(id: string): void;
-  /** Create alert collection */
-  collection(name: string): MinimalAlerts;
-}
-
-/**
- * Options for FilesLoader
- */
-export interface FilesLoaderOptions {
-  /** Configuration instance */
-  config: Config;
-  /** Logger instance */
-  logger: MinimalLogger;
-  /** Alerts instance */
-  alerts: MinimalAlerts;
-  /** MocksManager instance */
-  mocksManager: MocksManager;
-}
+import type {
+  MinimalLogger,
+  MinimalAlerts,
+  FilesLoaderOptions,
+} from "./files-loader.types.js";
 
 /**
  * FilesLoader manages loading of mock files (routes and suites) with hot-reload support.
@@ -77,7 +42,7 @@ export class FilesLoader {
    * Initialize and load files
    */
   async init(): Promise<void> {
-    const config = await this._config.getConfig();
+    const config = this._config.getConfig();
 
     this._enabled = config.files?.enabled ?? true;
     this._watch = config.files?.watch ?? true;
@@ -160,7 +125,8 @@ export class FilesLoader {
    */
   private async _loadRoutes(): Promise<void> {
     try {
-      const unconfig = FilesLoader._unconfigModule ?? (await import("unconfig"));
+      const unconfig =
+        FilesLoader._unconfigModule ?? (await import("unconfig"));
       FilesLoader._unconfigModule = unconfig;
       const { loadConfig } = unconfig;
 
@@ -177,6 +143,11 @@ export class FilesLoader {
         ],
         merge: true,
       });
+      console.log(
+        "🚀 ~ FilesLoader ~ _loadRoutes ~ routes:",
+        routesPath,
+        routes
+      );
 
       if (!routes || Object.keys(routes).length === 0) {
         this._logger.warn(`No routes found in: ${routesPath}`);
@@ -214,7 +185,8 @@ export class FilesLoader {
    */
   private async _loadRoutesSuites(): Promise<void> {
     try {
-      const unconfig = FilesLoader._unconfigModule ?? (await import("unconfig"));
+      const unconfig =
+        FilesLoader._unconfigModule ?? (await import("unconfig"));
       FilesLoader._unconfigModule = unconfig;
       const { loadConfig } = unconfig;
 

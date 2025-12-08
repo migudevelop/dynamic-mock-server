@@ -29,16 +29,16 @@
     "@dynamic-mock-server/logger": "workspace:*",
     "@dynamic-mock-server/alerts": "workspace:*",
     "@dynamic-mock-server/mocks-manager": "workspace:*",
-    "@clack/prompts": "^0.8.2",
-    "commander": "^12.1.0",
-    "picocolors": "^1.1.1"
+    "@clack/prompts": "0.8.2",
+    "commander": "12.1.0",
+    "picocolors": "1.1.1"
   },
   "devDependencies": {
     "@dynamic-mock-server/eslint-config": "workspace:*",
     "@dynamic-mock-server/typescript-config": "workspace:*",
-    "@types/node": "^22.10.1",
-    "tsup": "^8.3.5",
-    "typescript": "^5.7.2"
+    "@types/node": "22.10.1",
+    "tsup": "8.3.5",
+    "typescript": "5.7.2"
   },
   "keywords": [
     "mock",

@@ -65,7 +65,7 @@ export class CLI {
    */
   async getStatus(): Promise<ServerStatus> {
     const stats = this._core.mocksManager.getStats();
-    const config = await this._core.config.getConfig();
+    const config = this._core.config.getConfig();
     const address = this._core.server.address();
 
     // Format URL correctly (replace ::1 with localhost)
@@ -222,7 +222,7 @@ export class CLI {
   displayHeader(): void {
     console.clear();
     console.log(pc.bold(pc.cyan("╔════════════════════════════════════════╗")));
-    console.log(pc.bold(pc.cyan("║   Dynamic Mock Server - CLI           ║")));
+    console.log(pc.bold(pc.cyan("║   Dynamic Mock Server - CLI            ║")));
     console.log(pc.bold(pc.cyan("╚════════════════════════════════════════╝")));
     console.log();
   }

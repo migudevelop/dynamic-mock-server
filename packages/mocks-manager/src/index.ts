@@ -24,9 +24,8 @@ export type {
   NestedCollectionOptions,
 } from "./nested-routes-suites.types.js";
 
-export type { FilesLoaderOptions } from "./files-loader.js";
-
 export type {
+  FilesLoaderOptions,
   RouteDefinition,
   RouteResponseDefinition,
   RoutesSuiteDefinition,

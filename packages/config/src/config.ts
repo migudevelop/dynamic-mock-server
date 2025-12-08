@@ -7,23 +7,27 @@ import { DEFAULT_CONFIG, DEFAULT_SEARCH_PLACES, FILE_NAME } from "./constants.js
 export class Config {
   private _config: ConfigType | null = null;
 
-  async loadConfig(): Promise<ConfigType> {
+  loadConfig(): ConfigType {
     const explorer = cosmiconfigSync(FILE_NAME, {
       searchPlaces: DEFAULT_SEARCH_PLACES,
       stopDir: process.cwd(),
     });
     const result = explorer.search();
     if (!result || result.isEmpty) {
-      return DEFAULT_CONFIG;
+      // Return a deep copy to prevent external mutations
+      return merge({}, DEFAULT_CONFIG) as ConfigType;
     }
-    return merge(DEFAULT_CONFIG, result.config);
+    // Merge defaults with loaded config (user config takes precedence)
+    return merge(DEFAULT_CONFIG, result.config) as ConfigType;
   }
 
-  async getConfig(): Promise<ConfigType> {
+  getConfig(): ConfigType {
     if (this._config) {
-      return this._config;
+      // Return a deep copy to prevent external mutations from affecting the cache
+      return merge({}, this._config) as ConfigType;
     }
-    this._config = await this.loadConfig();
-    return this._config;
+    this._config = this.loadConfig();
+    // Return a deep copy to prevent external mutations from affecting the cache
+    return merge({}, this._config) as ConfigType;
   }
 }

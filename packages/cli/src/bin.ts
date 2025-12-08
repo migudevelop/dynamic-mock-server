@@ -12,7 +12,7 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   if (
     args.length === 0 ||
-    (!args[0].startsWith("-") &&
+    (!args[0]?.startsWith("-") &&
       ![
         "start",
         "interactive",
@@ -21,7 +21,7 @@ async function main(): Promise<void> {
         "suites",
         "routes",
         "restart",
-      ].includes(args[0]))
+      ]?.includes(args[0] || ""))
   ) {
     process.argv.push("start");
   }

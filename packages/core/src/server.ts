@@ -47,7 +47,7 @@ export class Server extends EventEmitter {
 
   private async _loadConfigOptions() {
     if (!this._config) return;
-    const configOptions = await this._config.getConfig();
+    const configOptions = this._config.getConfig();
     this._options = {
       server: configOptions.server,
       logLevel: configOptions.logLevel,

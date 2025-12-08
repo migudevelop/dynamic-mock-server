@@ -69,7 +69,7 @@ export class PluginManager {
    */
   async init(): Promise<void> {
     // Load plugins from config
-    const config = await this._coreApi.config.getConfig();
+    const config = this._coreApi.config.getConfig();
     const configPlugins = (config.plugins as { register?: PluginConstructor[] })
       ?.register;
 

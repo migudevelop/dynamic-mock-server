@@ -31,7 +31,7 @@ import { Config } from "@dynamic-mock-server/config";
 const config = new Config();
 
 // Load configuration (searches for config file)
-const settings = await config.getConfig();
+const settings = config.getConfig();
 
 console.log(settings.server.port); // 3000 (default) or your custom value
 ```
@@ -151,22 +151,22 @@ Main configuration management class.
 
 #### Methods
 
-##### `loadConfig(): Promise<ConfigType>`
+##### `loadConfig(): ConfigType`
 
 Searches for and loads configuration file, merging it with defaults.
 
 ```typescript
 const config = new Config();
-const settings = await config.loadConfig();
+const settings = config.loadConfig();
 ```
 
-##### `getConfig(): Promise<ConfigType>`
+##### `getConfig(): ConfigType`
 
-Gets the configuration, loading it if not already loaded (cached).
+Gets the configuration, loading it if not already loaded (cached). Returns a deep copy to prevent external mutations.
 
 ```typescript
 const config = new Config();
-const settings = await config.getConfig();
+const settings = config.getConfig();
 ```
 
 ## Default Configuration

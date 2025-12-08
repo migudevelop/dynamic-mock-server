@@ -1,3 +1,4 @@
+import { isNull } from "@migudevelop/types-utils";
 import type {
   RouteResponse,
   RouteConfig,
@@ -89,7 +90,7 @@ export class ResponsesHandler {
    * Set the active suite.
    */
   setActiveSuite(suiteId: string | null): void {
-    if (suiteId !== null && !this.suites.has(suiteId)) {
+    if (!isNull(suiteId) && !this.suites.has(suiteId)) {
       throw new Error(`Suite "${suiteId}" not found`);
     }
     this.activeSuite = suiteId;
@@ -110,12 +111,12 @@ export class ResponsesHandler {
     if (!route) {
       throw new Error(`Route "${routeId}" not found`);
     }
-    if (responseId !== null && !route.responsesMap!.has(responseId)) {
+    if (!isNull(responseId) && !route.responsesMap!.has(responseId)) {
       throw new Error(
         `Response "${responseId}" not found for route "${routeId}"`
       );
     }
-    if (responseId === null) {
+    if (isNull(responseId)) {
       this.routeResponseOverrides.delete(routeId);
     } else {
       this.routeResponseOverrides.set(routeId, responseId);

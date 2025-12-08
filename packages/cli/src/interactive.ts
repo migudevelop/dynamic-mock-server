@@ -1,7 +1,20 @@
-import * as clack from "@clack/prompts";
+import {
+  intro,
+  select,
+  isCancel,
+  spinner,
+  log,
+  confirm,
+  outro,
+  note,
+} from "@clack/prompts";
 import pc from "picocolors";
 import type { Core } from "@dynamic-mock-server/core";
 import type { CLI } from "./cli.js";
+import {
+  INTERACTIVE_OPTIONS,
+  INTERACTIVE_OPTIONS_VALUES_MAP,
+} from "./contants.js";
 
 /**
  * Interactive CLI mode using @clack/prompts
@@ -22,31 +35,20 @@ export class InteractiveCLI {
   async start(): Promise<void> {
     this._running = true;
 
-    clack.intro(
-      pc.bgCyan(pc.black(" Dynamic Mock Server - Interactive Mode "))
-    );
+    intro(pc.bgCyan(pc.black(" Dynamic Mock Server - Interactive Mode ")));
 
     await this._showStatus();
 
     while (this._running) {
-      const action = await clack.select({
+      const action = await select({
         message: "What would you like to do?",
-        options: [
-          { value: "status", label: "[i] Show server status" },
-          { value: "suite", label: "[*] Change routes suite" },
-          { value: "routes", label: "[>] View routes" },
-          { value: "response", label: "[~] Override route response" },
-          { value: "restart", label: "[R] Restart server" },
-          { value: "alerts", label: "[!] View alerts" },
-          { value: "exit", label: "[x] Exit" },
-        ],
+        options: INTERACTIVE_OPTIONS,
       });
-
-      if (clack.isCancel(action)) {
+      console.clear();
+      if (isCancel(action)) {
         await this._exit();
         break;
       }
-
       await this._handleAction(action as string);
     }
   }
@@ -63,25 +65,28 @@ export class InteractiveCLI {
    */
   private async _handleAction(action: string): Promise<void> {
     switch (action) {
-      case "status":
+      case INTERACTIVE_OPTIONS_VALUES_MAP.STATUS:
         await this._showStatus();
         break;
-      case "suite":
+      case INTERACTIVE_OPTIONS_VALUES_MAP.CONFIG:
+        await this._getConfiguration();
+        break;
+      case INTERACTIVE_OPTIONS_VALUES_MAP.SUITE:
         await this._changeSuite();
         break;
-      case "routes":
+      case INTERACTIVE_OPTIONS_VALUES_MAP.ROUTES:
         await this._viewRoutes();
         break;
-      case "response":
+      case INTERACTIVE_OPTIONS_VALUES_MAP.RESPONSE:
         await this._overrideResponse();
         break;
-      case "restart":
+      case INTERACTIVE_OPTIONS_VALUES_MAP.RESTART:
         await this._restartServer();
         break;
-      case "alerts":
+      case INTERACTIVE_OPTIONS_VALUES_MAP.ALERTS:
         await this._viewAlerts();
         break;
-      case "exit":
+      case INTERACTIVE_OPTIONS_VALUES_MAP.EXIT:
         await this._exit();
         break;
     }
@@ -91,12 +96,16 @@ export class InteractiveCLI {
    * Show server status
    */
   private async _showStatus(): Promise<void> {
-    const spinner = clack.spinner();
-    spinner.start("Loading status...");
+    const loader = spinner();
+    loader.start("Loading status...");
 
     const status = await this._cli.getStatus();
 
-    spinner.stop("Status loaded");
+    loader.stop("Status loaded");
+    console.clear();
+    console.log(pc.bold(pc.cyan("╔════════════════════════════════════════╗")));
+    console.log(pc.bold(pc.cyan("║       Dynamic Mock Server Status       ║")));
+    console.log(pc.bold(pc.cyan("╚════════════════════════════════════════╝")));
 
     console.log();
     console.log(pc.bold("Server Information:"));
@@ -115,6 +124,11 @@ export class InteractiveCLI {
     console.log();
   }
 
+  private async _getConfiguration(): Promise<void> {
+    const config = this._core.config.getConfig();
+    note(JSON.stringify(config, null, 2), "Current Server Configuration:");
+  }
+
   /**
    * Change active routes suite
    */
@@ -123,7 +137,7 @@ export class InteractiveCLI {
     const currentSuite = this._core.mocksManager.getActiveSuite();
 
     if (suites.length === 0) {
-      clack.log.warning("No suites available");
+      log.warning("No suites available");
       return;
     }
 
@@ -138,22 +152,22 @@ export class InteractiveCLI {
       })),
     ];
 
-    const suiteId = await clack.select({
+    const suiteId = await select({
       message: "Select routes suite:",
       options,
     });
 
-    if (clack.isCancel(suiteId)) {
-      clack.log.info("Cancelled");
+    if (isCancel(suiteId)) {
+      log.info("Cancelled");
       return;
     }
 
-    const spinner = clack.spinner();
-    spinner.start("Changing suite...");
+    const loader = spinner();
+    loader.start("Changing suite...");
 
     await this._cli.changeSuite(suiteId as string | null);
 
-    spinner.stop(
+    loader.stop(
       suiteId
         ? `Suite changed to: ${pc.green(suiteId as string)}`
         : "Active suite cleared"
@@ -167,7 +181,7 @@ export class InteractiveCLI {
     const routes = this._core.mocksManager.getRoutes();
 
     if (routes.length === 0) {
-      clack.log.warning("No routes available");
+      log.warning("No routes available");
       return;
     }
 
@@ -199,7 +213,7 @@ export class InteractiveCLI {
     const routes = this._core.mocksManager.getRoutes();
 
     if (routes.length === 0) {
-      clack.log.warning("No routes available");
+      log.warning("No routes available");
       return;
     }
 
@@ -210,19 +224,19 @@ export class InteractiveCLI {
       })
     );
 
-    const routeId = await clack.select({
+    const routeId = await select({
       message: "Select route:",
       options: routeOptions,
     });
 
-    if (clack.isCancel(routeId)) {
-      clack.log.info("Cancelled");
+    if (isCancel(routeId)) {
+      log.info("Cancelled");
       return;
     }
 
     const route = this._core.mocksManager.getRoute(routeId as string);
     if (!route) {
-      clack.log.error("Route not found");
+      log.error("Route not found");
       return;
     }
 
@@ -234,25 +248,25 @@ export class InteractiveCLI {
       })),
     ];
 
-    const responseId = await clack.select({
+    const responseId = await select({
       message: "Select response:",
       options: responseOptions,
     });
 
-    if (clack.isCancel(responseId)) {
-      clack.log.info("Cancelled");
+    if (isCancel(responseId)) {
+      log.info("Cancelled");
       return;
     }
 
-    const spinner = clack.spinner();
-    spinner.start("Setting response...");
+    const loader = spinner();
+    loader.start("Setting response...");
 
     await this._cli.setRouteResponse(
       routeId as string,
       responseId as string | null
     );
 
-    spinner.stop(
+    loader.stop(
       responseId
         ? `Response set to: ${pc.green(responseId as string)}`
         : "Response override cleared"
@@ -263,24 +277,24 @@ export class InteractiveCLI {
    * Restart the server
    */
   private async _restartServer(): Promise<void> {
-    const confirm = await clack.confirm({
+    const confirmed = await confirm({
       message: "Are you sure you want to restart the server?",
     });
 
-    if (clack.isCancel(confirm) || !confirm) {
-      clack.log.info("Cancelled");
+    if (isCancel(confirmed) || !confirmed) {
+      log.info("Cancelled");
       return;
     }
 
-    const spinner = clack.spinner();
-    spinner.start("Restarting server...");
+    const spin = spinner();
+    spin.start("Restarting server...");
 
     try {
       await this._cli.restartServer();
-      spinner.stop(pc.green("Server restarted successfully ✓"));
+      spin.stop(pc.green("Server restarted successfully ✓"));
     } catch (error) {
-      spinner.stop(pc.red("Failed to restart server"));
-      clack.log.error((error as Error).message);
+      spin.stop(pc.red("Failed to restart server"));
+      log.error((error as Error).message);
     }
   }
 
@@ -291,7 +305,7 @@ export class InteractiveCLI {
     const alerts = this._core.alerts.flat;
 
     if (alerts.length === 0) {
-      clack.log.success("No alerts");
+      log.success("No alerts");
       return;
     }
 
@@ -310,7 +324,7 @@ export class InteractiveCLI {
    */
   private async _exit(): Promise<void> {
     this._running = false;
-    clack.outro(pc.cyan("Thanks for using Dynamic Mock Server!"));
+    outro(pc.cyan("Thanks for using Dynamic Mock Server!"));
   }
 
   /**

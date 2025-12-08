@@ -52,7 +52,7 @@ export class Core {
    */
   async init(): Promise<void> {
     // Load configuration (available via this._config.getConfig())
-    await this._config.getConfig();
+    this._config.getConfig();
 
     // Initialize plugin manager (will load plugins from config + options)
     await this._pluginManager.init();

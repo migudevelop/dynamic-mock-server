@@ -155,15 +155,15 @@ export class Commander {
     console.log(pc.cyan("Starting Dynamic Mock Server..."));
 
     try {
-      // Apply options to config if provided
+      // Note: CLI options for port/host should be handled differently
+      // as mutating config directly is not recommended.
+      // For now, we'll log a warning if these options are used.
       if (options.port || options.host) {
-        const config = await this._core.config.getConfig();
-        if (options.port) {
-          config.server.port = Number.parseInt(options.port, 10);
-        }
-        if (options.host) {
-          config.server.host = options.host;
-        }
+        console.log(
+          pc.yellow(
+            "Warning: Port and host CLI options are not yet implemented. Use config file instead."
+          )
+        );
       }
 
       await this._core.start();
