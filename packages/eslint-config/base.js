@@ -68,3 +68,6 @@ export const config = [
     ignores: ["dist/**"],
   },
 ];
+
+// Provide a default export for consumers that import the module as default
+export default config;

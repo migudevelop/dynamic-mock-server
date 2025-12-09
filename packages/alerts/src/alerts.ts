@@ -54,8 +54,9 @@ export class Alerts extends NestedRoutesSuites {
     const child = super.collection(namespace);
     // Convert to Alerts instance if it's a plain NestedRoutesSuites
     if (!(child instanceof Alerts)) {
-      const alertsChild = new Alerts();
-      // Copy data from plain nested collection
+      // Convert prototype in-place so the returned collection behaves as `Alerts`.
+      // We mutate the existing nested collection rather than creating a new
+      // Alerts instance to preserve internal data stored on `child`.
       Object.setPrototypeOf(child, Alerts.prototype);
     }
     return child as Alerts;

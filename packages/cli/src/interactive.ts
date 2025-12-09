@@ -8,8 +8,9 @@ import {
   outro,
   note,
 } from "@clack/prompts";
-import pc from "picocolors";
 import type { Core } from "@dynamic-mock-server/core";
+import pc from "picocolors";
+
 import type { CLI } from "./cli.js";
 import {
   INTERACTIVE_OPTIONS,

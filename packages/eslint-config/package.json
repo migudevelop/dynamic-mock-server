@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "exports": {
+    "./base.js": "./base.js",
     "./base": "./base.js"
   },
   "devDependencies": {

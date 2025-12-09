@@ -1,5 +1,6 @@
-import pc from "picocolors";
 import type { Core } from "@dynamic-mock-server/core";
+import pc from "picocolors";
+
 import type { CLIOptions, ServerStatus } from "./cli.types.js";
 
 /**
@@ -252,6 +253,7 @@ export class CLI {
       console.log(message);
     } else {
       // Strip colors if disabled
+      // eslint-disable-next-line no-control-regex
       console.log(message.replace(/\x1b\[[0-9;]*m/g, ""));
     }
   }

@@ -1,6 +1,7 @@
+import { Core } from "@dynamic-mock-server/core";
 import { Command } from "commander";
 import pc from "picocolors";
-import { Core } from "@dynamic-mock-server/core";
+
 import { CLI } from "./cli.js";
 import { InteractiveCLI } from "./interactive.js";
 
