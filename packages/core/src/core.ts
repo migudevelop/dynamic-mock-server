@@ -23,7 +23,10 @@ export class Core {
   constructor(options?: CoreOptions) {
     // Initialize core systems
     this._config = new Config();
-    this._logger = new Logger();
+    const logLevel = this._config.getConfig().logLevel;
+    this._logger = options?.logger
+      ? options.logger
+      : new Logger({ level: logLevel });
     this._alerts = new Alerts();
     this._mocksManager = new MocksManager({
       config: this._config,
@@ -35,6 +38,7 @@ export class Core {
     this._server = new Server({
       config: this._config,
       mocksManager: this._mocksManager,
+      logger: this._logger,
     });
 
     // Create Core API for plugins

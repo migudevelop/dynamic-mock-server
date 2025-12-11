@@ -1,14 +1,20 @@
+import type { FastifyBaseLogger } from "fastify";
 import fastify, { type FastifyInstance } from "fastify";
 import { EventEmitter } from "events";
 import type { Config } from "@dynamic-mock-server/config";
 import type { ConfigType } from "@dynamic-mock-server/config";
 import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
+import type { Logger } from "@dynamic-mock-server/logger";
+import { isString } from "@migudevelop/types-utils";
+import { isIP } from "net";
 
 export type ConfigOptions = Pick<ConfigType, "server" | "logLevel">;
 
 export interface ServerOptions {
   config: Config;
   mocksManager: MocksManager;
+  /** Logger instance for Fastify, or false to disable logging */
+  logger?: Logger;
 }
 
 export class Server extends EventEmitter {
@@ -17,24 +23,26 @@ export class Server extends EventEmitter {
   private _app: FastifyInstance | null = null;
   private _isServerInitialized: boolean = false;
   private _options: ConfigOptions | null = null;
+  private _logger?: Logger;
 
-  constructor({ config, mocksManager }: ServerOptions) {
+  constructor({ config, mocksManager, logger }: ServerOptions) {
     super();
     this._config = config;
     this._mocksManager = mocksManager;
+    this._logger = logger ?? undefined;
   }
 
   private async _initServer() {
     if (this._isServerInitialized) return;
     await this._loadConfigOptions();
+
+    // Use the shared logger instance or disable if explicitly set to false
+    const fastifyLogger = this._logger
+      ? { loggerInstance: this._logger?.raw as FastifyBaseLogger }
+      : { logger: false };
+
     this._app = fastify({
-      logger: {
-        level: process.env.LOG_LEVEL ?? this._options?.logLevel ?? "info",
-        transport: {
-          target: "pino-pretty",
-          options: { colorize: true },
-        },
-      },
+      ...fastifyLogger,
     });
 
     // Connect MocksManager with Fastify
@@ -106,18 +114,44 @@ export class Server extends EventEmitter {
     }
   }
 
+  isLocalhost(host: string): boolean {
+    if (!host) return false;
+
+    // Normalize to lowercase and strip IPv6 zone id if present (e.g. fe80::1%lo0)
+    const formatedHost = host.toLowerCase().split("%")?.[0] || "";
+
+    // Bind-all addresses
+    if (formatedHost === "0.0.0.0" || formatedHost === "::") return true;
+
+    const ver = isIP(formatedHost);
+    if (ver === 4) {
+      // Any 127.x.x.x is loopback
+      return formatedHost.startsWith("127.");
+    }
+
+    if (ver === 6) {
+      // IPv6 loopback
+      if (formatedHost === "::1" || formatedHost === "0:0:0:0:0:0:0:1")
+        return true;
+      // IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1)
+      if (formatedHost.startsWith("::ffff:")) {
+        const mapped = formatedHost.substring("::ffff:".length);
+        return isIP(mapped) === 4 && mapped.startsWith("127.");
+      }
+    }
+
+    return false;
+  }
+
   address(): string | null {
     const s = this._app?.server;
     if (!s) return null;
     const addr = s.address();
     if (!addr) return null;
-    if (typeof addr === "string") return addr;
+    if (isString(addr)) return addr;
 
-    // Normalize IPv6 localhost (::1) and bind-all (::) to readable format
     let host = addr.address;
-    if (host === "::1" || host === "::") {
-      host = "localhost";
-    } else if (host === "0.0.0.0") {
+    if (this.isLocalhost(host)) {
       host = "localhost";
     }
 

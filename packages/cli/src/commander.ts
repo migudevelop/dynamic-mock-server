@@ -1,9 +1,11 @@
 import { Core } from "@dynamic-mock-server/core";
+import { Logger } from "@dynamic-mock-server/logger";
 import { Command } from "commander";
 import pc from "picocolors";
 
 import { CLI } from "./cli.js";
-import { InteractiveCLI } from "./interactive.js";
+import type { CLIOptions } from "./commander.types.js";
+import { InteractiveCLI } from "./interactive-cli.js";
 
 /**
  * Commander program for the CLI
@@ -54,18 +56,10 @@ export class Commander {
     this._program
       .command("start")
       .description("Start the mock server (interactive by default)")
-      .option("-p, --port <port>", "Server port", "3000")
-      .option("-h, --host <host>", "Server host", "localhost")
       .option("--no-interactive", "Disable interactive mode")
-      .action(
-        async (options: {
-          port?: string;
-          host?: string;
-          interactive?: boolean;
-        }) => {
-          await this._startServer(options);
-        }
-      );
+      .action(async (options: CLIOptions) => {
+        await this._startServer(options);
+      });
 
     // Status command
     this._program
@@ -149,23 +143,19 @@ export class Commander {
    * Start server command
    */
   private async _startServer(options: {
-    port?: string;
-    host?: string;
     interactive?: boolean;
   }): Promise<void> {
     console.log(pc.cyan("Starting Dynamic Mock Server..."));
 
     try {
-      // Note: CLI options for port/host should be handled differently
-      // as mutating config directly is not recommended.
-      // For now, we'll log a warning if these options are used.
-      if (options.port || options.host) {
-        console.log(
-          pc.yellow(
-            "Warning: Port and host CLI options are not yet implemented. Use config file instead."
-          )
-        );
-      }
+      // Create logger based on mode: false in interactive, normal logger in non-interactive
+      const logger =
+        options.interactive !== false
+          ? false // Disable logs in interactive mode
+          : new Logger(); // Normal logs in non-interactive mode
+
+      this._core = new Core({ logger });
+      this._cli = new CLI({ core: this._core });
 
       await this._core.start();
 
@@ -174,7 +164,6 @@ export class Commander {
 
       // Interactive mode by default (unless --no-interactive is passed)
       if (options.interactive !== false) {
-        await this._cli.start();
         const interactive = new InteractiveCLI(this._core, this._cli);
         await interactive.start();
       } else {
@@ -185,7 +174,6 @@ export class Commander {
         process.on("SIGINT", async () => {
           console.log(pc.yellow("\nShutting down..."));
           await this._core.stop();
-          await this._cli.stop();
           process.exit(0);
         });
 

@@ -6,8 +6,6 @@ import type { Core } from "@dynamic-mock-server/core";
 export interface CLIOptions {
   /** Core instance to interact with */
   core: Core;
-  /** Enable CLI by default */
-  enabled?: boolean;
   /** Enable colored output */
   colors?: boolean;
 }

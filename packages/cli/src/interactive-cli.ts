@@ -11,7 +11,7 @@ import {
 import type { Core } from "@dynamic-mock-server/core";
 import pc from "picocolors";
 
-import type { CLI } from "./cli.js";
+import { CLI } from "./cli.js";
 import {
   INTERACTIVE_OPTIONS,
   INTERACTIVE_OPTIONS_VALUES_MAP,
@@ -20,37 +20,53 @@ import {
 /**
  * Interactive CLI mode using @clack/prompts
  */
-export class InteractiveCLI {
-  private _core: Core;
-  private _cli: CLI;
+export class InteractiveCLI extends CLI {
   private _running = false;
 
-  constructor(core: Core, cli: CLI) {
-    this._core = core;
-    this._cli = cli;
+  constructor(core: Core) {
+    super({ core });
+  }
+
+  private _getLoader(startMessage: string) {
+    const loader = spinner();
+    loader.start(startMessage);
+    return loader;
   }
 
   /**
    * Start interactive mode
    */
   async start(): Promise<void> {
+    await this._core.start();
+    // console.clear();
     this._running = true;
 
-    intro(pc.bgCyan(pc.black(" Dynamic Mock Server - Interactive Mode ")));
+    try {
+      intro(pc.bgCyan(pc.black(" Dynamic Mock Server - Interactive Mode ")));
 
-    await this._showStatus();
+      await this._showStatus();
 
-    while (this._running) {
-      const action = await select({
-        message: "What would you like to do?",
-        options: INTERACTIVE_OPTIONS,
-      });
-      console.clear();
-      if (isCancel(action)) {
-        await this._exit();
-        break;
+      while (this._running) {
+        // console.clear();
+        const action = await select({
+          message: "What would you like to do?",
+          options: INTERACTIVE_OPTIONS,
+        });
+        if (isCancel(action)) {
+          await this._exit();
+          break;
+        }
+
+        try {
+          await this._handleAction(action as string);
+        } catch (error) {
+          log.error(`Action failed: ${(error as Error).message}`);
+          // Don't exit, continue loop
+        }
       }
-      await this._handleAction(action as string);
+    } catch (error) {
+      log.error(`Interactive mode failed: ${(error as Error).message}`);
+      throw error;
     }
   }
 
@@ -94,19 +110,24 @@ export class InteractiveCLI {
   }
 
   /**
-   * Show server status
+   * Show status header
    */
-  private async _showStatus(): Promise<void> {
-    const loader = spinner();
-    loader.start("Loading status...");
-
-    const status = await this._cli.getStatus();
-
-    loader.stop("Status loaded");
-    console.clear();
+  private _showStatusHeader() {
     console.log(pc.bold(pc.cyan("╔════════════════════════════════════════╗")));
     console.log(pc.bold(pc.cyan("║       Dynamic Mock Server Status       ║")));
     console.log(pc.bold(pc.cyan("╚════════════════════════════════════════╝")));
+  }
+
+  /**
+   * Show server status
+   */
+  private async _showStatus(): Promise<void> {
+    const loader = this._getLoader("Loading status...");
+    const status = await this.getStatus();
+    loader.stop("Status loaded");
+
+    // console.clear();
+    this._showStatusHeader();
 
     console.log();
     console.log(pc.bold("Server Information:"));
@@ -127,7 +148,7 @@ export class InteractiveCLI {
 
   private async _getConfiguration(): Promise<void> {
     const config = this._core.config.getConfig();
-    note(JSON.stringify(config, null, 2), "Current Server Configuration:");
+    note(JSON.stringify(config, null, 2), "Current Server Configuration file:");
   }
 
   /**
@@ -166,7 +187,7 @@ export class InteractiveCLI {
     const loader = spinner();
     loader.start("Changing suite...");
 
-    await this._cli.changeSuite(suiteId as string | null);
+    await this.changeSuite(suiteId as string | null);
 
     loader.stop(
       suiteId
@@ -262,10 +283,7 @@ export class InteractiveCLI {
     const loader = spinner();
     loader.start("Setting response...");
 
-    await this._cli.setRouteResponse(
-      routeId as string,
-      responseId as string | null
-    );
+    await this.setRouteResponse(routeId as string, responseId as string | null);
 
     loader.stop(
       responseId
@@ -291,7 +309,7 @@ export class InteractiveCLI {
     spin.start("Restarting server...");
 
     try {
-      await this._cli.restartServer();
+      await this.restartServer();
       spin.stop(pc.green("Server restarted successfully ✓"));
     } catch (error) {
       spin.stop(pc.red("Failed to restart server"));
