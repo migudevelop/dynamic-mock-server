@@ -367,5 +367,5 @@ setTimeout(() => {
 - [@dynamic-mock-server/logger](../logger) - Complementary logging system
 
 ## License
-
-ISC © Miguel Martínez
+ 
+Apache-2.0 © Miguel Martínez

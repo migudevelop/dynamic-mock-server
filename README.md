@@ -553,8 +553,8 @@ refactor(logger): simplify namespace creation
 - Use destructuring where applicable
 
 ## 📄 License
-
-ISC © Miguel Martínez
+ 
+Apache-2.0 © Miguel Martínez
 
 ## 🙏 Acknowledgments
 
@@ -583,7 +583,7 @@ Made with ❤️ for developers who need fast, flexible API mocking
 
 ## License
 
-MIT
+Apache-2.0 © Miguel Martínez
 
 ## Credits
 

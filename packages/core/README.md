@@ -243,5 +243,5 @@ Core (Orchestrator)
 - [@dynamic-mock-server/config](../config) - Configuration management
 
 ## License
-
-ISC © Miguel Martínez
+ 
+Apache-2.0 © Miguel Martínez

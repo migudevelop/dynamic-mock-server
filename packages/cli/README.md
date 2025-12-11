@@ -421,8 +421,8 @@ console.log("Demo server started!");
 - [@dynamic-mock-server/mocks-manager](../mocks-manager) - Mock management
 
 ## License
-
-ISC © Miguel Martínez
+ 
+Apache-2.0 © Miguel Martínez
 
 #### Constructor
 
