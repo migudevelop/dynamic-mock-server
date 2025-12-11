@@ -1,41 +1,42 @@
 # @dynamic-mock-server/mocks-manager
 
-Manages the lifecycle and organization of mocks in the Dynamic Mock Server, including routes, responses, nested routes suites, and HTTP request handling through Fastify integration.
+> Mock management engine for the Dynamic Mock Server
+
+Central manager for all mocks in the Dynamic Mock Server. Manages routes, responses, and routes suites with support for multiple response options per route, hierarchical suite organization, per-route overrides, and hot-reload file watching.
 
 ## Features
 
-- 🔁 **Route Management**: Add, update, remove, and query routes with their responses
-- 🎯 **Response Management**: Handle multiple responses per route for different scenarios
-- 🗂️ **Routes Suites**: Group specific route responses into reusable suites
-- 📂 **Nested Organization**: Hierarchical organization of routes suites with namespaces
-- ⭐ **Active Suite Management**: Set and manage the active suite to control which responses are used
-- 🔧 **Per-Route Overrides**: Override specific route responses independently of the active suite
-- ⚡ **Fastify Integration**: Automatic HTTP request handling through `RoutesHandler`
-- 🧭 **Responses Handler**: Internal management of route responses resolution
-- 🔗 **Nested Routes Suites**: Hierarchical structure for organizing suites with parent-child relationships
+- 🎯 **Route Management**: Add, update, remove, and query routes with multiple response options
+- 🔄 **Response Variants**: Define multiple responses per route (success, error, loading, etc.)
+- 🗂️ **Routes Suites**: Named collections mapping routes to specific responses
+- 📂 **Nested Suites**: Hierarchical organization with namespace support
+- ⭐ **Active Suite**: Set which suite controls default route responses
+- 🔧 **Per-Route Overrides**: Override specific routes independently of active suite
+- ⚡ **Fastify Integration**: Automatic HTTP request handling via RoutesHandler
+- 📁 **File Loading**: Load routes and suites from JavaScript files with FilesLoader
+- 🔥 **Hot Reload**: Watch mode automatically reloads files on changes (via chokidar)
+- 📊 **Statistics**: Get real-time stats on routes, responses, and suites
 
 ## Installation
 
-This package is part of the Dynamic Mock Server monorepo and should be installed via the workspace.
-
 ```bash
-pnpm install
+pnpm add @dynamic-mock-server/mocks-manager
 ```
 
-## Usage
+## Quick Start
+
+### Basic Usage
 
 ```typescript
-import Fastify from "fastify";
 import { MocksManager } from "@dynamic-mock-server/mocks-manager";
+import Fastify from "fastify";
 
-// Create a new mocks manager instance
+// Create manager and Fastify app
 const mocksManager = new MocksManager();
-
-// Create Fastify app and integrate with mocks manager
 const app = Fastify();
 mocksManager.setApp(app);
 
-// Add a route with responses
+// Add a route with multiple response options
 mocksManager.addRoute({
   id: "get-users",
   url: "/api/users",
@@ -43,19 +44,27 @@ mocksManager.addRoute({
   responses: [
     {
       id: "success",
-      status: 200,
-      body: [{ id: 1, name: "John" }],
+      statusCode: 200,
+      body: [
+        { id: 1, name: "John Doe" },
+        { id: 2, name: "Jane Smith" },
+      ],
+    },
+    {
+      id: "empty",
+      statusCode: 200,
+      body: [],
     },
     {
       id: "error",
-      status: 500,
+      statusCode: 500,
       body: { error: "Internal server error" },
     },
     {
       id: "slow",
-      status: 200,
+      statusCode: 200,
       body: [{ id: 1, name: "John" }],
-      delay: 3000, // 3 seconds delay
+      delay: 3000, // Simulate slow response
     },
   ],
 });
@@ -63,152 +72,314 @@ mocksManager.addRoute({
 // Add a routes suite
 mocksManager.addSuite({
   id: "happy-path",
-  routes: ["get-users:success"],
+  routes: {
+    "get-users": "success", // Map route to response
+  },
 });
 
 // Set the active suite
 mocksManager.setActiveSuite("happy-path");
 
-// Start the server
+// Start server
 await app.listen({ port: 3000 });
-
-// The server will now respond to GET /api/users with the "success" response
-// Override a specific route response
-mocksManager.setRouteResponse("get-users", "error");
-// Now GET /api/users will return the error response
-
-// Use nested routes suites for organization
-const apiSuites = mocksManager.routesSuites.collection("api");
-apiSuites.set("v1-suite", { id: "v1", routes: ["get-users:success"] });
-apiSuites.set("v2-suite", { id: "v2", routes: ["get-users:error"] });
+// GET /api/users now returns "success" response
 ```
 
-## Direct Component Usage
-
-You can also use the individual components directly:
+### Per-Route Overrides
 
 ```typescript
-import {
-  RoutesHandler,
-  ResponsesHandler,
-  NestedRoutesSuites,
-} from "@dynamic-mock-server/mocks-manager";
+// Override a specific route without changing the suite
+mocksManager.setRouteResponse("get-users", "error");
+// GET /api/users now returns "error" response
 
-// Use RoutesHandler for Fastify integration
-const routesHandler = new RoutesHandler();
-routesHandler.setApp(app);
-
-// Use ResponsesHandler for response management
-routesHandler.responses.addRoute({
-  id: "get-users",
-  url: "/api/users",
-  method: "GET",
-  responses: [
-    /* ... */
-  ],
-});
-
-// Use NestedRoutesSuites for hierarchical organization
-const suites = new NestedRoutesSuites();
-const apiSuites = suites.collection("api");
-apiSuites.set("v1", {
-  /* suite config */
-});
+// Clear override to return to suite default
+mocksManager.setRouteResponse("get-users", null);
+// GET /api/users returns "success" again (from suite)
 ```
 
-## API
+### Nested Suites Organization
+
+```typescript
+// Organize suites hierarchically
+const apiSuites = mocksManager.routesSuites.collection("api");
+apiSuites.set("v1", {
+  id: "api-v1",
+  routes: { "get-users": "success" },
+});
+apiSuites.set("v2", {
+  id: "api-v2",
+  routes: { "get-users": "empty" },
+});
+
+// Access nested suite
+const v1Suite = apiSuites.get("v1");
+```
+
+### Constructor Options
+
+```typescript
+import { MocksManager } from "@dynamic-mock-server/mocks-manager";
+import { Config } from "@dynamic-mock-server/config";
+import { Logger } from "@dynamic-mock-server/logger";
+import { Alerts } from "@dynamic-mock-server/alerts";
+
+const mocksManager = new MocksManager({
+  // Optional: Enable file loading with hot-reload
+  config: new Config(),
+  logger: new Logger(),
+  alerts: new Alerts(),
+
+  // Optional: Initial routes
+  routes: [
+    { id: "route1", url: "/test", method: "GET", responses: [...] }
+  ],
+
+  // Optional: Initial suites
+  suites: [
+    { id: "suite1", routes: { "route1": "response1" } }
+  ],
+
+  // Optional: Set active suite immediately
+  activeSuite: "suite1",
+});
+
+// Initialize and start file watching
+await mocksManager.init();
+await mocksManager.start();
+```
+
+## API Reference
 
 ### MocksManager
 
 Main class that orchestrates all mock management functionality.
 
+#### Constructor
+
+```typescript
+constructor(options?: MocksManagerOptions)
+```
+
+**MocksManagerOptions:**
+
+- `config?: Config` - Configuration instance (enables file loading)
+- `logger?: Logger` - Logger instance (enables file loading)
+- `alerts?: Alerts` - Alerts instance (enables file loading)
+- `routes?: RouteConfig[]` - Initial routes to add
+- `suites?: RoutesSuite[]` - Initial suites to add
+- `activeSuite?: string` - Initial active suite ID
+
 #### Methods
 
-- `setApp(app: FastifyInstance): void` - Set the Fastify instance for HTTP handling
-- `getApp(): FastifyInstance | undefined` - Get the current Fastify instance
+##### Route Management
+
 - `addRoute(config: RouteConfig): void` - Add or update a route with its responses
 - `removeRoute(routeId: string): void` - Remove a route by ID
-- `addResponse(routeId: string, response: RouteResponse): void` - Add a response to an existing route
+- `addResponse(routeId: string, response: RouteResponse): void` - Add/update a response for a route
 - `removeResponse(routeId: string, responseId: string): void` - Remove a response from a route
-- `addSuite(suite: RoutesSuite): void` - Add or update a routes suite
-- `removeSuite(suiteId: string): void` - Remove a routes suite
-- `setActiveSuite(suiteId: string | null): void` - Set the active routes suite
-- `getActiveSuite(): string | null` - Get the current active suite ID
-- `setRouteResponse(routeId: string, responseId: string | null): void` - Override response for a specific route
-- `getRoutes(): RouteConfig[]` - Get all routes
-- `getRoute(routeId: string): RouteConfig | undefined` - Get a specific route by ID
-- `getSuites(): RoutesSuite[]` - Get all routes suites
-- `getSuite(suiteId: string): RoutesSuite | undefined` - Get a specific suite by ID
-- `resolveResponse(routeId: string): RouteResponse | null` - Resolve the active response for a route
-- `findRoute(method: string, url: string): RouteConfig | null` - Find a route by method and URL
-- `clear(): void` - Clear all routes and suites
-- `getStats(): object` - Get statistics about the current mocks state
-
-#### Properties
-
-- `routesSuites: NestedRoutesSuites` - Access the nested routes suites for hierarchical organization
-- `routesHandler: RoutesHandler` - Access the routes handler for Fastify integration
-
-### RoutesHandler
-
-Handles HTTP request routing through Fastify integration.
-
-#### Methods
-
-- `setApp(app: FastifyInstance): void` - Set the Fastify instance and register routes
-- `getApp(): FastifyInstance | undefined` - Get the Fastify instance
-- `isRegistered(): boolean` - Check if routes are registered
-
-#### Properties
-
-- `responses: ResponsesHandler` - Access the responses handler
-
-### ResponsesHandler
-
-Manages route responses and their resolution.
-
-#### Methods
-
-- `addRoute(config: RouteConfig): void` - Add or update a route
-- `removeRoute(routeId: string): void` - Remove a route
-- `addResponse(routeId: string, response: RouteResponse): void` - Add a response to a route
-- `removeResponse(routeId: string, responseId: string): void` - Remove a response
-- `addSuite(suite: RoutesSuite): void` - Add a routes suite
-- `removeSuite(suiteId: string): void` - Remove a routes suite
-- `setActiveSuite(suiteId: string | null): void` - Set the active suite
-- `getActiveSuite(): string | null` - Get the active suite
-- `setRouteResponse(routeId: string, responseId: string | null): void` - Override route response
 - `getRoutes(): RouteConfig[]` - Get all routes
 - `getRoute(routeId: string): RouteConfig | undefined` - Get a specific route
-- `getSuites(): RoutesSuite[]` - Get all suites
-- `getSuite(suiteId: string): RoutesSuite | undefined` - Get a specific suite
-- `resolveResponse(routeId: string): RouteResponse | null` - Resolve active response
 - `findRoute(method: string, url: string): RouteConfig | null` - Find route by method and URL
-- `clear(): void` - Clear all data
 
-### NestedRoutesSuites
+##### Suite Management
 
-Provides hierarchical organization for routes suites with namespaces.
+- `addSuite(suite: RoutesSuite): void` - Add or update a routes suite
+- `removeSuite(suiteId: string): void` - Remove a routes suite
+- `setActiveSuite(suiteId: string | null): void` - Set the active suite (null to clear)
+- `getActiveSuite(): string | null` - Get current active suite ID
+- `getSuites(): RoutesSuite[]` - Get all routes suites
+- `getSuite(suiteId: string): RoutesSuite | undefined` - Get a specific suite
 
-#### Methods
+##### Response Resolution
 
-- `set(id: string, value: unknown): void` - Set an item
-- `get(id: string): unknown` - Get an item
-- `has(id: string): boolean` - Check if item exists
-- `remove(id: string): boolean` - Remove an item
-- `clean(): void` - Clear all items (preserves children)
-- `collection(namespace: string): NestedRoutesSuites` - Get or create a child collection
-- `onChange(listener: ChangeListener): UnsubscribeFunction` - Subscribe to changes
-- `clear(): void` - Remove all items and children
+- `setRouteResponse(routeId: string, responseId: string | null): void` - Override route response
+- `resolveResponse(routeId: string): RouteResponse | null` - Resolve the active response for a route
+
+##### Lifecycle
+
+- `async init(): Promise<void>` - Initialize FilesLoader if configured
+- `async start(): Promise<void>` - Start file watching
+- `async stop(): Promise<void>` - Stop file watching
+
+##### Fastify Integration
+
+- `setApp(app: FastifyInstance): void` - Set Fastify instance for HTTP handling
+- `getApp(): FastifyInstance | undefined` - Get the Fastify instance
+
+##### Utilities
+
+- `clear(): void` - Clear all routes and suites
+- `getStats(): MocksStats` - Get statistics about current state
 
 #### Properties
 
-- `flat: unknown[]` - Get all items recursively
-- `values: unknown[]` - Get items from this collection only
-- `keys: string[]` - Get all keys
-- `size: number` - Get collection size
-- `childRoutesSuites: string[]` - Get child collection names
+- `routesSuites: NestedRoutesSuites` - Access nested routes suites
+- `routesHandler: RoutesHandler` - Access routes handler
+
+### Types
+
+#### RouteConfig
+
+```typescript
+interface RouteConfig {
+  id: string; // Unique route identifier
+  url: string; // Route URL (supports Fastify params)
+  method: HttpMethod; // HTTP method (GET, POST, etc.)
+  responses: RouteResponse[]; // Array of response options
+}
+```
+
+#### RouteResponse
+
+```typescript
+interface RouteResponse {
+  id: string; // Unique response identifier
+  statusCode: number; // HTTP status code
+  body?: any; // Response body (JSON)
+  headers?: Record<string, string>; // Response headers
+  delay?: number; // Delay in milliseconds
+}
+```
+
+#### RoutesSuite
+
+```typescript
+interface RoutesSuite {
+  id: string; // Unique suite identifier
+  routes: Record<string, string>; // Map of routeId -> responseId
+}
+```
+
+#### MocksStats
+
+```typescript
+interface MocksStats {
+  totalRoutes: number; // Total number of routes
+  totalResponses: number; // Total number of responses
+  totalSuites: number; // Total number of suites
+  activeSuite: string | null; // Currently active suite
+  routeOverrides: number; // Number of per-route overrides
+}
+```
+
+### FilesLoader
+
+Manages loading of mock files with hot-reload support.
+
+**Automatically initialized when MocksManager is created with config, logger, and alerts.**
+
+#### File Structure
+
+```
+mocks/
+├── routes/           # Route definitions (.js files)
+│   ├── users.js
+│   └── products.js
+└── routesSuites/     # Suite definitions (.js files)
+    ├── base.js
+    └── errors.js
+```
+
+#### Route File Example
+
+```javascript
+// mocks/routes/users.js
+export default {
+  id: "get-users",
+  url: "/api/users",
+  method: "GET",
+  responses: [
+    { id: "success", statusCode: 200, body: [{ id: 1, name: "John" }] },
+    { id: "error", statusCode: 500, body: { error: "Server Error" } },
+  ],
+};
+```
+
+#### Suite File Example
+
+```javascript
+// mocks/routesSuites/base.js
+export default {
+  id: "base",
+  routes: {
+    "get-users": "success",
+    "get-products": "success",
+  },
+};
+```
+
+## Complete Example
+
+```typescript
+import { MocksManager } from "@dynamic-mock-server/mocks-manager";
+import { Config } from "@dynamic-mock-server/config";
+import { Logger } from "@dynamic-mock-server/logger";
+import { Alerts } from "@dynamic-mock-server/alerts";
+import Fastify from "fastify";
+
+// Create MocksManager with file loading
+const mocksManager = new MocksManager({
+  config: new Config(),
+  logger: new Logger(),
+  alerts: new Alerts(),
+});
+
+// Initialize file loading
+await mocksManager.init();
+
+// Add programmatic routes (in addition to file-based ones)
+mocksManager.addRoute({
+  id: "health",
+  url: "/health",
+  method: "GET",
+  responses: [{ id: "ok", statusCode: 200, body: { status: "ok" } }],
+});
+
+// Create and configure Fastify
+const app = Fastify();
+mocksManager.setApp(app);
+
+// Set active suite
+mocksManager.setActiveSuite("base");
+
+// Start file watching
+await mocksManager.start();
+
+// Start server
+await app.listen({ port: 3000 });
+
+console.log("Server running at http://localhost:3000");
+console.log("Stats:", mocksManager.getStats());
+
+// Later: stop file watching
+await mocksManager.stop();
+```
+
+## Architecture
+
+```
+MocksManager
+  ├── RoutesHandler (Fastify integration)
+  │   └── ResponsesHandler (response resolution)
+  ├── NestedRoutesSuites (hierarchical organization)
+  └── FilesLoader (file loading with chokidar)
+```
+
+## Dependencies
+
+- `fastify` - HTTP server framework
+- `chokidar` - File watching for hot-reload
+- `fast-glob` - File discovery
+- `@dynamic-mock-server/config` - Configuration management (optional)
+- `@dynamic-mock-server/logger` - Logging (optional)
+- `@dynamic-mock-server/alerts` - Alerts system (optional)
+
+## Related Packages
+
+- [@dynamic-mock-server/core](../core) - Core orchestrator
+- [@dynamic-mock-server/config](../config) - Configuration management
+- [@dynamic-mock-server/logger](../logger) - Logging utilities
 
 ## License
 
-MIT
+ISC © Miguel Martínez

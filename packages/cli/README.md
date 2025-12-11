@@ -1,17 +1,19 @@
 # @dynamic-mock-server/cli
 
-Interactive command-line interface for Dynamic Mock Server. Provides an intuitive way to manage your mock server, change routes suites, override responses, and control server behavior in real-time.
+> Interactive and command-line interface for the Dynamic Mock Server
+
+Intuitive CLI for managing your mock server in real-time. Features both an interactive mode powered by @clack/prompts and a command mode powered by Commander.js for scriptable automation.
 
 ## Features
 
-## Features
-
-- 🎯 **Interactive Mode**: Navigate options with an intuitive interface
-- 🔁 **Hot Reload**: Change routes suites and responses without restarting
-- 🎨 **Colored Output**: Beautiful terminal UI with picocolors
-- ⚙️ **Flexible Commands**: CLI and programmatic API
-- 📊 **Real-time Management**: Monitor and control your mock server on the fly
-- 🚀 **Easy to Use**: Simple commands with helpful prompts
+- 🎨 **Interactive Mode**: Beautiful UI with @clack/prompts for navigation
+- ⚙️ **Command Mode**: Scriptable CLI powered by Commander.js
+- 🔄 **Hot Management**: Change suites and responses without restart
+- 📊 **Real-time Status**: View server stats, routes, and configuration
+- 🎯 **Suite Control**: Switch between route suites on the fly
+- 🔧 **Route Overrides**: Override individual route responses
+- 💻 **Programmatic API**: Use CLI classes in your own code
+- 🌈 **Colored Output**: Clear, colorful terminal UI with picocolors
 
 ## Installation
 
@@ -19,126 +21,205 @@ Interactive command-line interface for Dynamic Mock Server. Provides an intuitiv
 pnpm add @dynamic-mock-server/cli
 ```
 
-Or install globally:
+For global installation:
 
 ```bash
 pnpm add -g @dynamic-mock-server/cli
 ```
 
-## Usage
+## Quick Start
 
-### Binary Commands
+### Interactive Mode
 
-#### Start Server (Interactive Mode)
+Launch the beautiful interactive interface:
 
-By default, the `start` command launches an interactive interface:
+```bash
+dynamic-mock-server interactive
+# or shorthand
+dynamic-mock-server i
+```
+
+Features:
+
+- Arrow key navigation
+- Real-time status display
+- View configuration
+- Change active suite
+- List and manage routes
+- Override route responses
+- Restart server
+- View alerts
+- Graceful exit
+
+### Command Mode
+
+Use commands for scriptable automation:
+
+```bash
+# Start server
+dynamic-mock-server start
+
+# View status
+dynamic-mock-server status
+
+# Suite management
+dynamic-mock-server suites list
+dynamic-mock-server suites set happy-path
+dynamic-mock-server suites clear
+
+# Route management
+dynamic-mock-server routes list
+dynamic-mock-server routes set get-users error
+dynamic-mock-server routes clear get-users
+
+# Server control
+dynamic-mock-server restart
+dynamic-mock-server stop
+```
+
+## CLI Commands
+
+### Server Management
+
+#### `start`
+
+Start the mock server.
 
 ```bash
 dynamic-mock-server start
 ```
 
-Options:
+**Options:**
 
-- `-p, --port <port>` - Server port (default: 3000)
-- `-h, --host <host>` - Server host (default: 127.0.0.1)
-- `--no-interactive` - Disable interactive mode and just run the server
+- `-p, --port <number>` - Server port (overrides config)
+- `-h, --host <string>` - Server host (overrides config)
+- `--no-interactive` - Disable interactive mode (show logs)
 
-Example with custom port:
-
-```bash
-dynamic-mock-server start --port 4000
-```
-
-Example in non-interactive mode:
+**Examples:**
 
 ```bash
+dynamic-mock-server start
+dynamic-mock-server start -p 8080
+dynamic-mock-server start -h 0.0.0.0
 dynamic-mock-server start --no-interactive
 ```
 
-#### Show Server Status
+> **Note:** Interactive mode disables server logs for clean UI. Use `--no-interactive` to see full logs.
 
-Display current server information:
+#### `status`
+
+Display current server information.
 
 ```bash
 dynamic-mock-server status
 ```
 
-Shows:
+**Displays:**
 
-- Server running status
+- Running status
 - Server URL
-- Active routes suite
+- Active suite
 - Total routes, responses, and suites
-- Any active alerts
+- Active alerts
 
-#### Manage Routes Suites
+#### `restart`
 
-List all available suites:
-
-```bash
-dynamic-mock-server suites list
-```
-
-Set active suite:
-
-```bash
-dynamic-mock-server suites set <suiteId>
-```
-
-Clear active suite:
-
-```bash
-dynamic-mock-server suites clear
-```
-
-#### Manage Routes
-
-List all available routes:
-
-```bash
-dynamic-mock-server routes list
-```
-
-Override a route response:
-
-```bash
-dynamic-mock-server routes set <routeId> <responseId>
-```
-
-Clear a route response override:
-
-```bash
-dynamic-mock-server routes clear <routeId>
-```
-
-#### Restart Server
-
-Restart the mock server:
+Restart the server.
 
 ```bash
 dynamic-mock-server restart
 ```
 
-### Programmatic Usage
+#### `stop`
+
+Stop the server gracefully.
+
+```bash
+dynamic-mock-server stop
+```
+
+### Interactive Mode
+
+#### `interactive` or `i`
+
+Enter interactive mode for real-time management.
+
+```bash
+dynamic-mock-server interactive
+# or
+dynamic-mock-server i
+```
+
+### Routes Suites
+
+#### `suites list`
+
+List all available routes suites.
+
+```bash
+dynamic-mock-server suites list
+```
+
+#### `suites set <suiteId>`
+
+Set the active routes suite.
+
+```bash
+dynamic-mock-server suites set happy-path
+dynamic-mock-server suites set error-scenarios
+```
+
+#### `suites clear`
+
+Clear the active suite (no default responses).
+
+```bash
+dynamic-mock-server suites clear
+```
+
+### Routes
+
+#### `routes list`
+
+List all available routes with their responses.
+
+```bash
+dynamic-mock-server routes list
+```
+
+#### `routes set <routeId> <responseId>`
+
+Override a specific route's response.
+
+```bash
+dynamic-mock-server routes set get-users error
+dynamic-mock-server routes set get-products empty
+```
+
+#### `routes clear <routeId>`
+
+Clear a route override (revert to suite default).
+
+```bash
+dynamic-mock-server routes clear get-users
+```
+
+## Programmatic Usage
+
+Use CLI classes in your own application:
 
 ```typescript
-import { CLI, Commander, InteractiveCLI } from "@dynamic-mock-server/cli";
+import { CLI, InteractiveCLI } from "@dynamic-mock-server/cli";
 import { Core } from "@dynamic-mock-server/core";
 
 // Create core instance
 const core = new Core();
 
-// Option 1: Use Commander for command-line interface
-const commander = new Commander(core);
-await commander.parse(process.argv);
-
-// Option 2: Use CLI directly
+// Option 1: Use CLI class programmatically
 const cli = new CLI({ core });
-await cli.start();
 
-// Get server status
-const status = await cli.getStatus();
-console.log(status);
+// Start server
+await cli.start();
 
 // Change active suite
 await cli.changeSuite("happy-path");
@@ -146,74 +227,202 @@ await cli.changeSuite("happy-path");
 // Override route response
 await cli.setRouteResponse("get-users", "error");
 
-// Option 3: Use Interactive CLI
-const interactive = new InteractiveCLI(core, cli);
-await interactive.start();
+// Restart server
+await cli.restartServer();
+
+// Option 2: Use Interactive CLI
+const interactiveCLI = new InteractiveCLI(core);
+await interactiveCLI.start();
 ```
 
-## Interactive Mode
+## Interactive Mode Features
 
-When you run `dynamic-mock-server start` without `--no-interactive`, you'll enter an interactive menu where you can:
+When using `dynamic-mock-server interactive`, you get:
 
-- **[i] Show server status** - View current server state and statistics
-- **[*] Change routes suite** - Select a different routes suite to activate
-- **[>] View routes** - See all available routes with their responses
-- **[~] Override route response** - Change a specific route's response
-- **[R] Restart server** - Restart the mock server
-- **[!] View alerts** - See any warnings or errors
-- **[x] Exit** - Close the interactive interface
+### Main Menu Options
+
+- 📊 **Show server status** - Display server URL, active suite, route counts
+- 🔧 **View configuration** - See current config settings
+- 🗂️ **Change routes suite** - Select from available suites
+- 📝 **View routes** - List all routes with methods and URLs
+- 🎯 **Override route response** - Set specific route responses
+- 🔄 **Restart server** - Restart without losing context
+- ⚠️ **View alerts** - Check for warnings or errors
+- 🚪 **Exit** - Gracefully exit the CLI
+
+### Interactive Navigation
+
+- Arrow keys to navigate options
+- Enter/Return to select
+- Ctrl+C or ESC to go back or cancel
+- Clean, colorful output with visual feedback
 
 ## API Reference
 
-### CLI
+### CLI Class
 
-Main CLI class for server management.
-
-#### Constructor
-
-```typescript
-new CLI(options: CLIOptions)
-```
-
-Options:
-
-- `core: Core` - Core instance (required)
-
-#### Methods
-
-- `start(): Promise<void>` - Initialize the CLI
-- `stop(): Promise<void>` - Stop the CLI and cleanup
-- `getStatus(): Promise<ServerStatus>` - Get server status information
-- `showStatus(): Promise<void>` - Display server status in console
-- `listSuites(): Promise<void>` - Display available suites
-- `listRoutes(): Promise<void>` - Display available routes
-- `changeSuite(suiteId: string | null): Promise<void>` - Change active suite
-- `setRouteResponse(routeId: string, responseId: string | null): Promise<void>` - Override route response
-- `restartServer(): Promise<void>` - Restart the server
-
-### Commander
-
-Commander.js integration for CLI commands.
+Base CLI class for programmatic server management.
 
 #### Constructor
 
 ```typescript
-new Commander(core?: Core)
+constructor(options: CLIOptions)
 ```
 
-#### Properties
+**CLIOptions:**
 
-- `program: Command` - Commander program instance
-- `core: Core` - Core instance
-- `cli: CLI` - CLI instance
+- `core: Core` - Core instance to manage
 
 #### Methods
 
-- `parse(argv?: string[]): Promise<void>` - Parse command-line arguments
+##### `async start(): Promise<void>`
 
-### InteractiveCLI
+Start the server.
 
-Interactive interface using @clack/prompts.
+```typescript
+await cli.start();
+```
+
+##### `async changeSuite(suiteId: string | null): Promise<void>`
+
+Change the active routes suite.
+
+```typescript
+await cli.changeSuite("happy-path");
+await cli.changeSuite(null); // Clear suite
+```
+
+##### `async setRouteResponse(routeId: string, responseId: string | null): Promise<void>`
+
+Override a specific route's response.
+
+```typescript
+await cli.setRouteResponse("get-users", "error");
+await cli.setRouteResponse("get-users", null); // Clear override
+```
+
+##### `async restartServer(): Promise<void>`
+
+Restart the mock server.
+
+```typescript
+await cli.restartServer();
+```
+
+### InteractiveCLI Class
+
+Interactive CLI with @clack/prompts UI. Extends CLI class.
+
+#### Constructor
+
+```typescript
+constructor(core: Core)
+```
+
+**Parameters:**
+
+- `core: Core` - Core instance to manage
+
+#### Methods
+
+##### `async start(): Promise<void>`
+
+Start interactive mode with menu navigation.
+
+```typescript
+const interactiveCLI = new InteractiveCLI(core);
+await interactiveCLI.start();
+```
+
+##### `async stop(): Promise<void>`
+
+Stop interactive mode.
+
+```typescript
+await interactiveCLI.stop();
+```
+
+## Examples
+
+### Basic CLI Usage
+
+```typescript
+import { Core } from "@dynamic-mock-server/core";
+import { CLI } from "@dynamic-mock-server/cli";
+
+const core = new Core();
+const cli = new CLI({ core });
+
+// Start server
+await cli.start();
+
+// Show status
+console.log("Server running!");
+
+// Change suite after 5 seconds
+setTimeout(async () => {
+  await cli.changeSuite("error-scenarios");
+  console.log("Switched to error scenarios");
+}, 5000);
+```
+
+### Interactive CLI
+
+```typescript
+import { Core } from "@dynamic-mock-server/core";
+import { InteractiveCLI } from "@dynamic-mock-server/cli";
+
+const core = new Core();
+const interactiveCLI = new InteractiveCLI(core);
+
+// Start interactive mode
+await interactiveCLI.start();
+// User can now navigate with arrow keys and manage server
+```
+
+### Custom CLI Tool
+
+```typescript
+#!/usr/bin/env node
+import { Core } from "@dynamic-mock-server/core";
+import { CLI } from "@dynamic-mock-server/cli";
+
+const core = new Core();
+const cli = new CLI({ core });
+
+// Your custom logic
+const args = process.argv.slice(2);
+
+if (args[0] === "demo") {
+  // Add demo routes
+  core.mocksManager.addRoute({
+    id: "demo",
+    url: "/demo",
+    method: "GET",
+    responses: [{ id: "ok", statusCode: 200, body: { demo: true } }],
+  });
+}
+
+await cli.start();
+console.log("Demo server started!");
+```
+
+## Dependencies
+
+- `@dynamic-mock-server/core` - Core server functionality
+- `@clack/prompts` - Interactive prompts for beautiful CLI
+- `commander` - Command-line argument parsing
+- `picocolors` - Terminal coloring
+
+## Related Packages
+
+- [@dynamic-mock-server/core](../core) - Core server that CLI manages
+- [@dynamic-mock-server/config](../config) - Configuration system
+- [@dynamic-mock-server/mocks-manager](../mocks-manager) - Mock management
+
+## License
+
+ISC © Miguel Martínez
 
 #### Constructor
 
