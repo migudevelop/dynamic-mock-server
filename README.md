@@ -553,7 +553,7 @@ refactor(logger): simplify namespace creation
 - Use destructuring where applicable
 
 ## 📄 License
- 
+
 Apache-2.0 © Miguel Martínez
 
 ## 🙏 Acknowledgments

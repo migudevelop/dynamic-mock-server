@@ -421,7 +421,7 @@ console.log("Demo server started!");
 - [@dynamic-mock-server/mocks-manager](../mocks-manager) - Mock management
 
 ## License
- 
+
 Apache-2.0 © Miguel Martínez
 
 #### Constructor
@@ -486,4 +486,4 @@ The CLI respects the server configuration file (`dynamicMockServer.config.{js,js
 
 ## License
 
-MIT
+Apache-2.0 © Miguel Martínez

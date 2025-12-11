@@ -381,5 +381,5 @@ MocksManager
 - [@dynamic-mock-server/logger](../logger) - Logging utilities
 
 ## License
- 
+
 Apache-2.0 © Miguel Martínez

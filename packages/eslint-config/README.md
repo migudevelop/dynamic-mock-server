@@ -244,4 +244,4 @@ The base configuration follows these principles:
 
 ## License
 
-MIT
+Apache-2.0 © Miguel Martínez

@@ -232,4 +232,4 @@ To update compiler settings for all packages:
 
 ## License
 
-MIT
+Apache-2.0 © Miguel Martínez

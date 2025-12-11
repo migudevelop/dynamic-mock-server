@@ -389,5 +389,5 @@ export default {
 - [@dynamic-mock-server/mocks-manager](../mocks-manager) - Uses `files` settings
 
 ## License
- 
+
 Apache-2.0 © Miguel Martínez

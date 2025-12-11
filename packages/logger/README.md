@@ -222,5 +222,5 @@ function handleRequest(req: Request) {
 - [@dynamic-mock-server/config](../config) - Respects `logLevel` config
 
 ## License
- 
+
 Apache-2.0 © Miguel Martínez
