@@ -511,51 +511,6 @@ Contributions are welcome! Please follow these guidelines:
 6. Push to your fork (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
 
-### Commit Convention
-
-We use [Conventional Commits](https://www.conventionalcommits.org/) enforced by Commitlint:
-
-```
-feat(scope): add new feature
-fix(scope): bug fix
-docs(scope): documentation changes
-style(scope): formatting changes (no code changes)
-refactor(scope): code refactoring
-test(scope): adding or updating tests
-chore(scope): maintenance tasks
-```
-
-Examples:
-
-```
-feat(core): add plugin lifecycle hooks
-fix(mocks-manager): handle null active suite
-docs(readme): update installation instructions
-refactor(logger): simplify namespace creation
-```
-
-### Git Hooks
-
-**Husky** manages git hooks automatically:
-
-- **pre-commit**: Runs `lint-staged` (ESLint + Prettier on staged files)
-- **commit-msg**: Validates commit message format with Commitlint
-
-### Code Style
-
-- Use **TypeScript** for all code
-- Follow the shared ESLint config (`@dynamic-mock-server/eslint-config`)
-- Use **kebab-case** for filenames (e.g., `routes-handler.ts`)
-- Separate types in `.types.ts` files (e.g., `routes-handler.types.ts`)
-- Add JSDoc comments for all public APIs
-- Use English for all code, comments, and documentation
-- Prefer `async/await` over raw Promises
-- Use destructuring where applicable
-
-## 📄 License
-
-Apache-2.0 © Miguel Martínez
-
 ## 🙏 Acknowledgments
 
 Built with:
@@ -568,19 +523,6 @@ Built with:
 - [Cosmiconfig](https://github.com/cosmiconfig/cosmiconfig) - Configuration management
 - [TurboRepo](https://turbo.build/) - High-performance monorepo build system
 
-## 📞 Support
-
-- 🐛 [Report Issues](https://github.com/migudevelop/dynamic-mock-server/issues)
-- 💬 [Discussions](https://github.com/migudevelop/dynamic-mock-server/discussions)
-- 📧 Contact: Miguel Martínez
-
----
-
-Made with ❤️ for developers who need fast, flexible API mocking
-
-- **pre-commit**: Runs lint-staged (format + lint)
-- **commit-msg**: Validates commit message format
-
 ## License
 
 Apache-2.0 © Miguel Martínez
@@ -588,9 +530,3 @@ Apache-2.0 © Miguel Martínez
 ## Credits
 
 Inspired by [mocks-server](https://github.com/mocks-server/main) - A great tool for API mocking.
-
-## Support
-
-- [?] [Documentation](./packages)
-- [!] [Issue Tracker](https://github.com/migudevelop/dynamic-mock-server/issues)
-- [+] [Discussions](https://github.com/migudevelop/dynamic-mock-server/discussions)

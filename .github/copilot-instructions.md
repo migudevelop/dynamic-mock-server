@@ -61,7 +61,7 @@ Dynamic Mock Server is a development tool designed to facilitate the rapid creat
 - Use kebab-case for package folder and file names (e.g., `eslint-config`, `typescript-config`).
 - Use destructuring in imports, arguments and let/const declarations where applicable for cleaner code.
 - Use async/await for asynchronous code instead of raw Promises for better readability.
-- Use functions to check types from @migudevelop/types-utils
+- Use functions to check types from types-guards
 - Use english for all code, comments, and documentation.
 - Avoid using `any` type; prefer specific types or generics.
 - Add types and interfaces in ".types.ts" files, for example, routes-handlers.types.ts, responses-handler.types.ts
@@ -80,7 +80,7 @@ Dynamic Mock Server is a development tool designed to facilitate the rapid creat
 
 ## Integration points & external dependencies
 
-- External runtime dependency shown in root `package.json`: `@migudevelop/types-utils` (published package) — check for its API contract when changing types.
+- External runtime dependency shown in root `package.json`: `types-guards` (published package) — check for its API contract when changing types.
 - Devtooling: `turbo`, `pnpm`, `typescript`, `eslint`, `prettier`, `husky`, `lint-staged` (root `package.json`).
 - Git hooks: Husky is configured (`prepare` script). Commit conventions are enforced with `@commitlint/config-conventional` and `lint-staged` for pre-commit formatting and linting.
 

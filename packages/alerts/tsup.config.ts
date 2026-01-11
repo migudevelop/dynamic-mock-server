@@ -8,7 +8,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   outDir: "dist",
-  external: ["@dynamic-mock-server/mocks-manager", "@migudevelop/types-utils"],
+  external: ["@dynamic-mock-server/mocks-manager", "types-guards"],
   cjsInterop: true,
   outExtension({ format }) {
     return {

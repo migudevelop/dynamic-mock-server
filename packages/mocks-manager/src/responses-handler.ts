@@ -1,4 +1,4 @@
-import { isNull } from "@migudevelop/types-utils";
+import { isNull } from "types-guards";
 import type {
   RouteResponse,
   RouteConfig,

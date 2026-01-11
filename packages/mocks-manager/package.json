@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "@dynamic-mock-server/config": "workspace:*",
-    "@migudevelop/types-utils": "1.3.0",
     "chokidar": "4.0.3",
     "fast-glob": "3.3.3"
   },

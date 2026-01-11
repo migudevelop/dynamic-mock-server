@@ -15,6 +15,7 @@ import type {
   MinimalAlerts,
   FilesLoaderOptions,
 } from "./files-loader.types.js";
+import { isArray } from "types-guards";
 
 /**
  * FilesLoader manages loading of mock files (routes and suites) with hot-reload support.
@@ -262,11 +263,14 @@ export class FilesLoader {
             this._logger.warn(`Could not load suite from file: ${file}`);
             continue;
           }
+          const suitesData = isArray(suiteData) ? suiteData : [suiteData];
 
-          const suite = this._convertSuiteDefinitionToConfig(suiteData);
-          this._mocksManager.addSuite(suite);
-          loadedCount++;
-          this._logger.info(`Loaded suite: ${suite.id} from ${file}`);
+          for (const singleSuiteData of suitesData) {
+            const suite = this._convertSuiteDefinitionToConfig(singleSuiteData);
+            this._mocksManager.addSuite(suite);
+            loadedCount++;
+            this._logger.info(`Loaded suite: ${suite.id} from ${file}`);
+          }
         } catch (err) {
           this._logger.error(
             `Error loading suite from ${file}: ${err instanceof Error ? err.message : String(err)}`

@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
-      '@migudevelop/types-utils':
-        specifier: 1.3.0
-        version: 1.3.0
       eslint:
         specifier: 9.38.0
         version: 9.38.0(jiti@2.6.1)
+      types-guards:
+        specifier: 0.1.0
+        version: 0.1.0
     devDependencies:
       '@commitlint/cli':
         specifier: 20.1.0
@@ -51,9 +51,6 @@ importers:
       '@dynamic-mock-server/mocks-manager':
         specifier: workspace:*
         version: link:../mocks-manager
-      '@migudevelop/types-utils':
-        specifier: 1.3.0
-        version: 1.3.0
     devDependencies:
       '@dynamic-mock-server/eslint-config':
         specifier: workspace:*
@@ -191,9 +188,6 @@ importers:
       '@dynamic-mock-server/config':
         specifier: workspace:*
         version: link:../config
-      '@migudevelop/types-utils':
-        specifier: 1.3.0
-        version: 1.3.0
       chokidar:
         specifier: 4.0.3
         version: 4.0.3
@@ -1008,10 +1002,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
-
-  '@migudevelop/types-utils@1.3.0':
-    resolution: {integrity: sha512-hvlKP5egKf9s7T4cySo1LKF8+6dfboPZpDbnbCBYV5XAdnE0JCLb2yuBpiMRC099hKRxE/jR/HhD4AkRJNRJSw==}
-    engines: {node: '>= 18.0.x'}
 
   '@mocks-server/admin-api-paths@5.0.0':
     resolution: {integrity: sha512-HlFhNnHtvY9ZZGthaatAFvGFofTCs1Yj3kxeb5EmvdHBgNC+dZxfMjXWCvuIhp7qFNaTFarPgGJ3Zsm7+o/siw==}
@@ -3901,6 +3891,10 @@ packages:
   typedarray-to-buffer@3.1.5:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
 
+  types-guards@0.1.0:
+    resolution: {integrity: sha512-Rl0pllDzIVQNrTGmvWLd3OqEqI5gKikTCRzNRk0AIC1HB8aOlF5vehXO1aKyDkyf+2WZ2E2S7SiGF0YLZirvIw==}
+    engines: {node: '>= 18.0.x'}
+
   typescript-eslint@8.40.0:
     resolution: {integrity: sha512-Xvd2l+ZmFDPEt4oj1QEXzA4A2uUK6opvKu3eGN9aGjB8au02lIVcLyi375w94hHyejTOmzIU77L8ol2sRg9n7Q==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -4783,8 +4777,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
-
-  '@migudevelop/types-utils@1.3.0': {}
 
   '@mocks-server/admin-api-paths@5.0.0': {}
 
@@ -8055,6 +8047,8 @@ snapshots:
   typedarray-to-buffer@3.1.5:
     dependencies:
       is-typedarray: 1.0.0
+
+  types-guards@0.1.0: {}
 
   typescript-eslint@8.40.0(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3):
     dependencies:

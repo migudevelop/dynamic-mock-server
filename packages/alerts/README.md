@@ -358,7 +358,7 @@ setTimeout(() => {
 ## Dependencies
 
 - `@dynamic-mock-server/mocks-manager` - Extends NestedRoutesSuites
-- `@migudevelop/types-utils` - Type checking utilities
+- `types-guards` - Type checking utilities
 
 ## Related Packages
 

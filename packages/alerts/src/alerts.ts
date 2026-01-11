@@ -1,5 +1,5 @@
 import { NestedRoutesSuites } from "@dynamic-mock-server/mocks-manager";
-import { isString } from "@migudevelop/types-utils";
+import { isString } from "types-guards";
 
 import type {
   Alert,

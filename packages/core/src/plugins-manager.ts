@@ -5,7 +5,7 @@ import type {
   CoreApi,
 } from "./plugins-manager.types.js";
 import type { Core } from "./core.js";
-import { isFunction, isString } from "@migudevelop/types-utils";
+import { isFunction, isString } from "types-guards";
 
 /**
  * PluginManager handles the lifecycle of all registered plugins.

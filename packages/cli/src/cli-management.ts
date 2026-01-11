@@ -3,8 +3,8 @@ import Logger from "@dynamic-mock-server/logger";
 import { Command } from "commander";
 import pc from "picocolors";
 
+import type { CLIArguments } from "./cli-management.types.js";
 import { CLI } from "./cli.js";
-import type { CLIOptions } from "./commander.types.js";
 import { InteractiveCLI } from "./interactive-cli.js";
 
 /**
@@ -56,7 +56,7 @@ export class CliManagement {
     this._program
       .description("Start the mock server (interactive by default)")
       .option("--no-interactive", "Disable interactive mode")
-      .action(async (options: CLIOptions) => {
+      .action(async (options: CLIArguments) => {
         await this._startCli(options);
       });
   }
@@ -70,7 +70,7 @@ export class CliManagement {
 
   private async _getCli({
     interactive,
-  }: CLIOptions): Promise<CLI | InteractiveCLI> {
+  }: CLIArguments): Promise<CLI | InteractiveCLI> {
     if (!interactive) {
       return new CLI({ core: this._core });
     }
@@ -81,7 +81,7 @@ export class CliManagement {
   /**
    * Start the cli with the given options
    */
-  private async _startCli({ interactive }: CLIOptions): Promise<void> {
+  private async _startCli({ interactive }: CLIArguments): Promise<void> {
     console.log(pc.cyan("Starting Dynamic Mock Server CLI..."));
 
     try {

@@ -5,7 +5,7 @@ import type { Config } from "@dynamic-mock-server/config";
 import type { ConfigType } from "@dynamic-mock-server/config";
 import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import type { Logger } from "@dynamic-mock-server/logger";
-import { isString } from "@migudevelop/types-utils";
+import { isString } from "types-guards";
 import { isIP } from "net";
 
 export type ConfigOptions = Pick<ConfigType, "server" | "logLevel">;

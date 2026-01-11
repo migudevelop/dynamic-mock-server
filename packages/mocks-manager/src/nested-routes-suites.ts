@@ -1,4 +1,4 @@
-import { isString } from "@migudevelop/types-utils";
+import { isString } from "types-guards";
 import type {
   ChangeListener,
   UnsubscribeFunction,

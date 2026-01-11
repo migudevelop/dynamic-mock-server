@@ -32,7 +32,6 @@
     "@dynamic-mock-server/typescript-config": "workspace:*"
   },
   "dependencies": {
-    "@dynamic-mock-server/mocks-manager": "workspace:*",
-    "@migudevelop/types-utils": "1.3.0"
+    "@dynamic-mock-server/mocks-manager": "workspace:*"
   }
 }

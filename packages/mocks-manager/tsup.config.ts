@@ -10,7 +10,7 @@ export default defineConfig({
   outDir: "dist",
   external: [
     "@dynamic-mock-server/config",
-    "@migudevelop/types-utils",
+    "types-guards",
     "fastify",
     "chokidar",
   ],
