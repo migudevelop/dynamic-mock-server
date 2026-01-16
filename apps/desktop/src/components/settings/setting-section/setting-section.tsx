@@ -14,9 +14,7 @@ export function SettingSection({ title, icon, children }: SettingSectionProps) {
           {title}
         </h3>
       </div>
-      <div className="p-6">
-        <div className="max-w-md">{children}</div>
-      </div>
+      <div className="flex flex-col gap-3 p-6">{children}</div>
     </section>
   );
 }

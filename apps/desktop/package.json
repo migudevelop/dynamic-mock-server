@@ -10,7 +10,12 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@dynamic-mock-server/core": "workspace:0.0.1-beta",
+    "@dynamic-mock-server/mocks-manager": "workspace:0.0.1-beta",
+    "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-dialog": "1.1.15",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "1.1.8",
     "@radix-ui/react-slot": "1.2.4",
     "@radix-ui/react-switch": "1.2.6",
@@ -23,9 +28,12 @@
     "lucide-react": "0.562.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-hook-form": "^7.71.1",
     "react-router": "7.12.0",
     "tailwind-merge": "3.4.0",
-    "tailwindcss": "4.1.18"
+    "tailwindcss": "4.1.18",
+    "zod": "^4.3.5",
+    "zustand": "^5.0.10"
   },
   "devDependencies": {
     "@dynamic-mock-server/eslint-config": "workspace:*",
