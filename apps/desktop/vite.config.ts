@@ -1,3 +1,5 @@
+import { resolve } from "path";
+
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
@@ -32,7 +34,7 @@ export default defineConfig(async () => ({
   resolve: {
     alias: {
       // 4. Enable use of the `@` alias to reference the `src` directory
-      "@": "/src",
+      "@": resolve(__dirname, "./src"),
     },
   },
 }));

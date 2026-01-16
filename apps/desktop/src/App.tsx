@@ -1,8 +1,23 @@
-import { invoke } from "@tauri-apps/api/core";
-import { useState } from "react";
-
-import reactLogo from "./assets/react.svg";
 import "@/styles/global.css";
+
+import { createBrowserRouter } from "react-router";
+import { RouterProvider } from "react-router/dom";
+
+import MainLayout from "@/components/layout/main-layout";
+import { ROUTES } from "@/helpers/navigation/navigation";
+import { Home } from "@/pages/home";
+import { Setting } from "@/pages/settings";
+
+const ROUTER = createBrowserRouter([
+  {
+    path: ROUTES.HOME,
+    Component: MainLayout,
+    children: [
+      { index: true, element: <Home /> },
+      { path: ROUTES.SETTINGS, element: <Setting /> },
+    ],
+  },
+]);
 
 function App() {
   // const [greetMsg, setGreetMsg] = useState("");
@@ -13,20 +28,7 @@ function App() {
   //   setGreetMsg(await invoke("greet", { name }));
   // }
 
-  return (
-    <main className="container">
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <div className="flex flex-row items-center gap-2">
-          <img
-            src={reactLogo}
-            className="w-20 h-20 animate-spin-slow"
-            alt="React logo"
-          />
-          <h1 className="text-4xl font-bold bg-amber-600">Welcome to Tauri!</h1>
-        </div>
-      </div>
-    </main>
-  );
+  return <RouterProvider router={ROUTER} />;
 }
 
 export default App;
