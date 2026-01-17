@@ -62,7 +62,7 @@ export function SelectFormField({
           <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">
             {label}
           </FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select value={field.value} onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger className="w-full h-11 px-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:border-primary">
                 <SelectValue placeholder={placeholder} />
