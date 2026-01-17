@@ -1,4 +1,4 @@
-import type { ConfigType } from "@dynamic-mock-server/config";
+import type { Config } from "@dynamic-mock-server/config";
 import type { Logger } from "@dynamic-mock-server/logger";
 import type { PluginConstructor } from "./plugins-manager.types.js";
 
@@ -7,7 +7,7 @@ import type { PluginConstructor } from "./plugins-manager.types.js";
  */
 export interface CoreOptions {
   /** Configuration overrides */
-  config?: Partial<ConfigType>;
+  config?: Config;
   /** Array of plugins to register */
   plugins?: {
     register?: PluginConstructor[];

@@ -22,7 +22,7 @@ export class Core {
 
   constructor(options?: CoreOptions) {
     // Initialize core systems
-    this._config = new Config();
+    this._config = options?.config ?? new Config();
     const logLevel = this._config.getConfig().logLevel;
     this._logger = options?.logger
       ? options.logger
