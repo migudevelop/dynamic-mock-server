@@ -1,11 +1,12 @@
-import { watch, type FSWatcher } from "chokidar";
-import { join } from "path";
 import { readFile } from "fs/promises";
+import { join } from "path";
 import { pathToFileURL } from "url";
-import fg from "fast-glob";
+
 import type { Config } from "@dynamic-mock-server/config";
-import type { MocksManager } from "./mocks-manager.js";
-import type { RouteConfig, RoutesSuite } from "./mocks-manager.types.js";
+import { watch, type FSWatcher } from "chokidar";
+import fg from "fast-glob";
+import { isArray } from "types-guards";
+
 import type {
   RouteDefinition,
   RoutesSuiteDefinition,
@@ -15,7 +16,8 @@ import type {
   MinimalAlerts,
   FilesLoaderOptions,
 } from "./files-loader.types.js";
-import { isArray } from "types-guards";
+import type { MocksManager } from "./mocks-manager.js";
+import type { RouteConfig, RoutesSuite } from "./mocks-manager.types.js";
 
 /**
  * FilesLoader manages loading of mock files (routes and suites) with hot-reload support.
@@ -57,7 +59,7 @@ export class FilesLoader {
     }
 
     this._logger.info(
-      `Initializing files loader from: ${this._basePath} (watch: ${this._watch})`
+      `Initializing files loader from: ${this._basePath} (watch: ${this._watch})`,
     );
 
     // Load routes and suites
@@ -185,31 +187,31 @@ export class FilesLoader {
               this._mocksManager.addRoute(routeConfig);
               loadedCount++;
               this._logger.info(
-                `✓ Loaded route: ${routeConfig.id} from ${file}`
+                `✓ Loaded route: ${routeConfig.id} from ${file}`,
               );
             } catch (err) {
               this._logger.error(
-                `Error converting route from ${file}: ${err instanceof Error ? err.message : String(err)}`
+                `Error converting route from ${file}: ${err instanceof Error ? err.message : String(err)}`,
               );
             }
           }
         } catch (err) {
           this._logger.error(
-            `Error loading route from ${file}: ${err instanceof Error ? err.message : String(err)}`
+            `Error loading route from ${file}: ${err instanceof Error ? err.message : String(err)}`,
           );
           this._alerts.set(
             `route-error-${file}`,
-            `Failed to load route from ${file}`
+            `Failed to load route from ${file}`,
           );
         }
       }
 
       this._logger.info(
-        `Successfully loaded ${loadedCount} of ${files.length} routes`
+        `Successfully loaded ${loadedCount} of ${files.length} routes`,
       );
     } catch (err) {
       this._logger.error(
-        `Error loading routes: ${err instanceof Error ? err.message : String(err)}`
+        `Error loading routes: ${err instanceof Error ? err.message : String(err)}`,
       );
       this._alerts.set("routes-load-error", "Failed to load routes");
     }
@@ -273,21 +275,21 @@ export class FilesLoader {
           }
         } catch (err) {
           this._logger.error(
-            `Error loading suite from ${file}: ${err instanceof Error ? err.message : String(err)}`
+            `Error loading suite from ${file}: ${err instanceof Error ? err.message : String(err)}`,
           );
           this._alerts.set(
             `suite-error-${file}`,
-            `Failed to load suite from ${file}`
+            `Failed to load suite from ${file}`,
           );
         }
       }
 
       this._logger.info(
-        `Successfully loaded ${loadedCount} of ${files.length} suites`
+        `Successfully loaded ${loadedCount} of ${files.length} suites`,
       );
     } catch (err) {
       this._logger.error(
-        `Error loading routes suites: ${err instanceof Error ? err.message : String(err)}`
+        `Error loading routes suites: ${err instanceof Error ? err.message : String(err)}`,
       );
       this._alerts.set("suites-load-error", "Failed to load routes suites");
     }
@@ -297,12 +299,12 @@ export class FilesLoader {
    * Convert route definition to route config
    */
   private _convertRouteDefinitionToConfig(
-    definition: RouteDefinition
+    definition: RouteDefinition,
   ): RouteConfig {
     const url = definition.url || definition.path;
     if (!url) {
       throw new Error(
-        `Route ${definition.id} must have either 'url' or 'path' defined`
+        `Route ${definition.id} must have either 'url' or 'path' defined`,
       );
     }
 
@@ -327,10 +329,12 @@ export class FilesLoader {
    * Convert suite definition to suite config
    */
   private _convertSuiteDefinitionToConfig(
-    definition: RoutesSuiteDefinition
+    definition: RoutesSuiteDefinition,
   ): RoutesSuite {
-    // Convert routes object to array of route IDs
-    const routes = Object.keys(definition.routes);
+    // Convert routes record to "routeId:responseId" array entries
+    const routes = Object.entries(definition.routes).map(
+      ([routeId, responseId]) => `${routeId}:${responseId}`,
+    );
 
     return {
       id: definition.id,

@@ -1,7 +1,12 @@
-import type {
-  ChangeListener,
-  UnsubscribeFunction,
-} from "@dynamic-mock-server/mocks-manager";
+/**
+ * Represents a listener function for alerts changes
+ */
+export type ChangeListener = () => void;
+
+/**
+ * Function to unsubscribe from a listener
+ */
+export type UnsubscribeFunction = () => void;
 
 /**
  * Represents an alert in the system
@@ -21,5 +26,3 @@ export interface Alert {
     stack: string;
   };
 }
-
-export type { ChangeListener, UnsubscribeFunction };

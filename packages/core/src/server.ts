@@ -1,12 +1,15 @@
-import type { FastifyBaseLogger } from "fastify";
-import fastify, { type FastifyInstance } from "fastify";
 import { EventEmitter } from "events";
+import { isIP } from "net";
+
 import type { Config } from "@dynamic-mock-server/config";
 import type { ConfigType } from "@dynamic-mock-server/config";
-import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
 import type { Logger } from "@dynamic-mock-server/logger";
+import type { MocksManager } from "@dynamic-mock-server/mocks-manager";
+import type { FastifyBaseLogger } from "fastify";
+import fastify, { type FastifyInstance } from "fastify";
 import { isString } from "types-guards";
-import { isIP } from "net";
+
+import { AdminRoutes } from "./routes/admin-routes.js";
 
 export type ConfigOptions = Pick<ConfigType, "server" | "logLevel">;
 
@@ -48,6 +51,8 @@ export class Server extends EventEmitter {
     // Connect MocksManager with Fastify
     if (this._mocksManager) {
       this._mocksManager.setApp(this._app);
+      // Register admin REST API routes at /__admin/*
+      new AdminRoutes(this._app, this._mocksManager);
     }
 
     this._isServerInitialized = true;

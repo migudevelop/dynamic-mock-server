@@ -3,6 +3,8 @@
  */
 module.exports = {
   id: "base",
-  extends: null,
-  routes: ["get-users:success", "get-user-by-id:success"],
+  routes: {
+    "get-users": "success",
+    "get-user-by-id": "success",
+  },
 };

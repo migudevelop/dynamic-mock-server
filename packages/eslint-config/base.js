@@ -1,6 +1,5 @@
 import js from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
-import importPlugin from "eslint-plugin-import";
 import turboPlugin from "eslint-plugin-turbo";
 import tseslint from "typescript-eslint";
 
@@ -16,7 +15,6 @@ export const config = [
   {
     plugins: {
       turbo: turboPlugin,
-      import: importPlugin,
     },
     rules: {
       "turbo/no-undeclared-env-vars": "warn",
@@ -24,24 +22,6 @@ export const config = [
         "warn",
         {
           destructuring: "all",
-        },
-      ],
-      "import/order": [
-        "error",
-        {
-          groups: [
-            "builtin",
-            "external",
-            "internal",
-            "parent",
-            "sibling",
-            "index",
-          ],
-          "newlines-between": "always",
-          alphabetize: {
-            order: "asc",
-            caseInsensitive: true,
-          },
         },
       ],
       // Disable base rule and enable TypeScript-aware unused vars rule

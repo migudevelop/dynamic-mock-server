@@ -1,4 +1,5 @@
 import { isNull } from "types-guards";
+
 import type {
   RouteResponse,
   RouteConfig,
@@ -113,7 +114,7 @@ export class ResponsesHandler {
     }
     if (!isNull(responseId) && !route.responsesMap!.has(responseId)) {
       throw new Error(
-        `Response "${responseId}" not found for route "${routeId}"`
+        `Response "${responseId}" not found for route "${routeId}"`,
       );
     }
     if (isNull(responseId)) {
@@ -173,7 +174,7 @@ export class ResponsesHandler {
       if (suite) {
         // find the route:response mapping in suite.routes
         const mapping = suite.routes.find((r: string) =>
-          r.startsWith(`${routeId}:`)
+          r.startsWith(`${routeId}:`),
         );
         if (mapping) {
           const parts = mapping.split(":");
@@ -191,17 +192,42 @@ export class ResponsesHandler {
   }
 
   /**
+   * Converts a route URL pattern with named parameters to a RegExp.
+   * E.g. "/api/users/:id" → /^\/api\/users\/([^/]+)$/
+   */
+  private _routePatternToRegex(pattern: string): RegExp {
+    const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const withParams = escaped.replace(/:([A-Za-z_][A-Za-z0-9_]*)/g, "([^/]+)");
+    return new RegExp(`^${withParams}$`);
+  }
+
+  /**
    * Find a route by method and url.
+   * Tries exact match first for performance, then falls back to pattern matching.
    */
   findRoute(method: string, url: string): RouteConfig | null {
+    const normalizedMethod = method.toUpperCase();
+
+    // 1. Exact match (fast path)
     for (const route of this.routes.values()) {
       if (
-        route.method.toUpperCase() === method.toUpperCase() &&
+        route.method.toUpperCase() === normalizedMethod &&
         route.url === url
       ) {
         return route;
       }
     }
+
+    // 2. Pattern match for parameterized routes (e.g. /api/users/:id)
+    for (const route of this.routes.values()) {
+      if (route.method.toUpperCase() !== normalizedMethod) continue;
+      if (!route.url.includes(":")) continue;
+      const regex = this._routePatternToRegex(route.url);
+      if (regex.test(url)) {
+        return route;
+      }
+    }
+
     return null;
   }
 

@@ -87,11 +87,11 @@ export class CliManagement {
     try {
       // Normal logs in non-interactive mode
       this._cli = await this._getCli({ interactive });
-      this._cli.start();
+      await this._cli.start();
     } catch (error) {
       console.error(
         pc.red("Failed to start server:"),
-        (error as Error).message
+        (error as Error).message,
       );
       process.exit(1);
     }

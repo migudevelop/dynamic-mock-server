@@ -3,6 +3,8 @@
  */
 module.exports = {
   id: "errors",
-  extends: "base",
-  routes: ["get-users:error", "get-user-by-id:not-found"],
+  routes: {
+    "get-users": "error",
+    "get-user-by-id": "not-found",
+  },
 };
