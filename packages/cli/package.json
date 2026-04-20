@@ -35,10 +35,7 @@
   },
   "devDependencies": {
     "@dynamic-mock-server/eslint-config": "workspace:*",
-    "@dynamic-mock-server/typescript-config": "workspace:*",
-    "@types/node": "22.10.1",
-    "tsup": "8.3.5",
-    "typescript": "5.7.2"
+    "@dynamic-mock-server/typescript-config": "workspace:*"
   },
   "keywords": [
     "mock",

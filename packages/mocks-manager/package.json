@@ -25,12 +25,12 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src --ext .ts",
+    "test": "vitest run",
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
     "@dynamic-mock-server/eslint-config": "workspace:*",
     "@dynamic-mock-server/typescript-config": "workspace:*",
-    "@types/node": "22.10.2",
     "fastify": "5.6.2"
   },
   "dependencies": {

@@ -1,11 +1,15 @@
-import { Server } from "./server.js";
+import { Alerts } from "@dynamic-mock-server/alerts";
 import { Config } from "@dynamic-mock-server/config";
 import { Logger } from "@dynamic-mock-server/logger";
-import { Alerts } from "@dynamic-mock-server/alerts";
 import { MocksManager } from "@dynamic-mock-server/mocks-manager";
+
+import type { CoreOptions } from "./core.types.js";
 import { PluginManager } from "./plugins-manager.js";
 import type { CoreApi } from "./plugins-manager.types.js";
-import type { CoreOptions } from "./core.types.js";
+import { Server } from "./server.js";
+
+/** @internal injected at build time by tsup */
+declare const PACKAGE_VERSION: string;
 
 /**
  * Core is the main orchestrator for the mock server.
@@ -18,7 +22,8 @@ export class Core {
   private _alerts: Alerts;
   private _mocksManager: MocksManager;
   private _pluginManager: PluginManager;
-  private _version = "0.0.1-beta"; // TODO: read from package.json
+  private _version =
+    typeof PACKAGE_VERSION !== "undefined" ? PACKAGE_VERSION : "0.0.1-beta";
 
   constructor(options?: CoreOptions) {
     // Initialize core systems

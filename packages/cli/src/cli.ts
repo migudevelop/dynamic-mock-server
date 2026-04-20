@@ -20,7 +20,7 @@ export class CLI {
   /**
    * Get server status information
    */
-  protected async getStatus(): Promise<ServerStatus> {
+  async getStatus(): Promise<ServerStatus> {
     const stats = this._core.mocksManager.getStats();
     const config = this._core.config.getConfig();
     const address = this._core.server.address();
@@ -64,7 +64,7 @@ export class CLI {
    */
   async setRouteResponse(
     routeId: string,
-    responseId: string | null
+    responseId: string | null,
   ): Promise<void> {
     this._core.mocksManager.setRouteResponse(routeId, responseId);
     const message = responseId

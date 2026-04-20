@@ -1,4 +1,8 @@
+import { readFileSync } from "fs";
+
 import { defineConfig } from "tsup";
+
+const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
 
 export default defineConfig({
   entry: ["src/index.ts"],
@@ -8,6 +12,9 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   outDir: "dist",
+  define: {
+    PACKAGE_VERSION: JSON.stringify(packageJson.version),
+  },
   external: [
     "@dynamic-mock-server/alerts",
     "@dynamic-mock-server/config",

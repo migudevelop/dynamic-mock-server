@@ -59,6 +59,126 @@ export class CliManagement {
       .action(async (options: CLIArguments) => {
         await this._startCli(options);
       });
+
+    // "start" command — starts the server (non-interactive)
+    const startCmd = new Command("start")
+      .description("Start the mock server")
+      .action(async () => {
+        await this._startCli({ interactive: false });
+      });
+
+    // "status" command
+    const statusCmd = new Command("status")
+      .description("Show server status")
+      .action(async () => {
+        const cli = new CLI({ core: this._core });
+        await this._core.start();
+        const status = await cli.getStatus();
+        console.log(pc.bold("Server Status:"));
+        console.log(
+          `  Running: ${status.running ? pc.green("Yes") : pc.red("No")}`,
+        );
+        if (status.url) console.log(`  URL: ${pc.blue(status.url)}`);
+        console.log(
+          `  Active Suite: ${status.activeSuite ?? pc.yellow("None")}`,
+        );
+        console.log(`  Routes: ${status.totalRoutes}`);
+        console.log(`  Suites: ${status.totalSuites}`);
+        await this._core.stop();
+      });
+
+    // "suites" command with subcommands
+    const suitesCmd = new Command("suites").description("Manage routes suites");
+
+    suitesCmd
+      .command("list")
+      .description("List all available suites")
+      .action(async () => {
+        await this._core.start();
+        const suites = this._core.mocksManager.getSuites();
+        const activeSuite = this._core.mocksManager.getActiveSuite();
+        if (suites.length === 0) {
+          console.log(pc.yellow("No suites available"));
+        } else {
+          console.log(pc.bold("Available Suites:"));
+          for (const suite of suites) {
+            const marker =
+              suite.id === activeSuite ? pc.green(" (active)") : "";
+            console.log(`  ${suite.id}${marker}`);
+          }
+        }
+        await this._core.stop();
+      });
+
+    suitesCmd
+      .command("set <suiteId>")
+      .description("Set the active suite")
+      .action(async (suiteId: string) => {
+        const cli = new CLI({ core: this._core });
+        await this._core.start();
+        await cli.changeSuite(suiteId);
+        await this._core.stop();
+      });
+
+    suitesCmd
+      .command("clear")
+      .description("Clear the active suite")
+      .action(async () => {
+        const cli = new CLI({ core: this._core });
+        await this._core.start();
+        await cli.changeSuite(null);
+        await this._core.stop();
+      });
+
+    // "routes" command with subcommands
+    const routesCmd = new Command("routes").description("Manage routes");
+
+    routesCmd
+      .command("list")
+      .description("List all available routes")
+      .action(async () => {
+        await this._core.start();
+        const routes = this._core.mocksManager.getRoutes();
+        if (routes.length === 0) {
+          console.log(pc.yellow("No routes available"));
+        } else {
+          console.log(pc.bold("Available Routes:"));
+          for (const route of routes) {
+            const responses = route.responses
+              .map((r: { id: string }) => r.id)
+              .join(", ");
+            console.log(
+              `  ${pc.bold(route.method.padEnd(7))} ${pc.blue(route.url)} [${pc.gray(responses)}]`,
+            );
+          }
+        }
+        await this._core.stop();
+      });
+
+    routesCmd
+      .command("set <routeId> <responseId>")
+      .description("Override a route response")
+      .action(async (routeId: string, responseId: string) => {
+        const cli = new CLI({ core: this._core });
+        await this._core.start();
+        await cli.setRouteResponse(routeId, responseId);
+        await this._core.stop();
+      });
+
+    routesCmd
+      .command("clear <routeId>")
+      .description("Clear a route response override")
+      .action(async (routeId: string) => {
+        const cli = new CLI({ core: this._core });
+        await this._core.start();
+        await cli.setRouteResponse(routeId, null);
+        await this._core.stop();
+      });
+
+    this._program.addCommand(startCmd);
+    this._program.addCommand(statusCmd);
+    this._program.addCommand(suitesCmd);
+    this._program.addCommand(routesCmd);
   }
 
   /**

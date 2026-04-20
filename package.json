@@ -7,6 +7,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "prepare": "husky install"
@@ -30,7 +31,8 @@
     "turbo": "2.6.0",
     "typescript": "5.9.2",
     "eslint": "9.38.0",
-    "types-guards": "0.1.0"
+    "types-guards": "0.1.0",
+    "vitest": "3.2.1"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [

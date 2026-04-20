@@ -1,16 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
-/**
- * HTTP methods supported by the routes handler
- */
-export type HttpMethod =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "PATCH"
-  | "DELETE"
-  | "OPTIONS"
-  | "HEAD";
+export type { HttpMethod } from "./responses-handler.types.js";
 
 /**
  * Options for creating a RoutesHandler instance
