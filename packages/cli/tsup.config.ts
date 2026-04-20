@@ -9,7 +9,4 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   minify: false,
-  banner: {
-    js: "#!/usr/bin/env node",
-  },
 });
