@@ -48,6 +48,9 @@ importers:
 
   apps/desktop:
     dependencies:
+      '@dynamic-mock-server/config':
+        specifier: workspace:0.0.1-beta
+        version: link:../../packages/config
       '@dynamic-mock-server/core':
         specifier: workspace:0.0.1-beta
         version: link:../../packages/core
