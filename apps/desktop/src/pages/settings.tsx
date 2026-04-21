@@ -1,6 +1,5 @@
 import { SaveIcon, SlidersHorizontal, FolderCog, Server } from "lucide-react";
-import { useCallback } from "react";
-import type { FieldValues } from "react-hook-form";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import InputFormField from "@/components/form/input-form-field";
@@ -10,6 +9,9 @@ import SettingSection from "@/components/settings/setting-section";
 import { Button } from "@/components/shadcn/ui/button";
 import { Form } from "@/components/shadcn/ui/form";
 import PageHeader from "@/components/ui/page-header";
+import { tauriCommands } from "@/helpers/tauri-commands";
+import { useProjectStore } from "@/stores/project-store";
+import { useServerStore } from "@/stores/server-store";
 
 const LOG_LEVELS_OPTIONS = [
   { value: "fatal", label: "Fatal" },
@@ -21,7 +23,29 @@ const LOG_LEVELS_OPTIONS = [
   { value: "silent", label: "Silent" },
 ];
 
-const DEFAULT_CONFIG = {
+/** Shape of the settings form */
+interface ConfigFormValues {
+  /** Logging verbosity */
+  logLevel: string;
+  /** Server binding settings */
+  server: {
+    /** TCP port */
+    port: number;
+    /** Hostname */
+    host: string;
+  };
+  /** File loader settings */
+  files: {
+    /** Whether file loading is enabled */
+    enabled: boolean;
+    /** Whether hot-reload watching is enabled */
+    watch: boolean;
+    /** Base directory for mocks relative to the project root */
+    path: string;
+  };
+}
+
+const DEFAULT_CONFIG: ConfigFormValues = {
   logLevel: "trace",
   server: {
     port: 3000,
@@ -34,20 +58,74 @@ const DEFAULT_CONFIG = {
   },
 };
 
+/**
+ * Settings page for configuring the mock server project.
+ * Loads current config from the server store as default form values and
+ * writes changes back to the project config file on submit.
+ */
 export function Setting() {
-  const form = useForm({
+  const config = useServerStore((s) => s.config);
+  const loadConfig = useServerStore((s) => s.loadConfig);
+  const getActiveProject = useProjectStore((s) => s.getActiveProject);
+
+  const form = useForm<ConfigFormValues>({
     defaultValues: DEFAULT_CONFIG,
   });
 
-  // Submit handler
-  const onSubmit = useCallback<(data: FieldValues) => void>((data) => {
-    console.log("Form submitted:", data);
-    // ...handle submit (save settings)...
-  }, []);
+  // Sync form values whenever the store config changes (e.g. after project switch)
+  useEffect(() => {
+    if (!config) return;
+
+    form.reset({
+      logLevel: config.logLevel ?? DEFAULT_CONFIG.logLevel,
+      server: {
+        port: config.server?.port ?? DEFAULT_CONFIG.server.port,
+        host: config.server?.host ?? DEFAULT_CONFIG.server.host,
+      },
+      files: {
+        enabled: config.files?.enabled ?? DEFAULT_CONFIG.files.enabled,
+        watch: config.files?.watch ?? DEFAULT_CONFIG.files.watch,
+        path: config.files?.path ?? DEFAULT_CONFIG.files.path,
+      },
+    });
+  }, [config, form]);
+
+  const onSubmit = useCallback(
+    async (values: ConfigFormValues) => {
+      const activeProject = getActiveProject();
+      if (!activeProject) return;
+
+      const configContent = `module.exports = ${JSON.stringify(values, null, 2)};\n`;
+      const configPath = `${activeProject.path}/dynamicMockServer.config.js`;
+
+      await tauriCommands.writeFileContent(
+        configPath,
+        configContent,
+        activeProject.path,
+      );
+      await loadConfig(activeProject.path);
+    },
+    [getActiveProject, loadConfig],
+  );
 
   const onReset = useCallback(() => {
-    form.reset();
-  }, []);
+    if (config) {
+      form.reset({
+        logLevel: config.logLevel ?? DEFAULT_CONFIG.logLevel,
+        server: {
+          port: config.server?.port ?? DEFAULT_CONFIG.server.port,
+          host: config.server?.host ?? DEFAULT_CONFIG.server.host,
+        },
+        files: {
+          enabled: config.files?.enabled ?? DEFAULT_CONFIG.files.enabled,
+          watch: config.files?.watch ?? DEFAULT_CONFIG.files.watch,
+          path: config.files?.path ?? DEFAULT_CONFIG.files.path,
+        },
+      });
+    } else {
+      form.reset(DEFAULT_CONFIG);
+    }
+  }, [config, form]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -58,7 +136,7 @@ export function Setting() {
             <Button variant="secondary" onClick={onReset}>
               Reset Defaults
             </Button>
-            <Button onClick={form.handleSubmit(onSubmit)}>
+            <Button onClick={() => void form.handleSubmit(onSubmit)()}>
               <SaveIcon /> Save Changes
             </Button>
           </>

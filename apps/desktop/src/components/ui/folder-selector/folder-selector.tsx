@@ -4,13 +4,22 @@ import { useCallback, useEffect } from "react";
 
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
-import { useAppStore } from "@/stores/app-store";
+import { useProjectStore } from "@/stores/project-store";
+import { useServerStore } from "@/stores/server-store";
 
 export function FolderSelector() {
-  const projectPath = useAppStore((state) => state.projectPath);
-  const setProjectPath = useAppStore((state) => state.setProjectPath);
-  const isLoading = useAppStore((state) => state.isLoading);
-  const error = useAppStore((state) => state.error);
+  const projectPath = useProjectStore(
+    (state) =>
+      state.projects.find((p) => p.id === state.activeProjectId)?.path ?? null,
+  );
+  const activeProjectId = useProjectStore((state) => state.activeProjectId);
+  const addProject = useProjectStore((state) => state.addProject);
+  const removeProject = useProjectStore((state) => state.removeProject);
+
+  const isLoading = useServerStore(
+    (state) => state.status === "starting" || state.status === "stopping",
+  );
+  const error = useServerStore((state) => state.error);
 
   const handleSelectFolder = useCallback(async () => {
     try {
@@ -20,18 +29,18 @@ export function FolderSelector() {
       });
 
       if (selected) {
-        // Set the project path, which will trigger config loading and Core initialization
-        await setProjectPath(selected);
+        await addProject(selected);
       }
-    } catch (error) {
-      alert(`Error selecting folder: ${error}`);
+    } catch (err) {
+      alert(`Error selecting folder: ${err}`);
     }
-  }, [setProjectPath]);
+  }, [addProject]);
 
-  const removeFolder = useCallback(async () => {
-    // Clear the project path and reset state
-    await setProjectPath(null);
-  }, [setProjectPath]);
+  const removeFolder = useCallback(() => {
+    if (activeProjectId) {
+      removeProject(activeProjectId);
+    }
+  }, [activeProjectId, removeProject]);
 
   // Show error alert if there's an error loading config
   useEffect(() => {

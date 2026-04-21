@@ -13,7 +13,10 @@ export function SuiteCardRoutesList({ routes }: SuiteCardRoutesListProps) {
       </div>
       <div className="space-y-1.5 max-h-[160px] overflow-y-auto custom-scrollbar pr-1">
         {routes.map((route) => (
-          <div className="flex items-center justify-between p-2 rounded bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60">
+          <div
+            key={route}
+            className="flex items-center justify-between p-2 rounded bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60"
+          >
             <code className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
               {route}
             </code>

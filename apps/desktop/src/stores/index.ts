@@ -1,1 +1,2 @@
-export { useAppStore } from "./app-store";
+export { useProjectStore } from "./project-store";
+export { useServerStore } from "./server-store";

@@ -1,16 +1,18 @@
 /**
- * Example usage of the app store in different scenarios
+ * Example usage of the split stores in different scenarios.
+ * These components demonstrate how to consume useProjectStore and useServerStore.
  */
 
 import { useCallback, useEffect } from "react";
 
-import { useAppStore } from "@/stores";
+import { useProjectStore } from "@/stores/project-store";
+import { useServerStore } from "@/stores/server-store";
 
 /**
- * Example 1: Access the current configuration
+ * Example 1: Display the loaded project configuration.
  */
 export function ConfigDisplay() {
-  const config = useAppStore((state) => state.config);
+  const config = useServerStore((state) => state.config);
 
   if (!config) {
     return <div>No configuration loaded</div>;
@@ -25,45 +27,37 @@ export function ConfigDisplay() {
 }
 
 /**
- * Example 2: Use Tauri commands to start/stop the server
- * Note: Tauri commands need to be implemented in the Rust backend first
+ * Example 2: Start/stop the mock server for the active project.
  */
 export function ServerControls() {
-  const projectPath = useAppStore((state) => state.projectPath);
-  const isLoading = useAppStore((state) => state.isLoading);
+  const projectPath = useProjectStore(
+    (state) => state.projects.find((p) => p.id === state.activeProjectId)?.path ?? null,
+  );
+  const status = useServerStore((state) => state.status);
+  const startServer = useServerStore((state) => state.startServer);
+  const stopServer = useServerStore((state) => state.stopServer);
+
+  const isLoading = status === "starting" || status === "stopping";
 
   const handleStart = useCallback(async () => {
     if (!projectPath) {
       alert("No project selected. Please select a project folder.");
       return;
     }
-
     try {
-      // TODO: Implement Tauri command
-      // await invoke("start_server");
-      alert(
-        "Server start command not implemented yet. See TAURI_ARCHITECTURE.md",
-      );
-    } catch (error) {
-      alert(`Error starting server: ${error}`);
+      await startServer(projectPath);
+    } catch (err) {
+      alert(`Error starting server: ${err}`);
     }
-  }, [projectPath]);
+  }, [projectPath, startServer]);
 
   const handleStop = useCallback(async () => {
-    if (!projectPath) {
-      return;
-    }
-
     try {
-      // TODO: Implement Tauri command
-      // await invoke("stop_server");
-      alert(
-        "Server stop command not implemented yet. See TAURI_ARCHITECTURE.md",
-      );
-    } catch (error) {
-      alert(`Error stopping server: ${error}`);
+      await stopServer();
+    } catch (err) {
+      alert(`Error stopping server: ${err}`);
     }
-  }, [projectPath]);
+  }, [stopServer]);
 
   return (
     <div>
@@ -78,21 +72,25 @@ export function ServerControls() {
 }
 
 /**
- * Example 3: Reload configuration when needed
+ * Example 3: Reload the project configuration from disk.
  */
 export function ConfigReloader() {
-  const reloadConfig = useAppStore((state) => state.reloadConfig);
-  const projectPath = useAppStore((state) => state.projectPath);
-  const isLoading = useAppStore((state) => state.isLoading);
+  const projectPath = useProjectStore(
+    (state) => state.projects.find((p) => p.id === state.activeProjectId)?.path ?? null,
+  );
+  const loadConfig = useServerStore((state) => state.loadConfig);
+  const status = useServerStore((state) => state.status);
+  const isLoading = status === "starting" || status === "stopping";
 
   const handleReload = useCallback(async () => {
+    if (!projectPath) return;
     try {
-      await reloadConfig();
+      await loadConfig(projectPath);
       alert("Configuration reloaded successfully!");
-    } catch (error) {
-      alert(`Error reloading configuration: ${error}`);
+    } catch (err) {
+      alert(`Error reloading configuration: ${err}`);
     }
-  }, [reloadConfig]);
+  }, [projectPath, loadConfig]);
 
   return (
     <button onClick={handleReload} disabled={!projectPath || isLoading}>
@@ -102,11 +100,13 @@ export function ConfigReloader() {
 }
 
 /**
- * Example 4: React to changes in the store
+ * Example 4: React to changes in the active project.
  */
 export function ProjectPathWatcher() {
-  const projectPath = useAppStore((state) => state.projectPath);
-  const config = useAppStore((state) => state.config);
+  const projectPath = useProjectStore(
+    (state) => state.projects.find((p) => p.id === state.activeProjectId)?.path ?? null,
+  );
+  const config = useServerStore((state) => state.config);
 
   useEffect(() => {
     if (projectPath) {
@@ -119,40 +119,45 @@ export function ProjectPathWatcher() {
 }
 
 /**
- * Example 5: Access multiple store values at once
+ * Example 5: Display combined application status.
  */
 export function AppStatus() {
-  const { projectPath, config, isLoading, error } = useAppStore((state) => ({
-    projectPath: state.projectPath,
-    config: state.config,
-    isLoading: state.isLoading,
-    error: state.error,
-  }));
+  const projectPath = useProjectStore(
+    (state) => state.projects.find((p) => p.id === state.activeProjectId)?.path ?? null,
+  );
+  const config = useServerStore((state) => state.config);
+  const status = useServerStore((state) => state.status);
+  const error = useServerStore((state) => state.error);
 
   return (
     <div>
       <h2>Application Status</h2>
       <ul>
-        <li>Project Path: {projectPath || "Not set"}</li>
+        <li>Project Path: {projectPath ?? "Not set"}</li>
         <li>Configuration: {config ? "Loaded" : "Not loaded"}</li>
-        <li>Loading: {isLoading ? "Yes" : "No"}</li>
-        <li>Error: {error || "None"}</li>
+        <li>Server Status: {status}</li>
+        <li>Error: {error ?? "None"}</li>
       </ul>
     </div>
   );
 }
 
 /**
- * Example 6: Clear state (useful for logout or reset functionality)
+ * Example 6: Reset the server and remove the active project.
  */
 export function ResetButton() {
-  const clearState = useAppStore((state) => state.clearState);
+  const activeProjectId = useProjectStore((state) => state.activeProjectId);
+  const removeProject = useProjectStore((state) => state.removeProject);
+  const reset = useServerStore((state) => state.reset);
 
   const handleReset = useCallback(() => {
     if (confirm("Are you sure you want to reset the application state?")) {
-      clearState();
+      reset();
+      if (activeProjectId) {
+        removeProject(activeProjectId);
+      }
     }
-  }, [clearState]);
+  }, [activeProjectId, removeProject, reset]);
 
   return <button onClick={handleReset}>Reset Application</button>;
 }

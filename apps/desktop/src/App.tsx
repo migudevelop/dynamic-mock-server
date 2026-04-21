@@ -5,6 +5,8 @@ import { RouterProvider } from "react-router/dom";
 
 import MainLayout from "@/components/layout/main-layout";
 import { ROUTES } from "@/helpers/navigation/navigation";
+import { useServerLogs } from "@/hooks/use-server-logs";
+import { useServerPolling } from "@/hooks/use-server-polling";
 import { Home } from "@/pages/home";
 import { Setting } from "@/pages/settings";
 
@@ -19,14 +21,14 @@ const ROUTER = createBrowserRouter([
   },
 ]);
 
+/**
+ * Root application component.
+ * Mounts app-level hooks for server polling and log streaming,
+ * then renders the router.
+ */
 function App() {
-  // const [greetMsg, setGreetMsg] = useState("");
-  // const [name, setName] = useState("");
-
-  // async function greet() {
-  //   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  //   setGreetMsg(await invoke("greet", { name }));
-  // }
+  useServerPolling();
+  useServerLogs();
 
   return <RouterProvider router={ROUTER} />;
 }
