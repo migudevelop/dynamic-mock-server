@@ -2,6 +2,7 @@ import "@/styles/global.css";
 
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
+import { Toaster } from "sonner";
 
 import MainLayout from "@/components/layout/main-layout";
 import { ROUTES } from "@/helpers/navigation/navigation";
@@ -32,7 +33,12 @@ function App() {
   useServerPolling();
   useServerLogs();
 
-  return <RouterProvider router={ROUTER} />;
+  return (
+    <>
+      <RouterProvider router={ROUTER} />
+      <Toaster richColors position="bottom-right" />
+    </>
+  );
 }
 
 export default App;

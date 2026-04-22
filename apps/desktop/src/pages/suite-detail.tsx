@@ -1,12 +1,11 @@
 import { useState } from "react";
-import {
-  ArrowLeftIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  SaveIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, PlusIcon, SaveIcon } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 
+import {
+  AddRoutesDialog,
+  type RouteSelection,
+} from "@/components/suites/add-routes-dialog";
 import { RouteAssignmentRow } from "@/components/suites/route-assignment-row";
 import { Badge } from "@/components/shadcn/ui/badge";
 import { Button } from "@/components/shadcn/ui/button";
@@ -15,18 +14,19 @@ import { Switch } from "@/components/shadcn/ui/switch";
 import { PageHeader } from "@/components/ui/page-header/page-header";
 import { ROUTES } from "@/helpers/navigation/navigation";
 import { useSuiteDetail } from "@/hooks/use-suite-detail";
+import { toast } from "sonner";
 
 /**
  * Suite detail page.
  *
  * Shows only the routes assigned to this suite.
- * An expandable section lets the user add additional routes.
+ * An "+ Add routes" button opens a modal to assign additional routes.
  * Works in both online (admin API) and offline (disk files) mode.
  */
 export function SuiteDetail() {
   const { id: suiteId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [addSectionOpen, setAddSectionOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   const {
     routes,
@@ -43,10 +43,36 @@ export function SuiteDetail() {
 
   /** Routes currently assigned to this suite */
   const assignedRoutes = routes.filter((r) => r.id in assignments);
-  /** Routes not yet assigned */
+  /** Routes not yet assigned — passed to the dialog */
   const unassignedRoutes = routes.filter((r) => !(r.id in assignments));
 
   const assignedCount = assignedRoutes.length;
+
+  /**
+   * Receives the selections from the dialog and marks them as assigned.
+   * Shows a toast with the number of routes added.
+   * The user can then click "Save changes" to persist.
+   */
+  function handleAddRoutes(selections: RouteSelection[]) {
+    for (const { routeId, responseId } of selections) {
+      setRouteResponse(routeId, responseId);
+    }
+    toast.success(
+      `${selections.length} route${selections.length !== 1 ? "s" : ""} added. Click "Save changes" to persist.`,
+    );
+  }
+
+  /** Saves the current assignments and shows a toast with the result. */
+  async function handleSave() {
+    try {
+      await save();
+      toast.success("Changes saved successfully.");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save changes.",
+      );
+    }
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -98,7 +124,16 @@ export function SuiteDetail() {
                 </div>
               )}
               <Button
-                onClick={() => void save()}
+                variant="outline"
+                size="sm"
+                onClick={() => setAddDialogOpen(true)}
+                disabled={isLoading || unassignedRoutes.length === 0}
+              >
+                <PlusIcon className="size-4" />
+                Add routes
+              </Button>
+              <Button
+                onClick={() => void handleSave()}
                 disabled={!isDirty || isLoading}
                 size="sm"
               >
@@ -129,7 +164,18 @@ export function SuiteDetail() {
         <section className="flex flex-col gap-2">
           {assignedRoutes.length === 0 ? (
             <div className="flex items-center justify-center py-10 text-muted-foreground border border-dashed rounded-md">
-              <p className="text-sm">No routes assigned yet. Add one below.</p>
+              <p className="text-sm">
+                No routes assigned yet.{" "}
+                {unassignedRoutes.length > 0 && (
+                  <button
+                    type="button"
+                    className="underline hover:text-foreground transition-colors"
+                    onClick={() => setAddDialogOpen(true)}
+                  >
+                    Add routes
+                  </button>
+                )}
+              </p>
             </div>
           ) : (
             <div className="flex flex-col gap-1">
@@ -146,37 +192,14 @@ export function SuiteDetail() {
         </section>
       )}
 
-      {/* ── Add routes (collapsible) ── */}
-      {!isLoading && unassignedRoutes.length > 0 && (
-        <section className="flex flex-col gap-2">
-          <button
-            type="button"
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors w-fit"
-            onClick={() => setAddSectionOpen((v) => !v)}
-            aria-expanded={addSectionOpen}
-          >
-            {addSectionOpen ? (
-              <ChevronDownIcon className="size-3.5" />
-            ) : (
-              <ChevronRightIcon className="size-3.5" />
-            )}
-            Add routes ({unassignedRoutes.length} available)
-          </button>
-
-          {addSectionOpen && (
-            <div className="flex flex-col gap-1">
-              {unassignedRoutes.map((route) => (
-                <RouteAssignmentRow
-                  key={route.id}
-                  route={route}
-                  assignedResponseId={null}
-                  onChange={setRouteResponse}
-                />
-              ))}
-            </div>
-          )}
-        </section>
-      )}
+      {/* ── Add routes dialog ── */}
+      <AddRoutesDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        suiteId={suiteId ?? ""}
+        availableRoutes={unassignedRoutes}
+        onAdd={handleAddRoutes}
+      />
     </div>
   );
 }
