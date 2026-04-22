@@ -103,3 +103,71 @@ console.log(JSON.stringify(resolved));
     let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
     Err(format!("Failed to read config: {}", stderr))
 }
+
+/// Evaluates a JavaScript/CommonJS file in the project and returns its export as a JSON string.
+///
+/// Uses Node.js to `require()` the file and serializes the result with `JSON.stringify`.
+/// This is used to read route and suite definition files without running the full server.
+///
+/// # Arguments
+/// * `file_path` - Absolute path to the JS file to evaluate
+/// * `project_path` - Absolute path to the project root (used for path validation and CWD)
+///
+/// # Returns
+/// JSON string of the module export
+#[tauri::command]
+pub async fn evaluate_js_file(
+    file_path: String,
+    project_path: String,
+) -> Result<String, String> {
+    // Security: validate that the file is inside the project directory
+    let project = std::path::Path::new(&project_path)
+        .canonicalize()
+        .map_err(|e| format!("Invalid project path: {}", e))?;
+    let file = std::path::Path::new(&file_path)
+        .canonicalize()
+        .map_err(|e| format!("File not found or inaccessible: {}", e))?;
+    if !file.starts_with(&project) {
+        return Err("Access denied: file is outside the project directory".into());
+    }
+
+    // Use forward slashes for Node.js compatibility on Windows.
+    // canonicalize() on Windows produces \\\\ UNC extended paths; strip that prefix first.
+    let file_str = {
+        let raw = file.to_string_lossy();
+        let clean = raw.strip_prefix(r"\\?\").unwrap_or(&raw);
+        clean.replace('\\', "/")
+    };
+
+    let script = format!(
+        "try {{ \
+            const m = require({:?}); \
+            const r = (m && m.default !== undefined) ? m.default : m; \
+            process.stdout.write(JSON.stringify(r)); \
+        }} catch(e) {{ \
+            process.stderr.write(e.message); \
+            process.exit(1); \
+        }}",
+        file_str
+    );
+
+    let output = tokio::process::Command::new("node")
+        .args(["-e", &script])
+        .current_dir(&project_path)
+        .output()
+        .await
+        .map_err(|e| format!("Failed to spawn node: {}", e))?;
+
+    if !output.status.success() {
+        return Err(format!(
+            "Failed to evaluate file: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    serde_json::from_str::<serde_json::Value>(&stdout)
+        .map_err(|e| format!("File did not produce valid JSON: {}", e))?;
+
+    Ok(stdout)
+}

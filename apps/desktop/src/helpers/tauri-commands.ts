@@ -102,4 +102,16 @@ export const tauriCommands = {
    */
   listDirectory: (path: string, projectPath: string) =>
     invoke<FileEntry[]>("list_directory", { path, projectPath }),
+
+  /**
+   * Evaluates a CommonJS/JS file within the project using Node.js
+   * and returns its module export serialized as a JSON string.
+   * Useful for reading route and suite definition files offline.
+   *
+   * @param filePath - Absolute path to the JS file
+   * @param projectPath - Project root for security validation
+   * @returns JSON string of the module export
+   */
+  evaluateJsFile: (filePath: string, projectPath: string) =>
+    invoke<string>("evaluate_js_file", { filePath, projectPath }),
 } as const;

@@ -1,4 +1,5 @@
 import { CodeIcon, EditIcon } from "lucide-react";
+import { useNavigate } from "react-router";
 
 import { SuiteCardExtendsSection } from "./suite-card-extends-section";
 import { SuiteCardRoutesList } from "./suite-card-routes-list";
@@ -14,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/shadcn/ui/card";
 import { Switch } from "@/components/shadcn/ui/switch";
+import { buildSuiteRoute } from "@/helpers/navigation/navigation";
 import type { SuiteDto } from "@/types/suite.types";
 
 interface SuiteCardProps {
@@ -45,6 +47,8 @@ export function SuiteCard({
   onToggleActive,
   disabled = false,
 }: SuiteCardProps) {
+  const navigate = useNavigate();
+
   return (
     <Card
       className={
@@ -55,6 +59,8 @@ export function SuiteCard({
           .filter(Boolean)
           .join(" ") || undefined
       }
+      onClick={() => void navigate(buildSuiteRoute(suite.id))}
+      style={{ cursor: "pointer" }}
     >
       <CardHeader>
         <div className="flex items-center gap-2 min-w-0">
@@ -76,7 +82,7 @@ export function SuiteCard({
             </Badge>
           )}
         </div>
-        <CardAction>
+        <CardAction onClick={(e) => e.stopPropagation()}>
           <Switch
             checked={isActive && !disabled}
             onCheckedChange={onToggleActive}

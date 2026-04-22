@@ -20,6 +20,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::config::detect_cli,
             commands::config::read_config,
+            commands::config::evaluate_js_file,
             commands::server::start_server,
             commands::server::stop_server,
             commands::server::server_status,

@@ -9,6 +9,7 @@ import { useServerLogs } from "@/hooks/use-server-logs";
 import { useServerPolling } from "@/hooks/use-server-polling";
 import { Home } from "@/pages/home";
 import { Setting } from "@/pages/settings";
+import { SuiteDetail } from "@/pages/suite-detail";
 
 const ROUTER = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ const ROUTER = createBrowserRouter([
     Component: MainLayout,
     children: [
       { index: true, element: <Home /> },
+      { path: ROUTES.SUITE, element: <SuiteDetail /> },
       { path: ROUTES.SETTINGS, element: <Setting /> },
     ],
   },

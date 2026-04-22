@@ -30,8 +30,18 @@ function normalizePath(path: string) {
  */
 export function isRouteActive(
   currentPath: string | undefined | null,
-  route: string
+  route: string,
 ) {
   if (!currentPath) return false;
   return normalizePath(currentPath) === normalizePath(route);
+}
+
+/**
+ * Builds the absolute path for a suite detail page.
+ *
+ * @param suiteId - The suite's unique identifier
+ * @returns Route path like `/suite/base`
+ */
+export function buildSuiteRoute(suiteId: string): string {
+  return `/suite/${encodeURIComponent(suiteId)}`;
 }

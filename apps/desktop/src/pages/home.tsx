@@ -44,7 +44,7 @@ export function Home() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /** Load suite IDs from disk (server not required). */
+  /** Load suites from disk (server not required). Reads file contents for route counts. */
   const loadSuitesFromDisk = useCallback(
     async (projectPath: string) => {
       const mocksPath = serverConfig?.files?.path ?? "mocks";
@@ -53,12 +53,32 @@ export function Home() {
           `${projectPath}/${mocksPath}/routesSuites`,
           projectPath,
         );
-        const diskSuites: SuiteDto[] = entries
-          .filter((e) => !e.isDirectory)
-          .map((e) => ({
-            id: e.name.replace(/\.[^.]+$/, ""), // strip extension
-            routes: [],
-          }));
+        const jsEntries = entries.filter((e) => !e.isDirectory);
+
+        // Read each suite file to get its actual route assignments
+        const diskSuites: SuiteDto[] = await Promise.all(
+          jsEntries.map(async (e) => {
+            const fallbackId = e.name.replace(/\.[^.]+$/, "");
+            try {
+              const json = await tauriCommands.evaluateJsFile(
+                e.path,
+                projectPath,
+              );
+              const disk = JSON.parse(json) as {
+                id?: string;
+                routes?: Record<string, string>;
+              };
+              const routeEntries = Object.entries(disk.routes ?? {}).map(
+                ([k, v]) => `${k}:${v}`,
+              );
+              return { id: disk.id ?? fallbackId, routes: routeEntries };
+            } catch {
+              // If evaluateJsFile fails, fall back to empty routes
+              return { id: fallbackId, routes: [] };
+            }
+          }),
+        );
+
         setSuites(diskSuites);
         setActiveSuite(null);
         setIsDiskMode(true);

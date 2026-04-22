@@ -53,7 +53,8 @@ export function useAdminApi() {
      *
      * @returns Array of route DTOs
      */
-    getRoutes: () => request<RouteDto[]>("GET", "/routes"),
+    getRoutes: () =>
+      request<{ routes: RouteDto[] }>("GET", "/routes").then((r) => r.routes),
 
     /**
      * Adds or updates a mock route at runtime.
