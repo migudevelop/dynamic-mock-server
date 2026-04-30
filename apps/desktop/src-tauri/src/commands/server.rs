@@ -85,13 +85,43 @@ pub async fn start_server(
 
     let pid = child.id();
 
-    // Capture stdout asynchronously
+    // Capture stdout asynchronously.
+    // Also auto-detects the actual listening address from the startup log so that
+    // server_status polls the correct host:port even when the CLI config differs
+    // from what the frontend config parser extracted.
     if let Some(stdout) = child.stdout.take() {
         let state_clone = state.inner().clone();
         let app_clone = app.clone();
         tokio::spawn(async move {
             let mut lines = BufReader::new(stdout).lines();
             while let Ok(Some(line)) = lines.next_line().await {
+                // Detect "Server listening at http://host:port" in the startup log.
+                // The line may contain ANSI colour codes, e.g.:
+                //   "INFO: \x1b[36mServer listening at http://127.0.0.1:3000\x1b[0m"
+                // We parse everything after "http://" up to the first non-URL character.
+                let detected_addr = if line.contains("listening at") {
+                    line.find("http://").and_then(|idx| {
+                        let after = &line[idx + 7..];
+                        let end = after
+                            .find(|c: char| {
+                                !c.is_alphanumeric()
+                                    && c != '.'
+                                    && c != ':'
+                                    && c != '-'
+                                    && c != '_'
+                            })
+                            .unwrap_or(after.len());
+                        let host_port = &after[..end];
+                        host_port.rfind(':').and_then(|colon| {
+                            host_port[colon + 1..].parse::<u16>().ok().map(|p| {
+                                (host_port[..colon].to_string(), p)
+                            })
+                        })
+                    })
+                } else {
+                    None
+                };
+
                 let entry = LogEntry {
                     timestamp: chrono::Utc::now().to_rfc3339(),
                     stream: "stdout".into(),
@@ -99,6 +129,13 @@ pub async fn start_server(
                 };
                 let _ = app_clone.emit("server-log", &entry);
                 let mut s = state_clone.lock().await;
+                // Apply the detected address update and log push in a single lock hold.
+                if let Some((new_host, new_port)) = detected_addr {
+                    if let Some(proc) = s.process.as_mut() {
+                        proc.host = new_host;
+                        proc.port = new_port;
+                    }
+                }
                 s.push_log(entry);
             }
         });

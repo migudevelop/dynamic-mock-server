@@ -220,9 +220,9 @@ export function AddRoutesDialog({
           </div>
 
           {/* Route list — min-h ensures modal stays stable even with few results */}
-          <div className="flex-1 overflow-y-auto px-6 pb-2 min-h-50">
+          <div className="flex-1 overflow-y-auto px-6 pb-2 min-h-60 max-h-60">
             {filtered.length === 0 ? (
-              <div className="flex items-center justify-center h-full min-h-50 text-muted-foreground">
+              <div className="flex items-center justify-center h-full min-h-60 text-muted-foreground">
                 <p className="text-sm">No routes match your search.</p>
               </div>
             ) : (

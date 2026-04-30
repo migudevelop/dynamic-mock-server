@@ -30,33 +30,43 @@ pub async fn detect_cli(project_path: String) -> Result<bool, String> {
 pub async fn read_config(project_path: String) -> Result<String, String> {
     // Node.js one-liner: search for the config file and output it as JSON
     let script = r#"
-const path = require('path');
-const fs = require('fs');
-const exts = ['.js', '.cjs', '.mjs'];
-const base = path.join(process.cwd(), 'dynamicMockServer.config');
-let configPath = null;
-for (const ext of exts) {
-  if (fs.existsSync(base + ext)) { configPath = base + ext; break; }
-}
-if (!configPath) {
+(async function() {
+  const path = require('path');
+  const fs = require('fs');
+  const exts = ['.js', '.cjs', '.mjs'];
+  const base = path.join(process.cwd(), 'dynamicMockServer.config');
+  let configPath = null;
+  for (const ext of exts) {
+    if (fs.existsSync(base + ext)) { configPath = base + ext; break; }
+  }
+  if (!configPath) {
+    try {
+      const jsonPath = base + '.json';
+      if (fs.existsSync(jsonPath)) {
+        console.log(fs.readFileSync(jsonPath, 'utf8'));
+        process.exit(0);
+      }
+    } catch(_) {}
+    console.error('Config file not found');
+    process.exit(1);
+  }
+  let mod;
   try {
-    const jsonPath = base + '.json';
-    if (fs.existsSync(jsonPath)) {
-      console.log(fs.readFileSync(jsonPath, 'utf8'));
-      process.exit(0);
+    mod = require(configPath);
+  } catch (e) {
+    if (e.code === 'ERR_REQUIRE_ESM') {
+      const { pathToFileURL } = require('url');
+      mod = await import(pathToFileURL(configPath).href);
+    } else {
+      throw e;
     }
-  } catch(_) {}
-  console.error('Config file not found');
-  process.exit(1);
-}
-try {
-  const mod = require(configPath);
+  }
   const resolved = mod.default !== undefined ? mod.default : mod;
   console.log(JSON.stringify(resolved));
-} catch (e) {
+})().catch(function(e) {
   console.error('Failed to load config: ' + e.message);
   process.exit(1);
-}
+});
 "#;
 
     let output = tokio::process::Command::new("node")

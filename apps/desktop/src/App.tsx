@@ -1,14 +1,19 @@
 import "@/styles/global.css";
 
+import { useEffect } from "react";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { Toaster } from "sonner";
+
+import { useProjectStore } from "@/stores/project-store";
+import { useServerStore } from "@/stores/server-store";
 
 import MainLayout from "@/components/layout/main-layout";
 import { ROUTES } from "@/helpers/navigation/navigation";
 import { useServerLogs } from "@/hooks/use-server-logs";
 import { useServerPolling } from "@/hooks/use-server-polling";
 import { Home } from "@/pages/home";
+import { RouteDetail } from "@/pages/route-detail";
 import { Setting } from "@/pages/settings";
 import { SuiteDetail } from "@/pages/suite-detail";
 
@@ -19,6 +24,7 @@ const ROUTER = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: ROUTES.SUITE, element: <SuiteDetail /> },
+      { path: ROUTES.ROUTE, element: <RouteDetail /> },
       { path: ROUTES.SETTINGS, element: <Setting /> },
     ],
   },
@@ -32,6 +38,18 @@ const ROUTER = createBrowserRouter([
 function App() {
   useServerPolling();
   useServerLogs();
+
+  const activeProject = useProjectStore(
+    (s) => s.projects.find((p) => p.id === s.activeProjectId) ?? null,
+  );
+  const config = useServerStore((s) => s.config);
+  const loadConfig = useServerStore((s) => s.loadConfig);
+
+  useEffect(() => {
+    if (activeProject?.path && !config) {
+      void loadConfig(activeProject.path);
+    }
+  }, [activeProject?.path, config, loadConfig]);
 
   return (
     <>

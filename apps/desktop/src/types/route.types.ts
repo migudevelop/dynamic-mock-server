@@ -32,6 +32,8 @@ export interface RouteDto {
   url: string;
   /** HTTP method this route handles */
   method: HttpMethod;
+  /** Whether this endpoint is enabled; disabled routes return 404 */
+  enabled?: boolean;
   /** Available responses for this route */
   responses: RouteResponseDto[];
   /** Currently selected response ID, or null if using default */
@@ -46,6 +48,8 @@ export interface UpsertRoutePayload {
   url: string;
   /** HTTP method */
   method: HttpMethod;
+  /** Whether this endpoint is enabled; disabled routes return 404 */
+  enabled?: boolean;
   /** Available responses */
   responses: RouteResponseDto[];
 }

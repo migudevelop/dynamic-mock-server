@@ -1,6 +1,7 @@
 export const ROUTES = {
   HOME: "/",
   SUITE: "/suite/:id",
+  ROUTE: "/route/:id",
   SETTINGS: "settings",
 };
 
@@ -44,4 +45,14 @@ export function isRouteActive(
  */
 export function buildSuiteRoute(suiteId: string): string {
   return `/suite/${encodeURIComponent(suiteId)}`;
+}
+
+/**
+ * Builds the absolute path for a route detail page.
+ *
+ * @param routeId - The route's unique identifier
+ * @returns Route path like `/route/get-users`
+ */
+export function buildRouteRoute(routeId: string): string {
+  return `/route/${encodeURIComponent(routeId)}`;
 }

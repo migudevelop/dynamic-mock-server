@@ -1,5 +1,7 @@
-import { Label } from "@/components/shadcn/ui/label";
-import { Switch } from "@/components/shadcn/ui/switch";
+import { Trash2Icon } from "lucide-react";
+import { useNavigate } from "react-router";
+
+import { Button } from "@/components/shadcn/ui/button";
 import {
   Select,
   SelectContent,
@@ -7,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/shadcn/ui/select";
+import { buildRouteRoute } from "@/helpers/navigation/navigation";
 import type { RouteDto } from "@/types/route.types";
 
 /** HTTP method → tailwind color class */
@@ -34,7 +37,7 @@ interface RouteAssignmentRowProps {
    */
   disabled?: boolean;
   /**
-   * Called when the user toggles the route or changes the response.
+   * Called when the user changes the assigned response.
    * `responseId = null` means "remove route from suite".
    */
   onChange: (routeId: string, responseId: string | null) => void;
@@ -42,7 +45,9 @@ interface RouteAssignmentRowProps {
 
 /**
  * A single row in the suite routes editor.
- * Shows a toggle (is route in suite?), method badge, URL, and response selector.
+ * Clicking the row navigates to the route detail page.
+ * Shows a trash button to remove the route from the suite, method badge,
+ * URL, and response selector.
  */
 export function RouteAssignmentRow({
   route,
@@ -50,43 +55,54 @@ export function RouteAssignmentRow({
   disabled = false,
   onChange,
 }: RouteAssignmentRowProps) {
+  const navigate = useNavigate();
   const isAssigned = assignedResponseId != null && assignedResponseId !== "";
   const methodColor = METHOD_COLORS[route.method] ?? "text-foreground";
-  const switchId = `route-${route.id}`;
 
-  function handleToggle(checked: boolean) {
-    if (checked) {
-      const firstResponse = route.responses[0]?.id ?? null;
-      onChange(route.id, firstResponse);
-    } else {
-      onChange(route.id, null);
+  function handleRowClick() {
+    if (!disabled) {
+      const base = buildRouteRoute(route.id);
+      const href = assignedResponseId
+        ? `${base}?variant=${encodeURIComponent(assignedResponseId)}`
+        : base;
+      void navigate(href);
     }
   }
 
   return (
     <div
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      onClick={handleRowClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") handleRowClick();
+      }}
       className={[
         "flex items-center gap-3 rounded-md border px-3 py-2 transition-colors",
+        "cursor-pointer hover:bg-muted/60",
         isAssigned ? "bg-muted/40 border-border" : "border-transparent",
-        disabled ? "opacity-60" : "",
+        disabled ? "opacity-60 cursor-default" : "",
       ]
         .filter(Boolean)
         .join(" ")}
     >
-      {/* Toggle */}
-      <Switch
-        id={switchId}
-        checked={isAssigned}
+      {/* Remove from suite */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-6 shrink-0 text-muted-foreground hover:text-destructive"
         disabled={disabled}
-        onCheckedChange={handleToggle}
-        aria-label={`Include ${route.id} in suite`}
-      />
+        onClick={(e) => {
+          e.stopPropagation();
+          onChange(route.id, null);
+        }}
+        aria-label={`Remove ${route.id} from suite`}
+      >
+        <Trash2Icon className="size-3.5" />
+      </Button>
 
       {/* Method + URL */}
-      <Label
-        htmlFor={switchId}
-        className="flex flex-1 items-center gap-2 cursor-pointer min-w-0"
-      >
+      <div className="flex flex-1 items-center gap-2 min-w-0">
         <span className={`font-mono text-xs font-bold shrink-0 ${methodColor}`}>
           {route.method}
         </span>
@@ -96,10 +112,14 @@ export function RouteAssignmentRow({
         <span className="text-xs text-muted-foreground shrink-0">
           ({route.id})
         </span>
-      </Label>
+      </div>
 
       {/* Response selector */}
-      <div className="shrink-0 w-40">
+      <div
+        className="shrink-0 w-40"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
         <Select
           value={isAssigned ? (assignedResponseId ?? "") : ""}
           disabled={!isAssigned || disabled}
