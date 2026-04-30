@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { CheckIcon, ClipboardIcon } from "lucide-react";
 
@@ -25,7 +25,7 @@ interface ResponseEditorProps {
  * Main editor panel for a single response variant.
  *
  * Shows:
- * - Endpoint Enabled switch (route-level)
+ * - Variant ID input
  * - Status Code and Delay inputs
  * - Monaco JSON editor for the response body
  */
@@ -37,35 +37,42 @@ export function ResponseEditor({
 }: ResponseEditorProps) {
   const [copied, setCopied] = useState(false);
 
-  const bodyString =
-    variant.body !== undefined ? JSON.stringify(variant.body, null, 2) : "";
+  const [editorValue, setEditorValue] = useState(
+    variant.body !== undefined ? JSON.stringify(variant.body, null, 2) : "",
+  );
 
-  /** Formats the JSON in the editor */
+  useEffect(() => {
+    setEditorValue(
+      variant.body !== undefined ? JSON.stringify(variant.body, null, 2) : "",
+    );
+  }, [variant.id]);
+
   function handleFormatJson() {
     try {
-      const parsed = JSON.parse(bodyString);
+      const parsed = JSON.parse(editorValue) as unknown;
+      const formatted = JSON.stringify(parsed, null, 2);
+      setEditorValue(formatted);
       onVariantChange("body", parsed);
     } catch {
-      // already invalid JSON — do nothing
+      // invalid JSON — do nothing
     }
   }
 
-  /** Copies the response body to clipboard */
   async function handleCopy() {
-    await navigator.clipboard.writeText(bodyString);
+    await navigator.clipboard.writeText(editorValue);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
-  /** Called by Monaco on every keystroke */
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
-      if (value === undefined) return;
+      const text = value ?? "";
+      setEditorValue(text);
       try {
-        const parsed = JSON.parse(value) as unknown;
+        const parsed = JSON.parse(text) as unknown;
         onVariantChange("body", parsed);
       } catch {
-        // keep the string as-is until it becomes valid JSON
+        // keep invalid text visible without updating body
       }
     },
     [onVariantChange],
@@ -193,7 +200,7 @@ export function ResponseEditor({
           <Editor
             height="320px"
             defaultLanguage="json"
-            value={bodyString}
+            value={editorValue}
             onChange={handleEditorChange}
             options={{
               minimap: { enabled: false },
