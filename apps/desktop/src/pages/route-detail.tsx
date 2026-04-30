@@ -156,24 +156,7 @@ export function RouteDetail() {
                   Duplicate
                 </Button>
               )}
-              {selectedVariant && !isDiskMode && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-destructive border-destructive/40 hover:bg-destructive/10"
-                  onClick={() => {
-                    if (route && route.responses.length === 1) {
-                      toast.error("A route must have at least one variant.");
-                      return;
-                    }
-                    removeVariant(selectedVariant.id);
-                  }}
-                  disabled={isLoading}
-                >
-                  <Trash2Icon className="size-4" />
-                  Delete
-                </Button>
-              )}
+
               <Button
                 size="sm"
                 onClick={() => void handleSave()}
@@ -290,6 +273,14 @@ export function RouteDetail() {
             selectedVariantId={selectedVariantId}
             onSelect={setSelectedVariant}
             onAdd={addVariant}
+            onRemove={(variantId) => {
+              if (route.responses.length === 1) {
+                toast.error("A route must have at least one variant.");
+                return;
+              }
+              removeVariant(variantId);
+            }}
+            canRemove={route.responses.length > 1}
           />
 
           <Separator orientation="vertical" className="self-stretch" />

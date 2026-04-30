@@ -1,4 +1,4 @@
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 
 import { Badge } from "@/components/shadcn/ui/badge";
 import { Button } from "@/components/shadcn/ui/button";
@@ -14,6 +14,10 @@ interface VariantSidebarProps {
   onSelect: (variantId: string) => void;
   /** Called when user clicks the "add variant" button */
   onAdd: () => void;
+  /** Called when user clicks the trash button on a variant. Undefined means no delete available. */
+  onRemove?: (variantId: string) => void;
+  /** Whether deletion is currently disabled (e.g. only one variant left) */
+  canRemove?: boolean;
 }
 
 /**
@@ -25,6 +29,8 @@ export function VariantSidebar({
   selectedVariantId,
   onSelect,
   onAdd,
+  onRemove,
+  canRemove = true,
 }: VariantSidebarProps) {
   return (
     <aside className="flex flex-col gap-1 w-52 min-w-52 shrink-0">
@@ -54,7 +60,7 @@ export function VariantSidebar({
               type="button"
               onClick={() => onSelect(variant.id)}
               className={cn(
-                "flex items-center gap-2.5 rounded-md px-3 py-2.5 text-left transition-colors w-full",
+                "group flex items-center gap-2.5 rounded-md px-3 py-2.5 text-left transition-colors w-full",
                 isSelected
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "hover:bg-muted text-foreground",
@@ -86,6 +92,26 @@ export function VariantSidebar({
                   </Badge>
                 )}
               </div>
+              {onRemove && (
+                <button
+                  type="button"
+                  aria-label={`Delete variant ${variant.id}`}
+                  disabled={!canRemove}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemove(variant.id);
+                  }}
+                  className={cn(
+                    "shrink-0 size-5 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity",
+                    isSelected
+                      ? "hover:bg-primary-foreground/20 text-primary-foreground"
+                      : "hover:bg-destructive/10 text-muted-foreground hover:text-destructive",
+                    !canRemove && "cursor-not-allowed opacity-30 group-hover:opacity-30",
+                  )}
+                >
+                  <Trash2Icon className="size-3" />
+                </button>
+              )}
             </button>
           );
         })}
