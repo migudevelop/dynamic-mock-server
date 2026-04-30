@@ -106,7 +106,8 @@ export function VariantSidebar({
                     isSelected
                       ? "hover:bg-primary-foreground/20 text-primary-foreground"
                       : "hover:bg-destructive/10 text-muted-foreground hover:text-destructive",
-                    !canRemove && "cursor-not-allowed opacity-30 group-hover:opacity-30",
+                    !canRemove &&
+                      "cursor-not-allowed opacity-30 group-hover:opacity-30",
                   )}
                 >
                   <Trash2Icon className="size-3" />
