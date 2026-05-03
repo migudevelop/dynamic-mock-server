@@ -210,7 +210,7 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
         );
         setRoutes(uniqueRoutes);
         setAssignments(suiteAssignments);
-        setActiveSuite(null); // unknown in offline mode
+        setActiveSuite(serverConfig?.routes?.selectedSuite ?? null);
         // Load all suite IDs (excluding this one) for the Extends selector
         try {
           const allEntries = await tauriCommands.listDirectory(
@@ -233,7 +233,8 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
         setIsLoading(false);
       }
     },
-    [suiteId, mocksPath],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [suiteId, mocksPath, serverConfig?.routes?.selectedSuite],
   );
 
   // ── Initial load ────────────────────────────────────────────────────────

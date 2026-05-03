@@ -2,6 +2,7 @@ export const ROUTES = {
   HOME: "/",
   SUITE: "/suite/:id",
   ROUTE: "/route/:id",
+  ROUTES_LIST: "/routes",
   SETTINGS: "settings",
 };
 

@@ -1,4 +1,10 @@
-import { Layers, Settings, Copyright, SquareTerminal } from "lucide-react";
+import {
+  Layers,
+  Settings,
+  Copyright,
+  SquareTerminal,
+  Route,
+} from "lucide-react";
 import type { ComponentProps } from "react";
 import { useLocation } from "react-router";
 
@@ -23,6 +29,11 @@ const MENU_ITEMS: AppSidebarItemProps[] = [
     title: "Suites",
     icon: Layers,
     href: ROUTES.HOME,
+  },
+  {
+    title: "Routes",
+    icon: Route,
+    href: ROUTES.ROUTES_LIST,
   },
   {
     title: "Settings",

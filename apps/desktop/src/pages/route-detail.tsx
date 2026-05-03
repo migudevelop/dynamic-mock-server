@@ -137,14 +137,6 @@ export function RouteDetail() {
           }
           actions={
             <div className="flex items-center gap-2">
-              {isDiskMode && (
-                <Badge
-                  variant="outline"
-                  className="text-muted-foreground border-muted-foreground/30 text-xs"
-                >
-                  OFFLINE
-                </Badge>
-              )}
               {selectedVariant && (
                 <Button
                   variant="outline"

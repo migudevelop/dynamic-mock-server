@@ -101,15 +101,7 @@ export function SuiteDetail() {
           description={`${assignedCount} route${assignedCount !== 1 ? "s" : ""} assigned`}
           actions={
             <div className="flex items-center gap-3">
-              {isDiskMode && (
-                <Badge
-                  variant="outline"
-                  className="text-muted-foreground border-muted-foreground/30 text-xs"
-                >
-                  OFFLINE
-                </Badge>
-              )}
-              {isActiveSuite && !isDiskMode && (
+              {isActiveSuite && (
                 <Badge
                   variant="outline"
                   className="text-primary border-primary/40 text-xs"
