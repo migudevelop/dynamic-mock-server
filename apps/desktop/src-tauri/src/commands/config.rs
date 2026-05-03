@@ -54,9 +54,21 @@ pub async fn read_config(project_path: String) -> Result<String, String> {
   try {
     mod = require(configPath);
   } catch (e) {
-    if (e.code === 'ERR_REQUIRE_ESM') {
+    if (e.code === 'ERR_REQUIRE_ESM' || e.name === 'SyntaxError') {
       const { pathToFileURL } = require('url');
-      mod = await import(pathToFileURL(configPath).href);
+      try {
+        mod = await import(pathToFileURL(configPath).href);
+      } catch (e2) {
+        if (e2.name === 'SyntaxError') {
+          // ESM syntax in a non-module package (.js without "type":"module").
+          // Use a data: URL so Node.js parses the content as ESM regardless of package.json.
+          const content = fs.readFileSync(configPath, 'utf8');
+          const b64 = Buffer.from(content).toString('base64');
+          mod = await import('data:text/javascript;base64,' + b64);
+        } else {
+          throw e2;
+        }
+      }
     } else {
       throw e;
     }

@@ -15,6 +15,7 @@ import { useServerPolling } from "@/hooks/use-server-polling";
 import { Home } from "@/pages/home";
 import { RouteDetail } from "@/pages/route-detail";
 import { RoutesListPage } from "@/pages/routes-list";
+import { ServerLogsPage } from "@/pages/server-logs";
 import { Setting } from "@/pages/settings";
 import { SuiteDetail } from "@/pages/suite-detail";
 
@@ -27,6 +28,7 @@ const ROUTER = createBrowserRouter([
       { path: ROUTES.SUITE, element: <SuiteDetail /> },
       { path: ROUTES.ROUTE, element: <RouteDetail /> },
       { path: ROUTES.ROUTES_LIST, element: <RoutesListPage /> },
+      { path: ROUTES.LOGS, element: <ServerLogsPage /> },
       { path: ROUTES.SETTINGS, element: <Setting /> },
     ],
   },

@@ -2,6 +2,7 @@ import {
   Layers,
   Settings,
   Copyright,
+  ScrollText,
   SquareTerminal,
   Route,
 } from "lucide-react";
@@ -34,6 +35,11 @@ const MENU_ITEMS: AppSidebarItemProps[] = [
     title: "Routes",
     icon: Route,
     href: ROUTES.ROUTES_LIST,
+  },
+  {
+    title: "Logs",
+    icon: ScrollText,
+    href: ROUTES.LOGS,
   },
   {
     title: "Settings",

@@ -7,6 +7,8 @@ interface PageHeaderProps {
   description?: string;
   /** Optional action elements rendered to the right of the title */
   actions?: ReactNode;
+  /** Optional flag to make the header take full width */
+  flexAll?: boolean;
 }
 
 /**
@@ -15,10 +17,18 @@ interface PageHeaderProps {
  * @param title - Heading content (string or JSX)
  * @param description - Optional subtitle
  * @param actions - Optional buttons / badges rendered on the right
+ * @param flexAll - Optional flag to make the header take full width
  */
-export function PageHeader({ title, description, actions }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+  flexAll = true,
+}: PageHeaderProps) {
   return (
-    <div className="flex flex-row items-center justify-between flex-1 min-w-0 gap-4">
+    <div
+      className={`flex flex-row items-center justify-between ${flexAll ? "flex-1" : ""} min-w-0 gap-4`}
+    >
       <div className="min-w-0">
         <h2 className="text-2xl font-bold tracking-tight leading-none">
           {title}

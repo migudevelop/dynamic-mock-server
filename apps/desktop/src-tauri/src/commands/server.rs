@@ -187,10 +187,19 @@ pub async fn stop_server(state: tauri::State<'_, ManagedServerState>) -> Result<
     match locked.process.take() {
         None => Err("No server is currently running.".into()),
         Some(mut proc) => {
-            proc.child
-                .kill()
-                .await
-                .map_err(|e| format!("Failed to kill server process: {}", e))?;
+            // On Windows, `cmd /c *.cmd` spawns cmd.exe → node.exe.
+            // Killing only cmd.exe leaves node.exe orphaned.
+            // Use `taskkill /F /T /PID` to kill the entire process tree.
+            #[cfg(target_os = "windows")]
+            if let Some(pid) = proc.child.id() {
+                let _ = tokio::process::Command::new("taskkill")
+                    .args(["/F", "/T", "/PID", &pid.to_string()])
+                    .output()
+                    .await;
+            }
+
+            // Also send kill signal to the direct child (cross-platform cleanup)
+            let _ = proc.child.kill().await;
             // Wait for the process to exit cleanly (ignore errors)
             let _ = proc.child.wait().await;
             Ok(())

@@ -3,6 +3,7 @@ export const ROUTES = {
   SUITE: "/suite/:id",
   ROUTE: "/route/:id",
   ROUTES_LIST: "/routes",
+  LOGS: "/logs",
   SETTINGS: "settings",
 };
 
