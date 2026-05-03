@@ -133,3 +133,19 @@ pub async fn list_directory(path: String, project_path: String) -> Result<Vec<Fi
 
     Ok(entries)
 }
+
+/// Deletes a file within the project directory.
+///
+/// # Arguments
+/// * `path` - Absolute path to the file to delete
+/// * `project_path` - Absolute path to the project root (used for path validation)
+#[tauri::command]
+pub async fn delete_file(path: String, project_path: String) -> Result<(), String> {
+    let safe_path = validate_path(&path, &project_path)?;
+    if safe_path.is_dir() {
+        return Err("Cannot delete a directory with delete_file".into());
+    }
+    fs::remove_file(&safe_path)
+        .await
+        .map_err(|e| format!("Failed to delete file: {}", e))
+}

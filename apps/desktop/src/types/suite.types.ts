@@ -4,6 +4,8 @@ export interface SuiteDto {
   id: string;
   /** Route-response assignments in "routeId:responseId" format */
   routes: string[];
+  /** ID of the suite this suite extends, if any */
+  extends?: string;
 }
 
 /** Payload to add or update a suite via admin API */
@@ -12,6 +14,8 @@ export interface UpsertSuitePayload {
   id: string;
   /** Route-response assignments in "routeId:responseId" format */
   routes: string[];
+  /** ID of the suite this suite extends, if any */
+  extends?: string;
 }
 
 /** Response from GET /__admin/suites */

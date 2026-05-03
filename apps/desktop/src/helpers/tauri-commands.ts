@@ -114,4 +114,13 @@ export const tauriCommands = {
    */
   evaluateJsFile: (filePath: string, projectPath: string) =>
     invoke<string>("evaluate_js_file", { filePath, projectPath }),
+
+  /**
+   * Deletes a file within the project directory.
+   *
+   * @param path - Absolute path to the file to delete
+   * @param projectPath - Project root for path validation
+   */
+  deleteFile: (path: string, projectPath: string) =>
+    invoke<void>("delete_file", { path, projectPath }),
 } as const;

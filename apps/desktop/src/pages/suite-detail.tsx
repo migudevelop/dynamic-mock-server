@@ -10,6 +10,13 @@ import { RouteAssignmentRow } from "@/components/suites/route-assignment-row";
 import { Badge } from "@/components/shadcn/ui/badge";
 import { Button } from "@/components/shadcn/ui/button";
 import { Label } from "@/components/shadcn/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/shadcn/ui/select";
 import { Switch } from "@/components/shadcn/ui/switch";
 import { PageHeader } from "@/components/ui/page-header/page-header";
 import { ROUTES } from "@/helpers/navigation/navigation";
@@ -36,6 +43,9 @@ export function SuiteDetail() {
     isDirty,
     isDiskMode,
     isActiveSuite,
+    extendsId,
+    allSuiteIds,
+    setExtendsId,
     setRouteResponse,
     save,
     toggleActive,
@@ -144,6 +154,36 @@ export function SuiteDetail() {
           }
         />
       </div>
+
+      {/* ── Suite metadata ── */}
+      {!isLoading && allSuiteIds.length > 0 && (
+        <div className="flex items-center gap-3 p-4 rounded-md border border-border bg-muted/30">
+          <Label
+            htmlFor="extends-select"
+            className="text-sm shrink-0 text-muted-foreground"
+          >
+            Extends
+          </Label>
+          <Select
+            value={extendsId ?? "__none__"}
+            onValueChange={(val) =>
+              setExtendsId(val === "__none__" ? null : val)
+            }
+          >
+            <SelectTrigger id="extends-select" className="w-48 h-8 text-sm">
+              <SelectValue placeholder="None" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__none__">None</SelectItem>
+              {allSuiteIds.map((id) => (
+                <SelectItem key={id} value={id}>
+                  {id}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* ── Error ── */}
       {error && (

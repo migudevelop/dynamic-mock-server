@@ -17,6 +17,8 @@ interface DiskSuite {
   id: string;
   /** Route → response assignments */
   routes: SuiteRoutesRecord;
+  /** ID of the suite this suite extends, or undefined */
+  extends?: string;
 }
 
 /** Raw disk format for a route file */
@@ -54,6 +56,12 @@ export interface SuiteDetailState {
   isDiskMode: boolean;
   /** Whether the suite is the currently active one */
   isActiveSuite: boolean;
+  /** ID of the suite this suite extends, if any */
+  extendsId: string | null;
+  /** IDs of all other suites (used to populate the Extends selector) */
+  allSuiteIds: string[];
+  /** Updates the extendsId for this suite */
+  setExtendsId: (id: string | null) => void;
   /** Updates the response assigned to a route in this suite */
   setRouteResponse: (routeId: string, responseId: string | null) => void;
   /** Saves the current assignments (via admin API or to disk) */
@@ -85,6 +93,8 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
   const [error, setError] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isDiskMode, setIsDiskMode] = useState(false);
+  const [extendsId, setExtendsId] = useState<string | null>(null);
+  const [allSuiteIds, setAllSuiteIds] = useState<string[]>([]);
 
   const adminApi = useAdminApi();
 
@@ -105,6 +115,8 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
       setRoutes(allRoutes);
       setAssignments(suite ? suiteArrayToRecord(suite.routes) : {});
       setActiveSuite(active);
+      setExtendsId(suite?.extends ?? null);
+      setAllSuiteIds(suites.filter((s) => s.id !== suiteId).map((s) => s.id));
       setIsDiskMode(false);
       setIsDirty(false);
     } catch (err: unknown) {
@@ -138,6 +150,7 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
             );
             const disk = JSON.parse(json) as DiskSuite;
             suiteAssignments = disk.routes ?? {};
+            setExtendsId(disk.extends ?? null);
           }
         } catch (err: unknown) {
           // Suite file may not exist yet — this is expected for new suites
@@ -198,6 +211,20 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
         setRoutes(uniqueRoutes);
         setAssignments(suiteAssignments);
         setActiveSuite(null); // unknown in offline mode
+        // Load all suite IDs (excluding this one) for the Extends selector
+        try {
+          const allEntries = await tauriCommands.listDirectory(
+            `${projectPath}/${mocksPath}/routesSuites`,
+            projectPath,
+          );
+          const otherIds = allEntries
+            .filter((e) => !e.isDirectory)
+            .map((e) => e.name.replace(/\.[^.]+$/, ""))
+            .filter((id) => id !== suiteId);
+          setAllSuiteIds(otherIds);
+        } catch {
+          setAllSuiteIds([]);
+        }
         setIsDiskMode(true);
         setIsDirty(false);
       } catch (err: unknown) {
@@ -247,7 +274,7 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
   async function save() {
     if (isDiskMode) {
       if (!activeProject?.path) return;
-      const content = serializeSuiteToDisk(suiteId, assignments);
+      const content = serializeSuiteToDisk(suiteId, assignments, extendsId);
       const suiteFilePath = `${activeProject.path}/${mocksPath}/routesSuites/${suiteId}.js`;
       try {
         await tauriCommands.writeFileContent(
@@ -265,6 +292,7 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
         await adminApi.upsertSuite({
           id: suiteId,
           routes: suiteRecordToArray(assignments),
+          extends: extendsId ?? undefined,
         });
         setIsDirty(false);
         setError(null);
@@ -295,6 +323,12 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
     isDirty,
     isDiskMode,
     isActiveSuite: activeSuite === suiteId,
+    extendsId,
+    allSuiteIds,
+    setExtendsId: (id: string | null) => {
+      setExtendsId(id);
+      setIsDirty(true);
+    },
     setRouteResponse,
     save,
     toggleActive,
@@ -314,10 +348,12 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
 function serializeSuiteToDisk(
   suiteId: string,
   assignments: SuiteRoutesRecord,
+  extendsId?: string | null,
 ): string {
+  const extendsLine = extendsId ? `  extends: "${extendsId}",\n` : "";
   const routesEntries = Object.entries(assignments)
     .map(([routeId, responseId]) => `  "${routeId}": "${responseId}",`)
     .join("\n");
 
-  return `module.exports = {\n  id: "${suiteId}",\n  routes: {\n${routesEntries}\n  },\n};\n`;
+  return `module.exports = {\n  id: "${suiteId}",\n${extendsLine}  routes: {\n${routesEntries}\n  },\n};\n`;
 }

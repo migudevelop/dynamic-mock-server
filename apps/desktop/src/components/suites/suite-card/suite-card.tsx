@@ -1,4 +1,4 @@
-import { CodeIcon, EditIcon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { SuiteCardExtendsSection } from "./suite-card-extends-section";
@@ -10,7 +10,6 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/shadcn/ui/card";
@@ -23,49 +22,34 @@ interface SuiteCardProps {
   suite: SuiteDto;
   /** Whether this suite is the currently active one */
   isActive: boolean;
-  /**
-   * Called when the user toggles the active switch.
-   * If the suite is currently inactive, activates it.
-   * If the suite is currently active, deactivates (passes null).
-   */
+  /** Called when the user toggles the active switch */
   onToggleActive: () => void;
-  /**
-   * When true, the card is shown in offline mode (server not running).
-   * The switch is disabled and the card is visually muted.
-   */
-  disabled?: boolean;
+  /** Called when the user clicks the delete button */
+  onDelete?: () => void;
 }
 
 /**
  * Displays a single routes suite with its route assignments.
  * The active suite can be switched via the toggle control.
- * When `disabled` is true, the card is in read-only / offline mode.
  */
 export function SuiteCard({
   suite,
   isActive,
   onToggleActive,
-  disabled = false,
+  onDelete,
 }: SuiteCardProps) {
   const navigate = useNavigate();
 
   return (
     <Card
-      className={
-        [
-          isActive && !disabled ? "ring-2 ring-primary/30" : "",
-          disabled ? "opacity-60" : "",
-        ]
-          .filter(Boolean)
-          .join(" ") || undefined
-      }
+      className={isActive ? "ring-2 ring-primary/30" : undefined}
       onClick={() => void navigate(buildSuiteRoute(suite.id))}
       style={{ cursor: "pointer" }}
     >
       <CardHeader>
         <div className="flex items-center gap-2 min-w-0">
           <CardTitle className="truncate">{suite.id}</CardTitle>
-          {isActive && !disabled && (
+          {isActive && (
             <Badge
               variant="outline"
               className="shrink-0 text-[10px] px-1.5 py-0 border-primary/40 text-primary"
@@ -73,43 +57,37 @@ export function SuiteCard({
               ACTIVE
             </Badge>
           )}
-          {disabled && (
-            <Badge
-              variant="outline"
-              className="shrink-0 text-[10px] px-1.5 py-0 text-muted-foreground border-muted-foreground/30"
-            >
-              OFFLINE
-            </Badge>
-          )}
         </div>
-        <CardAction onClick={(e) => e.stopPropagation()}>
+        <CardAction
+          className="flex items-center gap-1"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {onDelete && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 text-muted-foreground hover:text-destructive"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              aria-label={`Delete suite ${suite.id}`}
+            >
+              <Trash2Icon className="size-3.5" />
+            </Button>
+          )}
           <Switch
-            checked={isActive && !disabled}
+            checked={isActive}
             onCheckedChange={onToggleActive}
-            disabled={disabled}
             aria-label={`Set ${suite.id} as active suite`}
           />
         </CardAction>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-2">
-        <SuiteCardExtendsSection />
+        <SuiteCardExtendsSection label={suite.extends} />
         <SuiteCardRoutesList routes={suite.routes} />
       </CardContent>
-
-      <CardFooter className="flex justify-end gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="View suite code"
-          disabled
-        >
-          <CodeIcon className="size-4" />
-        </Button>
-        <Button variant="ghost" size="icon" aria-label="Edit suite" disabled>
-          <EditIcon className="size-4" />
-        </Button>
-      </CardFooter>
     </Card>
   );
 }
