@@ -142,6 +142,14 @@ export function Setting() {
           </>
         }
       />
+      <div
+        role="status"
+        className="flex items-start gap-3 p-3 rounded-md bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-700/50 text-sky-800 dark:text-sky-200 text-sm"
+      >
+        <div className="flex-1">
+          <span className="font-semibold">Note:</span> Changing these settings requires restarting the mock server for the changes to take effect.
+        </div>
+      </div>
       <Form {...form}>
         <SettingSection title="General Settings" icon={<SlidersHorizontal />}>
           <SelectFormField
