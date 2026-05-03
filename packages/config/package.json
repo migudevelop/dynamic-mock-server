@@ -25,6 +25,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src --ext .ts",
+    "test": "vitest run",
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {

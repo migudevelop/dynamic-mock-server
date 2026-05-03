@@ -1,6 +1,18 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 /**
+ * HTTP methods supported by the mocks manager
+ */
+export type HttpMethod =
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "PATCH"
+  | "DELETE"
+  | "OPTIONS"
+  | "HEAD";
+
+/**
  * Represents a response option for a route
  */
 export interface RouteResponse {
@@ -15,7 +27,7 @@ export interface RouteResponse {
   /** Custom handler function for dynamic responses */
   handler?: (
     request: FastifyRequest,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) => Promise<unknown> | unknown;
   /** Artificial delay in milliseconds before sending the response */
   delay?: number;

@@ -13,6 +13,7 @@ Dynamic Mock Server is a development tool designed to facilitate the rapid creat
 - Primary package to inspect: `packages/core` — a TypeScript library that compiles to `dist` (see `packages/core/package.json` and `packages/core/tsconfig.json`).
 - Tooling: builds and scripts are driven from the root `package.json` via `turbo run <task>` (root scripts: `build`, `dev`, `lint`, `check-types`).
 - Lint and formatter: repository uses a local ESLint shareable config in `packages/eslint-config` and a TypeScript base config in `packages/typescript-config`.
+- The desktop app under `apps/desktop` is a React-based [Tauri](https://v2.tauri.app/es/) application that serves as the user interface for interacting with the Dynamic Mock Server functionalities. Using shadcn UI for styling and components.
 
 ## How to run / build / debug (concrete)
 

@@ -1,4 +1,3 @@
-import { NestedRoutesSuites } from "@dynamic-mock-server/mocks-manager";
 import { isString } from "types-guards";
 
 import type {
@@ -6,6 +5,7 @@ import type {
   ChangeListener,
   UnsubscribeFunction,
 } from "./alerts.types.js";
+import { NestedRoutesSuites } from "./nested-routes-suites.js";
 
 /**
  * Alerts system extends NestedRoutesSuites to provide structured alert management.

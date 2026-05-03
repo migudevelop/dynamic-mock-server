@@ -11,22 +11,16 @@ module.exports = [
     responses: [
       {
         id: "success",
-        type: "json",
-        options: {
-          status: 200,
-          body: [
-            { id: 1, name: "Product 1", price: 99.99 },
-            { id: 2, name: "Product 2", price: 149.99 },
-          ],
-        },
+        status: 200,
+        body: [
+          { id: 1, name: "Product 1", price: 99.99 },
+          { id: 2, name: "Product 2", price: 149.99 },
+        ],
       },
       {
         id: "empty",
-        type: "json",
-        options: {
-          status: 200,
-          body: [],
-        },
+        status: 200,
+        body: [],
       },
     ],
   },
@@ -39,26 +33,20 @@ module.exports = [
     responses: [
       {
         id: "ok",
-        type: "text",
-        options: {
-          status: 200,
-          body: "OK",
-          contentType: "text/plain",
-        },
+        status: 200,
+        body: "OK",
+        headers: { "Content-Type": "text/plain" },
       },
       {
         id: "error",
-        type: "text",
-        options: {
-          status: 503,
-          body: "Service Unavailable",
-          contentType: "text/plain",
-        },
+        status: 503,
+        body: "Service Unavailable",
+        headers: { "Content-Type": "text/plain" },
       },
     ],
   },
 
-  // Route with Status responses
+  // Route with Status-only responses
   {
     id: "delete-product",
     url: "/api/products/:id",
@@ -66,22 +54,16 @@ module.exports = [
     responses: [
       {
         id: "success",
-        type: "status",
-        options: {
-          status: 204,
-        },
+        status: 204,
       },
       {
         id: "not-found",
-        type: "status",
-        options: {
-          status: 404,
-        },
+        status: 404,
       },
     ],
   },
 
-  // Route with File responses
+  // Route with file-like responses (served via handler)
   {
     id: "get-document",
     url: "/api/documents/:id",
@@ -89,30 +71,18 @@ module.exports = [
     responses: [
       {
         id: "pdf",
-        type: "file",
-        options: {
-          path: "documents/sample.pdf",
-          status: 200,
-          headers: {
-            "Content-Type": "application/pdf",
-          },
-        },
+        status: 200,
+        headers: { "Content-Type": "application/pdf" },
       },
       {
         id: "image",
-        type: "file",
-        options: {
-          path: "images/sample.jpg",
-          status: 200,
-          headers: {
-            "Content-Type": "image/jpeg",
-          },
-        },
+        status: 200,
+        headers: { "Content-Type": "image/jpeg" },
       },
     ],
   },
 
-  // Route with Middleware responses
+  // Route with dynamic handler responses
   {
     id: "custom-logic",
     url: "/api/custom",
@@ -120,37 +90,20 @@ module.exports = [
     responses: [
       {
         id: "dynamic",
-        type: "middleware",
-        options: {
-          middleware: async (context) => {
-            // Access request data
-            const { body, query, params } = context;
-
-            // Custom logic
-            const result = {
-              received: body,
-              timestamp: new Date().toISOString(),
-              echo: query.echo || "no echo",
-            };
-
-            // Send response
-            context.reply.status(200).send(result);
-          },
+        handler: async (request, reply) => {
+          const result = {
+            received: request.body,
+            timestamp: new Date().toISOString(),
+            echo: request.query.echo || "no echo",
+          };
+          reply.status(200).send(result);
         },
       },
       {
         id: "delayed",
-        type: "middleware",
-        options: {
-          middleware: async (context) => {
-            // Simulate delay
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            context.reply.status(200).send({
-              message: "This response was delayed by 2 seconds",
-            });
-          },
-        },
+        delay: 2000,
+        status: 200,
+        body: { message: "This response was delayed by 2 seconds" },
       },
     ],
   },

@@ -30,14 +30,17 @@
   },
   "devDependencies": {
     "@dynamic-mock-server/eslint-config": "workspace:*",
-    "@dynamic-mock-server/typescript-config": "workspace:*"
+    "@dynamic-mock-server/typescript-config": "workspace:*",
+    "fastify": "5.6.2"
   },
   "dependencies": {
     "@dynamic-mock-server/alerts": "workspace:*",
     "@dynamic-mock-server/config": "workspace:*",
     "@dynamic-mock-server/logger": "workspace:*",
     "@dynamic-mock-server/mocks-manager": "workspace:*",
-    "chokidar": "4.0.3",
-    "fastify": "5.6.2"
+    "types-guards": "0.1.0"
+  },
+  "peerDependencies": {
+    "fastify": ">=5.0.0"
   }
 }

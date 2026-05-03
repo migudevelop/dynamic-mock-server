@@ -7,6 +7,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "prepare": "husky install"
@@ -18,10 +19,6 @@
   "author": "Miguel Martínez",
   "license": "Apache-2.0",
   "packageManager": "pnpm@9.0.0",
-  "dependencies": {
-    "types-guards": "0.1.0",
-    "eslint": "9.38.0"
-  },
   "devDependencies": {
     "@commitlint/cli": "20.1.0",
     "@commitlint/config-conventional": "20.0.0",
@@ -32,7 +29,10 @@
     "prettier": "3.6.2",
     "tsup": "8.5.1",
     "turbo": "2.6.0",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "eslint": "9.38.0",
+    "types-guards": "0.1.0",
+    "vitest": "3.2.1"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [

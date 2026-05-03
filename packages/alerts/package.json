@@ -32,6 +32,6 @@
     "@dynamic-mock-server/typescript-config": "workspace:*"
   },
   "dependencies": {
-    "@dynamic-mock-server/mocks-manager": "workspace:*"
+    "types-guards": "0.1.0"
   }
 }
