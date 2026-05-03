@@ -92,7 +92,8 @@ export const useServerStore = create<ServerStore>()((set, get) => ({
       }
       const config = get().config;
       const host = config?.server?.host;
-      const port = config?.server?.port;
+      const rawPort = config?.server?.port;
+      const port = rawPort !== undefined ? Number(rawPort) : undefined;
 
       await tauriCommands.startServer(projectPath, host, port);
 
