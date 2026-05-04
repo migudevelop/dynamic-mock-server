@@ -48,12 +48,12 @@ core.mocksManager.addRoute({
   responses: [
     {
       id: "success",
-      statusCode: 200,
+      status: 200,
       body: [{ id: 1, name: "John Doe" }],
     },
     {
       id: "error",
-      statusCode: 500,
+      status: 500,
       body: { error: "Internal Server Error" },
     },
   ],
@@ -99,7 +99,7 @@ class MyPlugin implements Plugin {
 
   constructor(
     private coreApi: CoreApi,
-    private core: Core
+    private core: Core,
   ) {}
 
   register(coreApi: CoreApi): void {

@@ -44,7 +44,7 @@ mocksManager.addRoute({
   responses: [
     {
       id: "success",
-      statusCode: 200,
+      status: 200,
       body: [
         { id: 1, name: "John Doe" },
         { id: 2, name: "Jane Smith" },
@@ -52,17 +52,17 @@ mocksManager.addRoute({
     },
     {
       id: "empty",
-      statusCode: 200,
+      status: 200,
       body: [],
     },
     {
       id: "error",
-      statusCode: 500,
+      status: 500,
       body: { error: "Internal server error" },
     },
     {
       id: "slow",
-      statusCode: 200,
+      status: 200,
       body: [{ id: 1, name: "John" }],
       delay: 3000, // Simulate slow response
     },
@@ -234,7 +234,7 @@ interface RouteConfig {
 ```typescript
 interface RouteResponse {
   id: string; // Unique response identifier
-  statusCode: number; // HTTP status code
+  status: number; // HTTP status code
   body?: any; // Response body (JSON)
   headers?: Record<string, string>; // Response headers
   delay?: number; // Delay in milliseconds
@@ -289,8 +289,8 @@ export default {
   url: "/api/users",
   method: "GET",
   responses: [
-    { id: "success", statusCode: 200, body: [{ id: 1, name: "John" }] },
-    { id: "error", statusCode: 500, body: { error: "Server Error" } },
+    { id: "success", status: 200, body: [{ id: 1, name: "John" }] },
+    { id: "error", status: 500, body: { error: "Server Error" } },
   ],
 };
 ```
@@ -332,7 +332,7 @@ mocksManager.addRoute({
   id: "health",
   url: "/health",
   method: "GET",
-  responses: [{ id: "ok", statusCode: 200, body: { status: "ok" } }],
+  responses: [{ id: "ok", status: 200, body: { status: "ok" } }],
 });
 
 // Create and configure Fastify

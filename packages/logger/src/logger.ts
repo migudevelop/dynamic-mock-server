@@ -12,14 +12,17 @@ export class Logger {
   constructor(opts?: LoggerOptions) {
     const level = process.env.LOG_LEVEL ?? opts?.level ?? "info";
 
-    const transport = pino.transport({
-      target: "pino-pretty",
-      options: {
-        colorize: true,
-        translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
-        ignore: "pid,hostname",
-      },
-    });
+    const isDev = process.env.NODE_ENV !== "production";
+    const transport = isDev
+      ? pino.transport({
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+            translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
+            ignore: "pid,hostname",
+          },
+        })
+      : undefined;
 
     this.logger = pino({ level, ...(opts?.options ?? {}) }, transport);
   }

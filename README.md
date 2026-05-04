@@ -75,7 +75,7 @@ core.mocksManager.addRoute({
   responses: [
     {
       id: "success",
-      statusCode: 200,
+      status: 200,
       body: [
         { id: 1, name: "John Doe", email: "john@example.com" },
         { id: 2, name: "Jane Smith", email: "jane@example.com" },
@@ -83,12 +83,12 @@ core.mocksManager.addRoute({
     },
     {
       id: "empty",
-      statusCode: 200,
+      status: 200,
       body: [],
     },
     {
       id: "error",
-      statusCode: 500,
+      status: 500,
       body: { error: "Internal Server Error" },
     },
   ],
@@ -127,8 +127,8 @@ export default {
   url: "/api/users",
   method: "GET",
   responses: [
-    { id: "success", statusCode: 200, body: [{ id: 1, name: "John" }] },
-    { id: "error", statusCode: 500, body: { error: "Server Error" } },
+    { id: "success", status: 200, body: [{ id: 1, name: "John" }] },
+    { id: "error", status: 500, body: { error: "Server Error" } },
   ],
 };
 ```
@@ -388,7 +388,7 @@ core.mocksManager.addRoute({
   id: "health-check",
   url: "/health",
   method: "GET",
-  responses: [{ id: "ok", statusCode: 200, body: { status: "ok" } }],
+  responses: [{ id: "ok", status: 200, body: { status: "ok" } }],
 });
 
 // Add suites
@@ -472,9 +472,7 @@ export class CustomPlugin implements Plugin {
       id: "plugin-route",
       url: "/plugin",
       method: "GET",
-      responses: [
-        { id: "default", statusCode: 200, body: { plugin: "active" } },
-      ],
+      responses: [{ id: "default", status: 200, body: { plugin: "active" } }],
     });
   }
 

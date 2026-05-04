@@ -399,7 +399,7 @@ if (args[0] === "demo") {
     id: "demo",
     url: "/demo",
     method: "GET",
-    responses: [{ id: "ok", statusCode: 200, body: { demo: true } }],
+    responses: [{ id: "ok", status: 200, body: { demo: true } }],
   });
 }
 
