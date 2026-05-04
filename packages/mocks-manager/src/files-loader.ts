@@ -175,9 +175,7 @@ export class FilesLoader {
           }
 
           // Ensure routesData is an array
-          const routesArray = Array.isArray(routesData)
-            ? routesData
-            : [routesData];
+          const routesArray = isArray(routesData) ? routesData : [routesData];
 
           // Process each route in the array
           for (const routeData of routesArray) {

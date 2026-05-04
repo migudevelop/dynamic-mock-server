@@ -20,6 +20,7 @@ import { useAdminApi } from "@/hooks/use-admin-api";
 import { useProjectStore } from "@/stores/project-store";
 import { useServerStore } from "@/stores/server-store";
 import type { RouteDto, RouteResponseDto } from "@/types/route.types";
+import { isNullish } from "types-guards";
 
 /** Background colors for method badges */
 const METHOD_BG: Record<string, string> = {
@@ -37,7 +38,7 @@ const METHOD_BG: Record<string, string> = {
 
 /** Returns a label for the response body type */
 function getBodyType(response: RouteResponseDto): string {
-  if (response.body !== undefined && response.body !== null) return "JSON";
+  if (!isNullish(response.body)) return "JSON";
   if (response.hasHandler) return "HANDLER";
   return "STATUS";
 }

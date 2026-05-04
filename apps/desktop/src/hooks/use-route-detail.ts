@@ -9,6 +9,7 @@ import type {
   RouteDto,
   RouteResponseDto,
 } from "@/types/route.types";
+import { isUndefined } from "types-guards";
 
 /** Raw disk format for a route response */
 interface DiskResponse {
@@ -326,7 +327,7 @@ export function useRouteDetail(
         if (resp.delay != null && resp.delay > 0) entry.delay = resp.delay;
         if (resp.headers && Object.keys(resp.headers).length > 0)
           entry.headers = resp.headers;
-        if (resp.body !== undefined) entry.body = resp.body;
+        if (!isUndefined(resp.body)) entry.body = resp.body;
         return entry;
       }),
     };

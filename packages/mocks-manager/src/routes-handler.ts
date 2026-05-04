@@ -4,6 +4,7 @@ import type {
   RoutesHandlerOptions,
 } from "./routes-handler.types.js";
 import { ResponsesHandler } from "./responses-handler.js";
+import { isUndefined } from "types-guards";
 
 /**
  * RoutesHandler
@@ -96,7 +97,7 @@ export class RoutesHandler {
           if (response.handler) {
             const result = await response.handler(request, reply);
             // If handler returned a value and did not send, send it now
-            if (result !== undefined && !reply.sent) {
+            if (!isUndefined(result) && !reply.sent) {
               const status = response.status ?? 200;
               if (response.headers) {
                 for (const [h, v] of Object.entries(response.headers)) {

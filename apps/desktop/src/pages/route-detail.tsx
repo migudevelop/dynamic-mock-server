@@ -4,7 +4,6 @@ import { toast } from "sonner";
 
 import { ResponseEditor } from "@/components/routes/response-editor";
 import { VariantSidebar } from "@/components/routes/variant-sidebar";
-import { Badge } from "@/components/shadcn/ui/badge";
 import { Button } from "@/components/shadcn/ui/button";
 import { Input } from "@/components/shadcn/ui/input";
 import { Label } from "@/components/shadcn/ui/label";

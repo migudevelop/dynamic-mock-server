@@ -5,7 +5,7 @@ import type {
   CoreApi,
 } from "./plugins-manager.types.js";
 import type { Core } from "./core.js";
-import { isFunction, isString } from "types-guards";
+import { isArray, isFunction, isString } from "types-guards";
 
 /**
  * PluginManager handles the lifecycle of all registered plugins.
@@ -40,14 +40,14 @@ export class PluginManager {
     // Validate plugin has an id
     if (!PluginClass.id || !isString(PluginClass.id)) {
       throw new Error(
-        `Plugin ${PluginClass.name || "Unknown"} must have a static 'id' property`
+        `Plugin ${PluginClass.name || "Unknown"} must have a static 'id' property`,
       );
     }
 
     // Check for duplicate plugin IDs
     if (this._pluginIds.has(PluginClass.id)) {
       throw new Error(
-        `Plugin with id "${PluginClass.id}" is already registered`
+        `Plugin with id "${PluginClass.id}" is already registered`,
       );
     }
 
@@ -74,12 +74,12 @@ export class PluginManager {
       ?.register;
 
     // Register plugins from config first
-    if (configPlugins && Array.isArray(configPlugins)) {
+    if (configPlugins && isArray(configPlugins)) {
       this.register(configPlugins);
     }
 
     // Then register plugins from options (allows overrides)
-    if (this._options?.register && Array.isArray(this._options.register)) {
+    if (this._options?.register && isArray(this._options.register)) {
       this.register(this._options.register);
     }
 

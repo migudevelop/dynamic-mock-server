@@ -10,6 +10,7 @@ import {
   suiteRecordToArray,
   type SuiteRoutesRecord,
 } from "@/types/suite.types";
+import { isNull } from "types-guards";
 
 /** Raw disk format for a suite file */
 interface DiskSuite {
@@ -261,7 +262,7 @@ export function useSuiteDetail(suiteId: string): SuiteDetailState {
   function setRouteResponse(routeId: string, responseId: string | null) {
     setAssignments((prev) => {
       const next = { ...prev };
-      if (responseId === null) {
+      if (isNull(responseId)) {
         delete next[routeId];
       } else {
         next[routeId] = responseId;

@@ -8,6 +8,7 @@ import type {
   RoutesSuite,
   MocksManagerOptions,
 } from "./mocks-manager.types.js";
+import { isUndefined } from "types-guards";
 
 /**
  * MocksManager
@@ -52,7 +53,7 @@ export class MocksManager {
       }
     }
 
-    if (options?.activeSuite !== undefined) {
+    if (!isUndefined(options?.activeSuite)) {
       this.setActiveSuite(options.activeSuite);
     }
   }
