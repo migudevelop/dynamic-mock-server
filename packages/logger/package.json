@@ -32,7 +32,9 @@
     "@dynamic-mock-server/typescript-config": "workspace:*"
   },
   "dependencies": {
-    "pino": "10.1.0",
+    "pino": "10.1.0"
+  },
+  "optionalDependencies": {
     "pino-pretty": "13.1.2"
   }
 }

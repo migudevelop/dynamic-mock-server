@@ -15,7 +15,7 @@ import { CLI } from "./cli.js";
 import {
   INTERACTIVE_OPTIONS,
   INTERACTIVE_OPTIONS_VALUES_MAP,
-} from "./contants.js";
+} from "./constants.js";
 
 /**
  * Interactive CLI mode using @clack/prompts
@@ -132,13 +132,13 @@ export class InteractiveCLI extends CLI {
     console.log();
     console.log(pc.bold("Server Information:"));
     console.log(
-      `  Status: ${status.running ? pc.green("Running ✓") : pc.red("Stopped ✗")}`
+      `  Status: ${status.running ? pc.green("Running ✓") : pc.red("Stopped ✗")}`,
     );
     if (status.url) {
       console.log(`  URL: ${pc.blue(status.url)}`);
     }
     console.log(
-      `  Active Suite: ${status.activeSuite ? pc.green(status.activeSuite) : pc.yellow("None")}`
+      `  Active Suite: ${status.activeSuite ? pc.green(status.activeSuite) : pc.yellow("None")}`,
     );
     console.log(`  Routes: ${pc.cyan(status.totalRoutes.toString())}`);
     console.log(`  Responses: ${pc.cyan(status.totalResponses.toString())}`);
@@ -192,7 +192,7 @@ export class InteractiveCLI extends CLI {
     loader.stop(
       suiteId
         ? `Suite changed to: ${pc.green(suiteId as string)}`
-        : "Active suite cleared"
+        : "Active suite cleared",
     );
   }
 
@@ -222,7 +222,7 @@ export class InteractiveCLI extends CLI {
       }
 
       console.log(
-        `    ${pc.gray(`Available: ${route.responses.map((r: { id: string }) => r.id).join(", ")}`)}`
+        `    ${pc.gray(`Available: ${route.responses.map((r: { id: string }) => r.id).join(", ")}`)}`,
       );
       console.log();
     }
@@ -243,7 +243,7 @@ export class InteractiveCLI extends CLI {
       (route: { id: string; method: string; url: string }) => ({
         value: route.id,
         label: `${route.method} ${route.url}`,
-      })
+      }),
     );
 
     const routeId = await select({
@@ -288,7 +288,7 @@ export class InteractiveCLI extends CLI {
     loader.stop(
       responseId
         ? `Response set to: ${pc.green(responseId as string)}`
-        : "Response override cleared"
+        : "Response override cleared",
     );
   }
 

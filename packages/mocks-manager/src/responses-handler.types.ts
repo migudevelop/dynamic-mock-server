@@ -45,7 +45,10 @@ export interface RouteConfig {
   method: string;
   /** Array of response options for this route */
   responses: RouteResponse[];
-  /** Internal map for quick response lookup */
+  /**
+   * Internal map for quick response lookup.
+   * @internal Do not use or mutate directly — this is an implementation detail.
+   */
   responsesMap?: Map<string, RouteResponse>;
 }
 

@@ -7,6 +7,8 @@ import type { CLIArguments } from "./cli-management.types.js";
 import { CLI } from "./cli.js";
 import { InteractiveCLI } from "./interactive-cli.js";
 
+declare const PACKAGE_VERSION: string;
+
 /**
  * CLI management program for the CLI
  */
@@ -50,7 +52,9 @@ export class CliManagement {
     this._program
       .name("dynamic-mock-server")
       .description("Interactive CLI for Dynamic Mock Server")
-      .version("0.0.1-beta");
+      .version(
+        typeof PACKAGE_VERSION !== "undefined" ? PACKAGE_VERSION : "0.0.1-beta",
+      );
 
     // Start command (interactive by default)
     this._program
