@@ -1,5 +1,13 @@
 use std::path::Path;
 
+/// Creates a new process command configured to not show a console window on Windows.
+fn new_hidden_command(program: &str) -> tokio::process::Command {
+    let mut cmd = tokio::process::Command::new(program);
+    #[cfg(target_os = "windows")]
+    cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
+    cmd
+}
+
 /// Checks whether the dynamic-mock-server CLI binary exists in the given project's node_modules.
 ///
 /// # Arguments
@@ -81,7 +89,7 @@ pub async fn read_config(project_path: String) -> Result<String, String> {
 });
 "#;
 
-    let output = tokio::process::Command::new("node")
+    let output = new_hidden_command("node")
         .args(["-e", script])
         .current_dir(&project_path)
         .output()
@@ -108,7 +116,7 @@ const resolved = mod.default !== undefined ? mod.default : mod;
 console.log(JSON.stringify(resolved));
 "#;
 
-    let tsx_output = tokio::process::Command::new("npx")
+    let tsx_output = new_hidden_command("npx")
         .args(["tsx", "-e", ts_script])
         .current_dir(&project_path)
         .output()
@@ -173,7 +181,7 @@ pub async fn evaluate_js_file(
         file_str
     );
 
-    let output = tokio::process::Command::new("node")
+    let output = new_hidden_command("node")
         .args(["-e", &script])
         .current_dir(&project_path)
         .output()
