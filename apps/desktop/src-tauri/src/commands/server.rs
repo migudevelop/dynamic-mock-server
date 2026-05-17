@@ -2,8 +2,6 @@ use crate::state::{LogEntry, ManagedServerState, ServerProcess, ServerState};
 use std::path::Path;
 use tauri::Emitter;
 use tokio::io::{AsyncBufReadExt, BufReader};
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
 
 /// Start result returned to the frontend
 #[derive(serde::Serialize)]
