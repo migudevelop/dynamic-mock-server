@@ -2,6 +2,8 @@ use crate::state::{LogEntry, ManagedServerState, ServerProcess, ServerState};
 use std::path::Path;
 use tauri::Emitter;
 use tokio::io::{AsyncBufReadExt, BufReader};
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 /// Start result returned to the frontend
 #[derive(serde::Serialize)]
@@ -68,6 +70,8 @@ pub async fn start_server(
         let mut cmd = if cfg!(target_os = "windows") {
             let mut c = tokio::process::Command::new("cmd");
             c.args(["/c", bin_str, "start"]);
+            #[cfg(target_os = "windows")]
+            c.creation_flags(0x08000000); // CREATE_NO_WINDOW
             c
         } else {
             let mut c = tokio::process::Command::new(bin_str);
@@ -194,6 +198,7 @@ pub async fn stop_server(state: tauri::State<'_, ManagedServerState>) -> Result<
             if let Some(pid) = proc.child.id() {
                 let _ = tokio::process::Command::new("taskkill")
                     .args(["/F", "/T", "/PID", &pid.to_string()])
+                    .creation_flags(0x08000000) // CREATE_NO_WINDOW
                     .output()
                     .await;
             }
