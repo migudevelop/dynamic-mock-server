@@ -1,6 +1,6 @@
 {
   "name": "@dynamic-mock-server/cli",
-  "version": "0.0.1-beta",
+  "version": "0.1.0-beta",
   "description": "Interactive CLI for Dynamic Mock Server",
   "type": "module",
   "main": "./dist/index.js",

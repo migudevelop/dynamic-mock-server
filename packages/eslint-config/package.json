@@ -1,6 +1,6 @@
 {
   "name": "@dynamic-mock-server/eslint-config",
-  "version": "0.0.1",
+  "version": "0.1.0-beta",
   "type": "module",
   "private": true,
   "license": "Apache-2.0",

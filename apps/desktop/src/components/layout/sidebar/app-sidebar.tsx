@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
                   Dynamic Mock Server
                 </h1>
                 <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">
-                  v1.0.0
+                  v0.1.0-beta
                 </p>
               </div>
             </div>

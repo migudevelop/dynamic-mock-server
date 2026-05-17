@@ -1,6 +1,6 @@
 {
   "name": "dynamic-mock-server",
-  "version": "0.0.1-beta",
+  "version": "0.1.0-beta",
   "description": "Serve and update API mocks instantly, with hot-reload support for faster development and testing.",
   "main": "index.js",
   "scripts": {

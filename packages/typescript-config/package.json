@@ -1,6 +1,6 @@
 {
   "name": "@dynamic-mock-server/typescript-config",
-  "version": "0.0.1",
+  "version": "0.1.0-beta",
   "private": true,
   "license": "Apache-2.0",
   "publishConfig": {
