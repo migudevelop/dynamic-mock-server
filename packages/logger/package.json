@@ -19,7 +19,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
@@ -44,7 +46,11 @@
     "development",
     "testing",
     "api",
-    "http"
+    "http",
+    "logger",
+    "logging",
+    "pino",
+    "namespace"
   ],
   "author": "migudevelop",
   "repository": {

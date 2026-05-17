@@ -15,7 +15,9 @@
     "dynamic-mock-server": "./dist/bin.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",

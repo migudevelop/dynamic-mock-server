@@ -19,7 +19,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
@@ -43,7 +45,10 @@
     "development",
     "testing",
     "api",
-    "http"
+    "http",
+    "config",
+    "configuration",
+    "cosmiconfig"
   ],
   "author": "migudevelop",
   "repository": {
