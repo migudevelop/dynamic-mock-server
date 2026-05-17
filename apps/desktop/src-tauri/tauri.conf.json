@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "dynamic-mock-server",
+        "title": "Dynamic Mock Server",
         "width": 1920,
         "height": 1080
       }
