@@ -36,5 +36,26 @@
   },
   "optionalDependencies": {
     "pino-pretty": "13.1.2"
+  },
+  "description": "Logger for Dynamic Mock Server — Pino-based structured logging with namespace support",
+  "keywords": [
+    "mock",
+    "server",
+    "development",
+    "testing",
+    "api",
+    "http"
+  ],
+  "author": "migudevelop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/migudevelop/dynamic-mock-server",
+    "directory": "packages/logger"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

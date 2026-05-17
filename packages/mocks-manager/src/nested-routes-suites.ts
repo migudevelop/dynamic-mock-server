@@ -12,7 +12,7 @@ import type {
  */
 export class NestedRoutesSuites {
   private _items = new Map<string, unknown>();
-  private _routesSuites = new Map<string, NestedRoutesSuites>();
+  protected _routesSuites = new Map<string, NestedRoutesSuites>();
   private _listeners = new Set<ChangeListener>();
   private _parent?: NestedRoutesSuites;
 

@@ -35,5 +35,26 @@
   "dependencies": {
     "cosmiconfig": "9.0.0",
     "deepmerge": "4.3.1"
+  },
+  "description": "Configuration loader for Dynamic Mock Server — supports cosmiconfig-based config files",
+  "keywords": [
+    "mock",
+    "server",
+    "development",
+    "testing",
+    "api",
+    "http"
+  ],
+  "author": "migudevelop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/migudevelop/dynamic-mock-server",
+    "directory": "packages/config"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

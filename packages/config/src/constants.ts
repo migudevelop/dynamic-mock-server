@@ -2,12 +2,12 @@ import type { ConfigType } from "./config.types.js";
 
 export const FILE_NAME = "dynamicMockServer";
 const VALID_CONFIG_EXTENSIONS = ["json", "yaml", "yml", "js", "ts", "cjs"];
-export const DEFAULT_SEARCH_PLACES = VALID_CONFIG_EXTENSIONS.map(
-  (ext) => `${FILE_NAME}.config.${ext}`
-);
+export const DEFAULT_SEARCH_PLACES = [
+  ...VALID_CONFIG_EXTENSIONS.map((ext) => `${FILE_NAME}.config.${ext}`),
+];
 
 export const DEFAULT_CONFIG: ConfigType = {
-  logLevel: "trace",
+  logLevel: "info",
   plugins: {
     register: [],
   },

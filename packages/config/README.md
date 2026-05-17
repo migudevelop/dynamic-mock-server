@@ -7,7 +7,7 @@ Centralized configuration system with automatic file discovery, multiple format 
 ## Features
 
 - 🔍 **Auto-Discovery**: Automatically finds config files in your project
-- 📝 **Multiple Formats**: Supports JSON, JS, CJS, TypeScript, YAML, and package.json
+- 📝 **Multiple Formats**: Supports JSON, JS, CJS, TypeScript, and YAML
 - 🔀 **Deep Merge**: Smart merging of user config with sensible defaults
 - ✅ **Type Safety**: Full TypeScript support with typed configuration
 - 🎯 **Simple API**: Load once, use everywhere with caching
@@ -46,13 +46,6 @@ Create a configuration file in your project root with one of these names:
 - `dynamicMockServer.config.ts` (requires loader)
 - `dynamicMockServer.config.yaml`
 - `dynamicMockServer.config.yml`
-- `.dynamicmockserverrc` (JSON or YAML)
-- `.dynamicmockserverrc.json`
-- `.dynamicmockserverrc.yaml`
-- `.dynamicmockserverrc.yml`
-- `.dynamicmockserverrc.js`
-- `.dynamicmockserverrc.cjs`
-- `package.json` (under `"dynamicMockServer"` key)
 
 ### Example Configurations
 
@@ -125,20 +118,6 @@ const config: ConfigType = {
 export default config;
 ```
 
-#### package.json Format
-
-```json
-{
-  "name": "my-project",
-  "dynamicMockServer": {
-    "server": {
-      "port": 3000
-    },
-    "logLevel": "info"
-  }
-}
-```
-
 ## Configuration Options
 
 ### Complete Type Definition
@@ -173,7 +152,7 @@ interface ConfigType {
 Logging level for the application.
 
 - **Options**: `"fatal"` | `"error"` | `"warn"` | `"info"` | `"debug"` | `"trace"` | `"silent"`
-- **Default**: `"trace"`
+- **Default**: `"info"`
 
 #### `server.port` (number)
 
@@ -262,7 +241,7 @@ If no configuration file is found, these defaults are used:
 
 ```typescript
 {
-  logLevel: "trace",
+  logLevel: "info",
   plugins: {
     register: [],
   },
@@ -288,13 +267,11 @@ If no configuration file is found, these defaults are used:
 Uses **cosmiconfig** to search for configuration files in this order:
 
 1. `dynamicMockServer.config.json`
-2. `dynamicMockServer.config.js`
-3. `dynamicMockServer.config.cjs`
-4. `.dynamicmockserverrc` (JSON or YAML)
-5. `.dynamicmockserverrc.json`
-6. `.dynamicmockserverrc.yaml`
-7. `.dynamicmockserverrc.js`
-8. `package.json` (under `dynamicMockServer` key)
+2. `dynamicMockServer.config.yaml`
+3. `dynamicMockServer.config.yml`
+4. `dynamicMockServer.config.js`
+5. `dynamicMockServer.config.ts`
+6. `dynamicMockServer.config.cjs`
 
 The search starts from `process.cwd()` and stops when a config file is found.
 
@@ -306,7 +283,7 @@ User configuration is deeply merged with defaults:
 // Default config
 {
   server: { port: 3000, host: "127.0.0.1" },
-  logLevel: "trace"
+  logLevel: "info"
 }
 
 // User config
@@ -317,7 +294,7 @@ User configuration is deeply merged with defaults:
 // Result
 {
   server: { port: 8080, host: "127.0.0.1" }, // Merged!
-  logLevel: "trace"
+  logLevel: "info"
 }
 ```
 

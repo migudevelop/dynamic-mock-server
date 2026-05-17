@@ -13,6 +13,7 @@ export default defineConfig({
     "types-guards",
     "fastify",
     "chokidar",
+    "fast-glob",
   ],
   cjsInterop: true,
   outExtension({ format }) {

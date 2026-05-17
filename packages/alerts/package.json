@@ -32,6 +32,28 @@
     "@dynamic-mock-server/typescript-config": "workspace:*"
   },
   "dependencies": {
+    "@dynamic-mock-server/mocks-manager": "workspace:*",
     "types-guards": "0.1.0"
+  },
+  "description": "Alerts system for Dynamic Mock Server — manage and serve alert mocks with namespaced collections",
+  "keywords": [
+    "mock",
+    "server",
+    "development",
+    "testing",
+    "api",
+    "http"
+  ],
+  "author": "migudevelop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/migudevelop/dynamic-mock-server",
+    "directory": "packages/alerts"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

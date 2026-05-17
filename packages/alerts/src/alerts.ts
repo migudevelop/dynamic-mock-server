@@ -5,7 +5,7 @@ import type {
   ChangeListener,
   UnsubscribeFunction,
 } from "./alerts.types.js";
-import { NestedRoutesSuites } from "./nested-routes-suites.js";
+import { NestedRoutesSuites } from "@dynamic-mock-server/mocks-manager";
 
 /**
  * Alerts system extends NestedRoutesSuites to provide structured alert management.
@@ -50,16 +50,19 @@ export class Alerts extends NestedRoutesSuites {
   /**
    * Create or get a namespaced alert collection
    */
-  collection(namespace: string): Alerts {
-    const child = super.collection(namespace);
-    // Convert to Alerts instance if it's a plain NestedRoutesSuites
-    if (!(child instanceof Alerts)) {
-      // Convert prototype in-place so the returned collection behaves as `Alerts`.
-      // We mutate the existing nested collection rather than creating a new
-      // Alerts instance to preserve internal data stored on `child`.
-      Object.setPrototypeOf(child, Alerts.prototype);
+  override collection(namespace: string): Alerts {
+    if (!isString(namespace) || namespace.trim() === "") {
+      throw new Error("Namespace must be a non-empty string");
     }
-    return child as Alerts;
+
+    const existing = this._routesSuites.get(namespace);
+    if (existing instanceof Alerts) {
+      return existing;
+    }
+
+    const alertsChild = new Alerts({ parent: this });
+    this._routesSuites.set(namespace, alertsChild);
+    return alertsChild;
   }
 
   /**

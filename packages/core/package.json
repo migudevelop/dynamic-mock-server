@@ -42,5 +42,26 @@
   },
   "peerDependencies": {
     "fastify": ">=5.0.0"
+  },
+  "description": "Core engine for Dynamic Mock Server — orchestrates server lifecycle, plugin system, and admin API",
+  "keywords": [
+    "mock",
+    "server",
+    "development",
+    "testing",
+    "api",
+    "http"
+  ],
+  "author": "migudevelop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/migudevelop/dynamic-mock-server",
+    "directory": "packages/core"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

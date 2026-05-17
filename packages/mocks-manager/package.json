@@ -41,5 +41,26 @@
   },
   "peerDependencies": {
     "fastify": ">=5.0.0"
+  },
+  "description": "Mocks manager for Dynamic Mock Server — hot-reload file loading, route handling, and response management",
+  "keywords": [
+    "mock",
+    "server",
+    "development",
+    "testing",
+    "api",
+    "http"
+  ],
+  "author": "migudevelop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/migudevelop/dynamic-mock-server",
+    "directory": "packages/mocks-manager"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

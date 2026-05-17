@@ -13,16 +13,21 @@ export class Logger {
     const level = process.env.LOG_LEVEL ?? opts?.level ?? "info";
 
     const isDev = process.env.NODE_ENV !== "production";
-    const transport = isDev
-      ? pino.transport({
+    let transport: ReturnType<typeof pino.transport> | undefined;
+    if (isDev) {
+      try {
+        transport = pino.transport({
           target: "pino-pretty",
           options: {
             colorize: true,
             translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
             ignore: "pid,hostname",
           },
-        })
-      : undefined;
+        });
+      } catch {
+        // pino-pretty not installed (optional dependency), fall back to JSON logging
+      }
+    }
 
     this.logger = pino({ level, ...(opts?.options ?? {}) }, transport);
   }
