@@ -1,16 +1,16 @@
 # @dynamic-mock-server/typescript-config
 
-Shared TypeScript configuration for the Dynamic Mock Server monorepo. Provides a centralized `tsconfig.json` base configuration that all packages extend, ensuring consistent TypeScript compiler settings across the workspace.
+> **Internal package — not published to npm. For use within the Dynamic Mock Server monorepo only.**
 
-## Features
+Shared TypeScript configuration for the Dynamic Mock Server monorepo. Provides a centralized `tsconfig.json` base configuration that all packages extend, ensuring consistent TypeScript compiler settings across the workspace.
 
 ## Features
 
 - ✅ **Strict Type Checking**: Enabled for maximum type safety
 - ⚡ **ES2022 Target**: Modern JavaScript features support
-- 📦 **ESM Modules**: ES Module system with Node16 resolution
+- 📦 **ESM Modules**: NodeNext resolution for full package.json `exports` support
 - 🔁 **Consistent Settings**: Unified compiler options for all packages
-- 🧾 **Source Maps**: Full debugging support with inline sources
+- 🔒 **Strict Index Access**: `noUncheckedIndexedAccess` enabled by default
 
 ## Usage
 
@@ -49,18 +49,19 @@ The `base.json` file includes these key settings:
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022",
     "lib": ["ES2022"],
-    "moduleResolution": "Node16",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "moduleDetection": "force",
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "inlineSources": true,
-    "resolveJsonModule": true
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "incremental": false
   }
 }
 ```
@@ -70,12 +71,14 @@ The `base.json` file includes these key settings:
 ### Type Checking
 
 - `strict: true` - Enables all strict type-checking options
-- `forceConsistentCasingInFileNames: true` - Ensures import paths match file casing
+- `noUncheckedIndexedAccess: true` - Adds `undefined` to array index access types for safer code
 
 ### Module System
 
-- `module: "ES2022"` - Use ECMAScript modules
-- `moduleResolution: "Node16"` - Node.js 16+ module resolution with package.json exports support
+- `module: "NodeNext"` - Use NodeNext module system (supports ESM and CJS)
+- `moduleResolution: "NodeNext"` - Node.js module resolution with full `package.json` exports support
+- `moduleDetection: "force"` - Treats all files as modules
+- `isolatedModules: true` - Enables per-file transpilation (required for esbuild/tsup)
 - `target: "ES2022"` - Compile to modern JavaScript
 - `lib: ["ES2022"]` - Include ES2022 standard library
 
@@ -88,8 +91,7 @@ The `base.json` file includes these key settings:
 
 - `declaration: true` - Generate `.d.ts` files
 - `declarationMap: true` - Generate source maps for declarations
-- `sourceMap: true` - Generate source maps for debugging
-- `inlineSources: true` - Include source code in source maps
+- `incremental: false` - Disabled to avoid stale cache issues in CI
 
 ### Performance
 
@@ -104,9 +106,7 @@ While packages should extend the base config, you can override specific options:
   "extends": "../typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true, // Enable project references
-    "incremental": true // Enable incremental compilation
+    "rootDir": "./src"
   }
 }
 ```
@@ -155,9 +155,7 @@ pnpm dev
   "extends": "../typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true
+    "rootDir": "./src"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
@@ -178,27 +176,13 @@ pnpm dev
 }
 ```
 
-### Config Package
-
-```json
-{
-  "extends": "../typescript-config/base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "resolveJsonModule": true
-  },
-  "include": ["src/**/*"]
-}
-```
-
 ## Troubleshooting
 
 ### Module Resolution Issues
 
 If you encounter module resolution errors:
 
-1. Ensure `moduleResolution: "Node16"` is set
+1. Ensure `moduleResolution: "NodeNext"` is set
 2. Check your `package.json` has correct `type: "module"`
 3. Verify `exports` field in `package.json` matches your build output
 

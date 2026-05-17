@@ -1,5 +1,7 @@
 # @dynamic-mock-server/eslint-config
 
+> **Internal package — not published to npm. For use within the Dynamic Mock Server monorepo only.**
+
 Shared ESLint configuration for the Dynamic Mock Server monorepo. Provides a centralized base configuration that all packages extend, ensuring consistent code style and quality across the workspace.
 
 ## Features

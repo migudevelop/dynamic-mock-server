@@ -145,24 +145,26 @@ export default config;
 
 ```typescript
 interface ConfigType {
-  logLevel?: "fatal" | "error" | "warn" | "info" | "debug" | "trace" | "silent";
-  server?: {
-    port?: number;
-    host?: string;
+  logLevel: "fatal" | "error" | "warn" | "info" | "debug" | "trace" | "silent";
+  server: {
+    port: number;
+    host: string;
   };
-  routes?: {
-    selectedSuite?: string;
+  routes: {
+    selectedSuite: string;
   };
-  files?: {
-    enabled?: boolean;
-    watch?: boolean;
-    path?: string;
+  files: {
+    enabled: boolean;
+    watch: boolean;
+    path: string;
   };
-  plugins?: {
+  plugins: {
     register?: PluginConstructor[];
   };
 }
 ```
+
+> **Note**: The full `ConfigType` is always fully populated after loading. Your config file can provide a partial subset — the rest is filled with defaults via deep merge.
 
 ### Option Details
 
@@ -171,7 +173,7 @@ interface ConfigType {
 Logging level for the application.
 
 - **Options**: `"fatal"` | `"error"` | `"warn"` | `"info"` | `"debug"` | `"trace"` | `"silent"`
-- **Default**: `"info"`
+- **Default**: `"trace"`
 
 #### `server.port` (number)
 
@@ -260,7 +262,7 @@ If no configuration file is found, these defaults are used:
 
 ```typescript
 {
-  logLevel: "info",
+  logLevel: "trace",
   plugins: {
     register: [],
   },
@@ -304,7 +306,7 @@ User configuration is deeply merged with defaults:
 // Default config
 {
   server: { port: 3000, host: "127.0.0.1" },
-  logLevel: "info"
+  logLevel: "trace"
 }
 
 // User config
@@ -315,7 +317,7 @@ User configuration is deeply merged with defaults:
 // Result
 {
   server: { port: 8080, host: "127.0.0.1" }, // Merged!
-  logLevel: "info"
+  logLevel: "trace"
 }
 ```
 

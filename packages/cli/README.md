@@ -414,75 +414,15 @@ console.log("Demo server started!");
 - `commander` - Command-line argument parsing
 - `picocolors` - Terminal coloring
 
+## Configuration
+
+The CLI respects the server configuration file (`dynamicMockServer.config.{js,json,yaml}`). See [@dynamic-mock-server/config](../config/README.md) for details.
+
 ## Related Packages
 
 - [@dynamic-mock-server/core](../core) - Core server that CLI manages
 - [@dynamic-mock-server/config](../config) - Configuration system
 - [@dynamic-mock-server/mocks-manager](../mocks-manager) - Mock management
-
-## License
-
-Apache-2.0 © Miguel Martínez
-
-#### Constructor
-
-```typescript
-new InteractiveCLI(core: Core, cli: CLI)
-```
-
-#### Methods
-
-- `start(): Promise<void>` - Start interactive mode
-- `stop(): Promise<void>` - Stop interactive mode
-
-## Examples
-
-### Change Suite and Override Response
-
-```typescript
-import { CLI } from "@dynamic-mock-server/cli";
-import { Core } from "@dynamic-mock-server/core";
-
-const core = new Core();
-const cli = new CLI({ core });
-
-await core.start();
-
-// Change to error scenarios suite
-await cli.changeSuite("error-scenarios");
-
-// But use success response for a specific route
-await cli.setRouteResponse("get-user-profile", "success");
-```
-
-### Custom Command Integration
-
-```typescript
-import { Commander } from "@dynamic-mock-server/cli";
-
-const commander = new Commander();
-
-// Add custom command
-commander.program
-  .command("custom")
-  .description("Custom command")
-  .action(async () => {
-    console.log("Custom action");
-  });
-
-await commander.parse(process.argv);
-```
-
-## Configuration
-
-The CLI respects the server configuration file (`dynamicMockServer.config.{js,json,yaml}`). See [@dynamic-mock-server/config](../config/README.md) for details.
-
-## Dependencies
-
-- `commander` - CLI framework
-- `@clack/prompts` - Interactive prompts
-- `picocolors` - Terminal colors
-- `@dynamic-mock-server/core` - Server core functionality
 
 ## License
 

@@ -122,7 +122,7 @@ class MyPlugin implements Plugin {
 
 // Use the plugin
 const core = new Core({
-  plugins: [MyPlugin],
+  plugins: { register: [MyPlugin] },
 });
 
 await core.start();
@@ -142,8 +142,9 @@ constructor(options?: CoreOptions)
 
 **CoreOptions:**
 
-- `logger?: Logger` - Custom logger instance (optional)
-- `plugins?: PluginConstructor[]` - Array of plugin constructors to register (optional)
+- `config?: Config` - Custom Config instance (optional)
+- `logger?: Logger | false` - Custom logger instance, or `false` to disable logging (optional)
+- `plugins?: { register?: PluginConstructor[] }` - Plugin configuration object (optional)
 
 #### Methods
 
@@ -234,7 +235,6 @@ Core (Orchestrator)
 - `@dynamic-mock-server/alerts` - Alert system
 - `@dynamic-mock-server/mocks-manager` - Mock management
 - `fastify` - HTTP server framework
-- `chokidar` - File watching
 
 ## Related Packages
 

@@ -43,20 +43,30 @@ This monorepo contains the following packages:
 - **[@dynamic-mock-server/eslint-config](./packages/eslint-config)** - Shared ESLint configuration
 - **[@dynamic-mock-server/typescript-config](./packages/typescript-config)** - Shared TypeScript configuration
 
+### Desktop App
+
+- **[Desktop App](./apps/desktop)** - Cross-platform GUI for managing the mock server (Tauri v2 + React 19)
+
 ## 🚀 Quick Start
 
 ### Installation
 
+Install the CLI globally to start using the mock server:
+
 ```bash
-# Clone the repository
-git clone https://github.com/migudevelop/dynamic-mock-server.git
-cd dynamic-mock-server
+pnpm add -g @dynamic-mock-server/cli
+# or
+npm install -g @dynamic-mock-server/cli
+```
 
-# Install dependencies
-pnpm install
+Or add packages individually to your project:
 
-# Build all packages
-pnpm build
+```bash
+# Main orchestrator for programmatic usage
+pnpm add @dynamic-mock-server/core
+
+# CLI as a dev dependency
+pnpm add -D @dynamic-mock-server/cli
 ```
 
 ### Basic Programmatic Usage
@@ -224,6 +234,8 @@ pnpm --filter @dynamic-mock-server/cli lint
 
 ```
 dynamic-mock-server/
+├── apps/
+│   └── desktop/         # Cross-platform GUI (Tauri v2 + React 19)
 ├── packages/
 │   ├── core/            # Main orchestrator (Server, Core, PluginManager)
 │   ├── mocks-manager/   # Routes, responses, suites, FilesLoader
@@ -380,7 +392,7 @@ import { InteractiveCLI } from "@dynamic-mock-server/cli";
 // Create core instance with optional configuration
 const core = new Core({
   logger: myCustomLogger, // Optional: provide custom logger
-  plugins: [MyPlugin], // Optional: register plugins
+  plugins: { register: [MyPlugin] }, // Optional: register plugins
 });
 
 // Programmatically add routes
@@ -491,23 +503,9 @@ export class CustomPlugin implements Plugin {
 import { Core } from "@dynamic-mock-server/core";
 
 const core = new Core({
-  plugins: [CustomPlugin],
+  plugins: { register: [CustomPlugin] },
 });
 ```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests and linting (`pnpm lint`, `pnpm check-types`)
-5. Commit using conventional commits (see below)
-6. Push to your fork (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
 
 ## 🙏 Acknowledgments
 
