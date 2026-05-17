@@ -4,6 +4,8 @@
 
 A powerful development tool built as a TypeScript monorepo for rapidly creating, serving, and updating API mocks with real-time hot-reload functionality. Perfect for frontend developers, QA engineers, and anyone needing to simulate API responses without a backend.
 
+> ⚠️ **Beta**: This project is currently in active beta. APIs, CLI commands, and behavior may change between minor releases. Use caution in production and pin versions when needed.
+
 ## ✨ Features
 
 - 🔁 **Hot Reload**: Watch mode automatically reloads routes and suites from files without server restart
