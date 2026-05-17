@@ -40,8 +40,8 @@ This monorepo contains the following packages:
 
 ### Tooling
 
-- **[@dynamic-mock-server/eslint-config](./packages/eslint-config)** - Shared ESLint configuration
-- **[@dynamic-mock-server/typescript-config](./packages/typescript-config)** - Shared TypeScript configuration
+- **[@dynamic-mock-server/eslint-config](./packages/eslint-config)** - Shared ESLint configuration (internal)
+- **[@dynamic-mock-server/typescript-config](./packages/typescript-config)** - Shared TypeScript configuration (internal)
 
 ### Desktop App
 
@@ -69,70 +69,14 @@ pnpm add @dynamic-mock-server/core
 pnpm add -D @dynamic-mock-server/cli
 ```
 
-### Basic Programmatic Usage
+### Programmatic Usage
 
 ```typescript
 import { Core } from "@dynamic-mock-server/core";
 
-// Create and configure the server
 const core = new Core();
 
-// Add a route with multiple response options
 core.mocksManager.addRoute({
-  id: "get-users",
-  url: "/api/users",
-  method: "GET",
-  responses: [
-    {
-      id: "success",
-      status: 200,
-      body: [
-        { id: 1, name: "John Doe", email: "john@example.com" },
-        { id: 2, name: "Jane Smith", email: "jane@example.com" },
-      ],
-    },
-    {
-      id: "empty",
-      status: 200,
-      body: [],
-    },
-    {
-      id: "error",
-      status: 500,
-      body: { error: "Internal Server Error" },
-    },
-  ],
-});
-
-// Create a suite for success scenarios
-core.mocksManager.addSuite({
-  id: "happy-path",
-  routes: {
-    "get-users": "success",
-  },
-});
-
-// Create a suite for error scenarios
-core.mocksManager.addSuite({
-  id: "error-scenarios",
-  routes: {
-    "get-users": "error",
-  },
-});
-
-// Set active suite and start
-core.mocksManager.setActiveSuite("happy-path");
-await core.start();
-// Server running at http://localhost:3000
-```
-
-### File-Based Configuration
-
-Create a `mocks` directory with your routes and suites:
-
-```javascript
-// mocks/routes/users.js
-export default {
   id: "get-users",
   url: "/api/users",
   method: "GET",
@@ -140,53 +84,29 @@ export default {
     { id: "success", status: 200, body: [{ id: 1, name: "John" }] },
     { id: "error", status: 500, body: { error: "Server Error" } },
   ],
-};
+});
+
+await core.start();
+// → http://localhost:3000
 ```
 
-```javascript
-// mocks/routesSuites/base.js
-export default {
-  id: "base",
-  routes: {
-    "get-users": "success",
-  },
-};
-```
-
-Configure in `dynamicMockServer.config.json`:
-
-```json
-{
-  "server": {
-    "port": 3000,
-    "host": "localhost"
-  },
-  "files": {
-    "enabled": true,
-    "path": "mocks",
-    "watch": true
-  }
-}
-```
+See [@dynamic-mock-server/core](./packages/core) for the full API reference and examples.
 
 ### Using the CLI
 
 ```bash
-# Start the server (loads config and files automatically)
+# Start the server (reads config automatically)
 dynamic-mock-server start
 
 # Enter interactive mode for real-time management
 dynamic-mock-server interactive
-
-# Change active routes suite
-dynamic-mock-server suites set error-scenarios
-
-# Override a specific route response
-dynamic-mock-server routes set get-users empty
-
-# View server status
-dynamic-mock-server status
 ```
+
+See [@dynamic-mock-server/cli](./packages/cli) for the full command reference and interactive mode documentation.
+
+### File-Based Configuration
+
+Place mock files in a `mocks/` directory and point to them in your config file (`dynamicMockServer.config.json`). See [@dynamic-mock-server/config](./packages/config) and [@dynamic-mock-server/mocks-manager](./packages/mocks-manager) for details.
 
 ## 🛠️ Development
 
@@ -243,57 +163,12 @@ dynamic-mock-server/
 │   ├── cli/             # CLI and Interactive CLI
 │   ├── logger/          # Pino-based logger
 │   ├── alerts/          # Structured alert system
-│   ├── eslint-config/   # Shared ESLint config
-│   └── typescript-config/ # Shared TypeScript config
+│   ├── eslint-config/   # Shared ESLint config (internal)
+│   └── typescript-config/ # Shared TypeScript config (internal)
 ├── examples/            # Usage examples and mock definitions
 ├── pnpm-workspace.yaml  # pnpm workspace configuration
 ├── turbo.json           # TurboRepo task orchestration
 └── package.json         # Root dependencies and scripts
-```
-
-## 💻 CLI Features
-
-The CLI package (`@dynamic-mock-server/cli`) provides two modes:
-
-### Interactive Mode
-
-Powered by **@clack/prompts** for beautiful, user-friendly interactions:
-
-- Navigate with arrow keys and selection prompts
-- Real-time status updates
-- View configuration and statistics
-- Change suites and route responses on the fly
-- Restart server without losing context
-- Graceful exit handling
-
-```bash
-dynamic-mock-server interactive
-# or shorthand
-dynamic-mock-server i
-```
-
-### Command Mode
-
-Powered by **Commander.js** for scriptable CLI operations:
-
-```bash
-# Server management
-dynamic-mock-server start              # Start server with config
-dynamic-mock-server start -p 8080      # Start on custom port
-dynamic-mock-server start -h 0.0.0.0   # Bind to all interfaces
-dynamic-mock-server restart            # Restart the server
-dynamic-mock-server stop               # Stop the server
-dynamic-mock-server status             # Show current status
-
-# Routes suites
-dynamic-mock-server suites list        # List all available suites
-dynamic-mock-server suites set <id>    # Activate a suite
-dynamic-mock-server suites clear       # Deactivate current suite
-
-# Route overrides
-dynamic-mock-server routes list                          # List all routes
-dynamic-mock-server routes set <routeId> <responseId>   # Override route response
-dynamic-mock-server routes clear <routeId>              # Remove override
 ```
 
 ## 📚 Examples
@@ -347,164 +222,6 @@ File Changes (Chokidar) → FilesLoader → MocksManager → RoutesHandler → F
                                          Alerts
                                             ↓
                                          Logger
-```
-
-### Plugin System
-
-Plugins can hook into the Core API to extend functionality:
-
-```typescript
-import type { Plugin, CoreApi } from "@dynamic-mock-server/core";
-
-export class MyPlugin implements Plugin {
-  static id = "my-plugin";
-
-  constructor(private coreApi: CoreApi) {}
-
-  // Called when plugin is registered
-  register(coreApi: CoreApi): void {
-    // Access config, logger, alerts, mocksManager, server
-  }
-
-  // Called during core.init()
-  async init(): Promise<void> {
-    // Initialize plugin resources
-  }
-
-  // Called during core.start()
-  async start(): Promise<void> {
-    // Start plugin functionality
-  }
-
-  // Called during core.stop()
-  async stop(): Promise<void> {
-    // Cleanup plugin resources
-  }
-}
-```
-
-### Integration Example
-
-```typescript
-import { Core } from "@dynamic-mock-server/core";
-import { InteractiveCLI } from "@dynamic-mock-server/cli";
-
-// Create core instance with optional configuration
-const core = new Core({
-  logger: myCustomLogger, // Optional: provide custom logger
-  plugins: { register: [MyPlugin] }, // Optional: register plugins
-});
-
-// Programmatically add routes
-core.mocksManager.addRoute({
-  id: "health-check",
-  url: "/health",
-  method: "GET",
-  responses: [{ id: "ok", status: 200, body: { status: "ok" } }],
-});
-
-// Add suites
-core.mocksManager.addSuite({
-  id: "default",
-  routes: { "health-check": "ok" },
-});
-
-// Start the server (initializes config, plugins, mocks)
-await core.start();
-
-// Optional: Start interactive CLI for management
-const cli = new InteractiveCLI(core);
-await cli.start();
-```
-
-## 🔧 Configuration
-
-Configuration is managed via **cosmiconfig**, supporting multiple formats:
-
-- `dynamicMockServer.config.json`
-- `dynamicMockServer.config.js`
-- `.dynamicmockserverrc`
-- `package.json` (under `dynamicMockServer` key)
-
-### Configuration Options
-
-```typescript
-{
-  // Server configuration
-  "server": {
-    "port": 3000,              // Server port
-    "host": "localhost"        // Server host
-  },
-
-  // File loading configuration
-  "files": {
-    "enabled": true,           // Enable/disable file loading
-    "path": "mocks",           // Base path for mock files
-    "watch": true              // Enable hot-reload watch mode
-  },
-
-  // Logging configuration
-  "logLevel": "info",          // trace | debug | info | warn | error | fatal
-
-  // Plugins configuration
-  "plugins": {
-    "register": []             // Array of plugin constructors
-  }
-}
-```
-
-## 🧩 Plugin Development
-
-Create custom plugins to extend functionality:
-
-```typescript
-import type { Plugin, CoreApi, Core } from "@dynamic-mock-server/core";
-
-export class CustomPlugin implements Plugin {
-  static id = "custom-plugin"; // Unique plugin identifier
-
-  private coreApi: CoreApi;
-  private core: Core;
-
-  constructor(coreApi: CoreApi, core: Core) {
-    this.coreApi = coreApi;
-    this.core = core;
-  }
-
-  // Optional: Called when plugin is registered
-  register(coreApi: CoreApi): void {
-    const logger = coreApi.logger.namespace("custom-plugin");
-    logger.info("Plugin registered");
-  }
-
-  // Optional: Called during core initialization
-  async init(): Promise<void> {
-    // Initialize resources, register routes, etc.
-    this.coreApi.mocksManager.addRoute({
-      id: "plugin-route",
-      url: "/plugin",
-      method: "GET",
-      responses: [{ id: "default", status: 200, body: { plugin: "active" } }],
-    });
-  }
-
-  // Optional: Called when server starts
-  async start(): Promise<void> {
-    // Start background tasks, listeners, etc.
-  }
-
-  // Optional: Called when server stops
-  async stop(): Promise<void> {
-    // Cleanup resources
-  }
-}
-
-// Usage
-import { Core } from "@dynamic-mock-server/core";
-
-const core = new Core({
-  plugins: { register: [CustomPlugin] },
-});
 ```
 
 ## 🙏 Acknowledgments
