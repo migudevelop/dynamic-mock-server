@@ -137,6 +137,22 @@ export const useProjectStore = create<ProjectStore>()(
     {
       name: "dynamic-mock-server:projects",
       storage: createJSONStorage(() => localStorage),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<ProjectState>;
+        const projects = persisted.projects ?? [];
+        const activeProjectId = persisted.activeProjectId ?? null;
+        const validActiveId =
+          activeProjectId !== null &&
+          projects.some((p) => p.id === activeProjectId)
+            ? activeProjectId
+            : null;
+
+        return {
+          ...currentState,
+          ...persisted,
+          activeProjectId: validActiveId,
+        };
+      },
     },
   ),
 );
